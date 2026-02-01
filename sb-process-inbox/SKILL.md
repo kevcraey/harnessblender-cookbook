@@ -38,7 +38,7 @@ For each item:
 1. Execute skill `sb-classify-content` to determine type (Project, Concept, Event, Task, People).
 2. **High Confidence (≥8/10)**:
    - Root files: Move to `9-staging/{type-folder}/`
-   - Journal items: Mark with ✅, create linked note in staging
+   - Journal items: Mark with ✅, create linked note in staging. Mark every journal item with ✅, not the header. I need to see what has been processed and what has not.
 3. **Low Confidence (<8/10)**:
    - Flag item with 🚩
    - Add to "Requires Attention" in report
