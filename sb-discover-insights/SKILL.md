@@ -56,6 +56,8 @@ For each identified cluster, propose appropriate MOC level:
 
 ### Report Structure
 
+DO NOT put checkboxes (`- [ ]`) in the report
+
 ```markdown
 ## 📌 Summary
 Overview of patterns discovered.

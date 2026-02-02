@@ -81,6 +81,7 @@ Semantic summary of integration actions.
 - [ ] All promoted notes removed from `9-staging/`
 - [ ] Staging structure intact: `9-staging/{1-notes,2-events,3-people,4-tasks}`
 - [ ] Report files properly located at vault root
+- [ ] DO NOT put checkboxes (`- [ ]`) in the report
 
 ## 7. Finalize
 

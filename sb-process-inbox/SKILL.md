@@ -76,6 +76,8 @@ related-to:
 
 **Always** generate: `{YYYY-MM-DD}-inbox-report.md` at vault root.
 
+DO NOT put checkboxes (`- [ ]`) in the report
+
 ### Report Structure
 
 ```markdown
