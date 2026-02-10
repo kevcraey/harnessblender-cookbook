@@ -24,13 +24,23 @@ Scan de vault voor notes met substantiële inhoud (niet enkel frontmatter):
 
 Selectieregels — zie `references/topic-selection.md`
 
-### 2. Lees de bestaande note
+### 2. Lees de bestaande note & Start discovery
 
 Lees de volledige note. Identificeer:
 - **Kernconcepten** die de gebruiker al begrijpt
 - **Analogieën** die de gebruiker zelf heeft opgeschreven
 - **Gaten** — gerelateerde concepten die nog stub-notes zijn of ontbreken
 - **Verbindingen** — `related-to` en `[[links]]` in frontmatter en body
+
+**NIEUW: Start discovery engine** (zie `references/discovery-engine.md`):
+1. Verzamel kandidaten via primary discovery (distance-1, broken links, semantic gaps)
+2. Check count: <3? → trigger fallback discovery (distance-2, domain, reasoning)
+3. Score alle kandidaten volgens scoring matrix
+4. Select top 3 met diversity filter
+5. Genereer learning values voor elke kandidaat
+6. Als nog steeds <3: gebruik generieke fallback suggesties
+
+**Timing**: Discovery draait parallel met note analysis (non-blocking).
 
 ### 3. Genereer de refresh
 
@@ -54,6 +64,11 @@ Geen vage algemeenheden zoals "het is een adaptief filtersysteem".]
 - Sluit aan bij [[bestaande-note]] — {korte uitleg waarom}
 - Gat gevonden: [[stub-note]] zou uitgewerkt kunnen worden
 
+### Verken verder
+1. [[Kandidaat 1]] - begrijp [learning value 1]
+2. [[Kandidaat 2]] - begrijp [learning value 2]
+3. [[Kandidaat 3]] - begrijp [learning value 3]
+
 ### Verder uitdiepen (optioneel)
 - {Suggestie 1}: korte omschrijving
 - {Suggestie 2}: korte omschrijving
@@ -67,6 +82,9 @@ Geen vage algemeenheden zoals "het is een adaptief filtersysteem".]
 | Vage verdieping: "het is een krachtig mechanisme" | Concrete verdieping: de scaling factor $\frac{1}{\sqrt{d_k}}$ voorkomt dat softmax satureerd |
 | Geen vault-links | Altijd connecties leggen met `[[bestaande-notes]]` |
 | Generieke suggesties | Suggesties gebaseerd op gaten in de vault (stub-notes, ontbrekende links) |
+| "Verken verder" sectie ontbreekt | **ALTIJD** tonen, zelfs met generieke fallbacks |
+| Suggestie zonder learning value | Elk item: `[[Topic]] - begrijp [specifieke leerwaarde]` |
+| Alle 3 suggesties zelfde type | Diversity filter: mix van stubs, broken links, reasoning |
 
 ## Taal
 
