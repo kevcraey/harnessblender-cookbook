@@ -31,178 +31,66 @@ Mix van strategieën om variatie te garanderen:
 
 **Ultimate fallback**: Als nog steeds <3, genereer generieke richtingen (gerelateerd domein, praktische toepassing, historische context)
 
-## Scoring Logic
+## Candidate Scoring
 
-Elke kandidaat krijgt een score om de 3 beste te selecteren:
+Elke kandidaat krijgt score 0-100 op basis van:
 
-### Score Components
+| Component | Max | Berekening |
+|-----------|-----|------------|
+| Distance weight | 40 | Distance-1 stub: 40<br>Broken link: 35<br>Semantic gap: 30<br>Distance-2: 20<br>Domain match: 10<br>Reasoning: 5 |
+| Mention count | 20 | Count hoeveel keer concept in note voorkomt |
+| Stub quality | 20 | Heeft stub-note: 15<br>Pure inferentie: 5 |
+| Recency bias | 10 | Gerelateerd aan recent gestagede items: +10 |
+| Freshness | 10 | Niet recent als suggestie getoond: +10 |
 
-1. **Link type** (base score):
-   - Broken link: 100 punten (hoogste prioriteit - user wil dit expliciet)
-   - Stub note: 80 punten (incomplete content, hoge waarde)
-   - Distance-1 complete note: 60 punten
-   - Distance-2 note: 40 punten
-   - Semantic gap: 50 punten
-   - Generated suggestion: 20 punten
+### Top 3 Selection
 
-2. **Connection strength** (+0-20 punten):
-   - Multiple references: +5 per extra reference (max +15)
-   - In frontmatter `related-to`: +10
-   - Domain/tag overlap: +5
-
-3. **Recency penalty** (-0-30 punten):
-   - Viewed in last 7 days: -30
-   - Viewed in last 30 days: -15
-   - Viewed in last 90 days: -5
-   - Never viewed: +10
-
-4. **Stub indicators** (+10-20 punten if stub):
-   - Explicit `stub: true` frontmatter: +20
-   - `status/stub` tag: +15
-   - Word count <100: +10
-
-### Diversity Filter
-
-Na scoring, filter voor variatie:
-
-- Maximum 1 broken link in top 3
-- Maximum 2 uit dezelfde subcategory/tag
-- Bij tie-break: prefer verschillende discovery methods (Phase 1 vs Phase 2)
-
-### Final Selection
-
-1. Sort candidates by total score (descending)
-2. Apply diversity filter
-3. Select top 3
-4. If <3 after diversity filter, fall back to next highest scores
+1. Sort kandidaten op totale score (desc)
+2. Select top 3
+3. **Diversity filter**: Als top 3 alle uit dezelfde categorie (bijv. alle distance-1), vervang #3 met hoogste uit andere categorie
 
 ## Learning Value Generation
 
-Voor elke geselecteerde kandidaat, genereer "waarom leren" text:
+Voor elke top-3 kandidaat, genereer "begrijp [x]" tekst:
 
-### Value Templates by Type
+### Als stub note bestaat
+- Lees stub frontmatter (titel, tags)
+- Infereer leerwaarde uit metadata
+- Format: "begrijp hoe/wat/waarom/welke [inferred value]"
 
-**Broken link** (user expliciet geïnteresseerd):
-```
-Je refereerde al naar [[{topic}]] - tijd om dit uit te werken
-```
+### Als broken link
+- Extract context waar link staat (surrounding sentence)
+- Gebruik context om leerwaarde te infereren
+- Voorbeeld: "The [[Bellman Equation]] is fundamental for RL"
+  → "begrijp hoe de Bellman Equation werkt in reinforcement learning"
 
-**Stub note** (incomplete kennis):
-```
-[[{topic}]] is nog een stub - verdiep je kennis hier
-```
+### Als inferreed (reasoning mode)
+- Gebruik het reasoning dat tot kandidaat leidde
+- Prerequisites: "begrijp wat [prerequisite] is als basis voor [current topic]"
+- Extensions: "begrijp hoe [extension] voortbouwt op [current topic]"
 
-**Distance-1 connection** (direct gerelateerd):
-```
-[[{topic}]] is direct verbonden met {current_topic}
-```
+**Regel**: Altijd beginnen met "begrijp" + vraagwoord (hoe/wat/waarom/welke)
 
-**Distance-2 exploration** (breder netwerk):
-```
-Via [[{intermediate}]] kom je bij [[{topic}]]
-```
+## Edge Cases & Error Handling
 
-**Domain match** (thematisch):
-```
-[[{topic}]] deelt domein/tags met {current_topic}
-```
+### Circulaire referenties (A→B→A)
+- Track `visited_notes` set tijdens distance-2 scan
+- Skip notes die al in pad zitten
+- Voorkomt infinite loops
 
-**Prerequisite reasoning**:
-```
-Voor {current_topic} is kennis van [[{topic}]] nuttig
-```
+### Invalid wikilinks
+- Regex: `\[\[([^\]]+)\]\]` om links te extracten
+- Skip links met: pipe syntax errors, nested brackets, empty content
+- Log warning maar continue met andere links
 
-**Extension reasoning**:
-```
-Na {current_topic} is [[{topic}]] een logische volgende stap
-```
+### Timeout protection
+- Max 5 seconden voor hele discovery process
+- Als timeout: return wat er tot nu toe is (kan <3 zijn)
+- Log: "Discovery timeout na 5s, gevonden: [N] kandidaten"
 
-**Generic fallback**:
-```
-Verken [[{topic}]] in relatie tot {domain/category}
-```
-
-### Context Integration
-
-Voeg specifieke context toe waar mogelijk:
-- Aantal broken links: "3x gerefereerd maar nog geen note"
-- Stub details: "5 woorden, tagged status/stub"
-- Connection path: "via [[Intermediate]] → [[Target]]"
-- Domain: "ook #programming/functional"
-
-## Edge Cases
-
-### 1. Empty Vault / Isolated Note
-
-**Problem**: Note heeft geen links, vault is leeg, of note is geïsoleerd
-
-**Solution**:
-- Check domain/category in frontmatter
-- Genereer generieke suggesties op basis van domain:
-  - Programming: "Design Patterns", "Testing", "Performance"
-  - Science: "Research Methods", "Statistical Analysis", "Literature Review"
-  - Generic: "Practical Applications", "Historical Context", "Related Fields"
-
-### 2. All Connections Explored
-
-**Problem**: Alle distance-1 en distance-2 notes zijn recent bekeken
-
-**Solution**:
-- Negeer recency penalty voor deze selectie
-- Prioriteer oudste views (refresh knowledge)
-- Of: genereer reasoning-based suggestions (prerequisites/extensions)
-
-### 3. Circular References
-
-**Problem**: Distance-2 scan kan terugverwijzen naar current note
-
-**Solution**:
-- Track visited notes in path: `current → intermediate → target`
-- Skip if `target == current`
-- Skip if `target` already in distance-1 set
-
-### 4. Too Many Candidates
-
-**Problem**: >20 broken links, >50 distance-1 connections
-
-**Solution**:
-- Pre-filter broken links: max 10 hoogste reference count
-- Pre-filter distance-1: max 20 hoogste connection strength
-- Distance-2: sample max 30 (random select from distance-1 links)
-
-### 5. Non-existent Vault Paths
-
-**Problem**: File paths in links bestaan niet (typo's, moved files)
-
-**Solution**:
-- Treat as broken links (high value)
-- Note in learning value: "broken link - maak nieuwe note of fix reference"
-
-### 6. Duplicate Candidates
-
-**Problem**: Zelfde note via meerdere paths (broken link + distance-2)
-
-**Solution**:
-- Deduplicate by note title/path
-- Keep highest scoring path
-- Combine context info: "broken link + verbonden via [[X]]"
-
-### 7. No Valid Markdown Notes
-
-**Problem**: Links naar non-markdown files, external URLs, etc.
-
-**Solution**:
-- Filter out during graph scan: only `.md` files
-- Externe links not considered for discovery
-- Images/PDFs niet opnemen in kandidaten
-
-### 8. Performance (Large Vaults)
-
-**Problem**: Vault met >10,000 notes, Phase 2 te traag
-
-**Solution**:
-- Phase 1: altijd snel (alleen current note scannen)
-- Phase 2: lazy execution (alleen als <3)
-- Distance-2: sample max 30 intermediate notes
-- Domain matching: filter op shared tags eerst (small set)
-- Timeout: max 5 seconden totale discovery time
+### Geen kandidaten (zelfs na fallback)
+- Genereer 3 generieke suggesties:
+  1. "[[Gerelateerd domein]] - verbreed naar aanpalend vakgebied"
+  2. "[[Praktische toepassing]] - vertaal theorie naar implementatie"
+  3. "[[Historische context]] - begrijp de ontwikkeling van dit concept"
+- Infereer concrete names uit current topic (bijv. "AI" → "Cognitieve Wetenschap", "Python implementatie", "AI geschiedenis")
