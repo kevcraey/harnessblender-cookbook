@@ -23,5 +23,4 @@ A collection of tasks or work achieving a specific goal.
 ```yaml
 tags:
   - type/project
-status: active | completed | on-hold
 ```

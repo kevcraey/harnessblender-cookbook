@@ -22,5 +22,5 @@ Pure knowledge, definitions, or mental models.
 
 ```yaml
 tags:
-  - type/concept
+  - type/{type}
 ```
