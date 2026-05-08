@@ -1,3 +1,17 @@
+---
+name: meeting-verwerker
+description: |
+  Verwerk meeting-transcripten (.whisper bestanden) tot gestructureerde vault-content
+  en publiceer optioneel naar Confluence. Gebruik wanneer je een vergadering hebt opgenomen
+  en wil verwerken tot een meeting note, daily note samenvatting, en vault-integratie.
+skills:
+  - sb-parse-whisper
+  - sb-write-meeting-note
+  - sb-summarize-for-daily
+  - sb-integrate-note
+  - humanizer
+---
+
 # Meeting-verwerker Agent
 
 ## Doel
