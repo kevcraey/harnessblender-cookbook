@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Inaccessible Test Page</title>
+    <style>
+      /* Visual Error: Low Contrast */
+      .low-contrast {
+        color: #999;
+        background-color: #fff; /* Ratio ~2.8:1, fails AA (4.5:1) */
+      }
+      /* Visual Error: Fixed container that breaks on zoom */
+      .fixed-container {
+        width: 500px;
+        height: 200px;
+        overflow: hidden; /* Content will be cut off on resize */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome</h1>
+
+    <!-- Interaction Error: Keyboard Trap / No Focus Style -->
+    <div class="fixed-container">
+      <p class="low-contrast">This text is hard to read and cuts off.</p>
+      <input
+        type="text"
+        style="outline: none"
+        placeholder="No focus ring here"
+      />
+    </div>
+
+    <!-- Screenreader Error: Button usage -->
+    <div onclick="alert('submit')">Submit Form</div>
+
+    <!-- Interaction Error: Meaningless Link -->
+    <a href="#">Click here</a>
+
+    <!-- Screenreader Error: Image missing alt -->
+    <img src="chart.png" />
+  </body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toegankelijkheidsverklaring - {{WEBSITE_NAAM}}</title>
+    <style>
+        :root {
+            --primary-color: #1a4d80;
+            --text-color: #222;
+            --bg-color: #fff;
+            --border-color: #ccc;
+            --link-color: #0066cc;
+            --link-visited: #551a8b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            padding: 2rem 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: underline;
+        }
+
+        a:visited {
+            color: var(--link-visited);
+        }
+
+        a:hover,
+        a:focus {
+            background-color: #ffffcc;
+            outline: 2px solid var(--link-color);
+            outline-offset: 2px;
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        .status-volledig {
+            background-color: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .status-gedeeltelijk {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .status-niet {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        .info-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid var(--link-color);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .contact-info {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .violation-item {
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+            border-left: 3px solid var(--border-color);
+        }
+
+        .metadata {
+            font-size: 0.9rem;
+            color: #666;
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem;
+            padding-top: 1rem;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --text-color: #000;
+                --bg-color: #fff;
+                --link-color: #0000ee;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+            }
+
+            a[href]:after {
+                content: " (" attr(href) ")";
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Toegankelijkheidsverklaring</h1>
+
+        <p><strong>{{ORGANISATIE_NAAM}}</strong> streeft ernaar haar website <strong>{{WEBSITE_NAAM}}</strong> toegankelijk te maken, conform het Tijdelijk besluit digitale toegankelijkheid overheid en EU richtlijn 2016/2102.</p>
+
+        <h2>Compliance Status</h2>
+
+        <div class="status-badge status-{{COMPLIANCE_CLASS}}">
+            {{COMPLIANCE_STATUS}}
+        </div>
+
+        <p>{{COMPLIANCE_BESCHRIJVING}}</p>
+
+        {{#HAS_VIOLATIONS}}
+        <h2>Niet-toegankelijke Content</h2>
+
+        <p>De hieronder vermelde content is (nog) niet volledig toegankelijk om de volgende redenen:</p>
+
+        {{#WAARNEEMBAAR}}
+        <h3>🔍 Waarneembaar (Perceivable)</h3>
+        <p>Gebruikers moeten informatie en componenten kunnen waarnemen.</p>
+        <ul>
+            {{#WAARNEEMBAAR_ITEMS}}
+            <li class="violation-item">
+                <strong>{{BESCHRIJVING}}</strong> (WCAG {{WCAG_NR}})
+                <ul>
+                    <li>Locatie: {{LOCATIE}}</li>
+                    <li>Status: {{STATUS}}</li>
+                    <li>Verwachte oplossing: {{DEADLINE}}</li>
+                </ul>
+            </li>
+            {{/WAARNEEMBAAR_ITEMS}}
+        </ul>
+        {{/WAARNEEMBAAR}}
+
+        {{#BEDIENBAAR}}
+        <h3>⌨️ Bedienbaar (Operable)</h3>
+        <p>Gebruikers moeten de interface kunnen bedienen.</p>
+        <ul>
+            {{#BEDIENBAAR_ITEMS}}
+            <li class="violation-item">
+                <strong>{{BESCHRIJVING}}</strong> (WCAG {{WCAG_NR}})
+                <ul>
+                    <li>Locatie: {{LOCATIE}}</li>
+                    <li>Status: {{STATUS}}</li>
+                    <li>Verwachte oplossing: {{DEADLINE}}</li>
+                </ul>
+            </li>
+            {{/BEDIENBAAR_ITEMS}}
+        </ul>
+        {{/BEDIENBAAR}}
+
+        {{#BEGRIJPELIJK}}
+        <h3>💡 Begrijpelijk (Understandable)</h3>
+        <p>Gebruikers moeten informatie en bediening kunnen begrijpen.</p>
+        <ul>
+            {{#BEGRIJPELIJK_ITEMS}}
+            <li class="violation-item">
+                <strong>{{BESCHRIJVING}}</strong> (WCAG {{WCAG_NR}})
+                <ul>
+                    <li>Locatie: {{LOCATIE}}</li>
+                    <li>Status: {{STATUS}}</li>
+                    <li>Verwachte oplossing: {{DEADLINE}}</li>
+                </ul>
+            </li>
+            {{/BEGRIJPELIJK_ITEMS}}
+        </ul>
+        {{/BEGRIJPELIJK}}
+
+        {{#ROBUUST}}
+        <h3>🏗️ Robuust (Robust)</h3>
+        <p>Content moet robuust genoeg zijn om betrouwbaar te kunnen worden geïnterpreteerd door verschillende gebruikersagenten, inclusief ondersteunende technologie.</p>
+        <ul>
+            {{#ROBUUST_ITEMS}}
+            <li class="violation-item">
+                <strong>{{BESCHRIJVING}}</strong> (WCAG {{WCAG_NR}})
+                <ul>
+                    <li>Locatie: {{LOCATIE}}</li>
+                    <li>Status: {{STATUS}}</li>
+                    <li>Verwachte oplossing: {{DEADLINE}}</li>
+                </ul>
+            </li>
+            {{/ROBUUST_ITEMS}}
+        </ul>
+        {{/ROBUUST}}
+        {{/HAS_VIOLATIONS}}
+
+        <h2>Feedback</h2>
+
+        <p>Heeft u een toegankelijkheidsprobleem gevonden op deze website? We horen graag van u, zodat we het kunnen verbeteren.</p>
+
+        <div class="contact-info">
+            <h3>Contactgegevens</h3>
+            <p><strong>Email:</strong> <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></p>
+            {{#CONTACT_PHONE}}
+            <p><strong>Telefoon:</strong> {{CONTACT_PHONE}}</p>
+            {{/CONTACT_PHONE}}
+            <p>Wij streven ernaar binnen {{RESPONSE_TIJD}} werkdagen te reageren op uw melding.</p>
+        </div>
+
+        <h2>Klachtenprocedure</h2>
+
+        <p>Bent u niet tevreden met de manier waarop wij omgaan met uw melding? Dan kunt u een klacht indienen.</p>
+
+        <div class="info-box">
+            {{#KLACHTEN_PROCEDURE}}
+            <p>{{KLACHTEN_PROCEDURE}}</p>
+            {{/KLACHTEN_PROCEDURE}}
+            {{^KLACHTEN_PROCEDURE}}
+            <p>Voor het indienen van een klacht kunt u contact opnemen via bovenstaande contactgegevens. Wij behandelen klachten volgens onze standaard klachtenprocedure.</p>
+            {{/KLACHTEN_PROCEDURE}}
+        </div>
+
+        <h2>Handhavingsprocedure</h2>
+
+        <p>Als u niet tevreden bent over de reactie op uw melding of klacht, kunt u contact opnemen met:</p>
+
+        <div class="info-box">
+            <p><strong>College voor de Rechten van de Mens</strong><br>
+            Postbus 16001<br>
+            3500 DA Utrecht</p>
+            <p>Website: <a href="https://mensenrechten.nl/">https://mensenrechten.nl/</a></p>
+        </div>
+
+        <h2>Technische Specificaties</h2>
+
+        <p>De toegankelijkheid van {{WEBSITE_NAAM}} is afhankelijk van de volgende technologieën:</p>
+        <ul>
+            <li>HTML5</li>
+            <li>CSS3</li>
+            <li>JavaScript</li>
+            <li>WAI-ARIA</li>
+        </ul>
+
+        <div class="metadata">
+            <p><strong>Deze verklaring is opgesteld op:</strong> {{PUBLICATIE_DATUM}}</p>
+            <p><strong>Laatst herzien op:</strong> {{HERZIENING_DATUM}}</p>
+            <p><strong>Laatst getest op:</strong> {{TEST_DATUM}}</p>
+            <p><strong>Testmethode:</strong> {{TEST_METHODE}}</p>
+        </div>
+    </main>
+</body>
+</html>
