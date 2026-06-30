@@ -132,7 +132,7 @@ Als er **geen header bestond** en de gebruiker het voorstel heeft goedgekeurd:
 - Voeg de nieuwe `##` header toe aan de daily note, boven de `## Logs` sectie
 - Zorg dat de header een `[[wikilink]]` is als het naar een bestaande note/project verwijst
 
-#### 4f. Transcript hernoemen en verplaatsen
+#### 4f. Transcript hernoemen, verplaatsen en bijhorende audio verwijderen
 
 ```bash
 mkdir -p ~/Documents/Transcripts\ Processed/
@@ -140,6 +140,23 @@ mv "~/Documents/{originele naam}.whisper" "~/Documents/Transcripts Processed/YYY
 ```
 
 De naam moet exact overeenkomen met de meeting note (zonder `.md`, met `.whisper`).
+
+**Bijhorende `.m4a` audio-bestanden verwijderen.** Het `.whisper` archief bevat het originele audiobestand (`originalAudio` entry in de ZIP), dus de losse `.m4a` bestanden in `~/Documents/` met dezelfde basis-naam zijn overbodig. Verwijder ze:
+
+```bash
+# Basis-naam zonder extensie van het originele .whisper bestand
+base="{originele naam zonder .whisper}"
+# Toon eerst welke bestanden geraakt worden
+ls ~/Documents/"$base".m4a 2>/dev/null
+# Prefix-match voor multi-channel opnames (bv. "... Microphone.m4a" + "... System Audio.m4a")
+prefix="${base% Microphone}"
+[ "$prefix" != "$base" ] && ls ~/Documents/"$prefix"*.m4a 2>/dev/null
+# Verwijder
+rm -f ~/Documents/"$base".m4a
+[ "$prefix" != "$base" ] && rm -f ~/Documents/"$prefix"*.m4a
+```
+
+Verifieer eerst de match-lijst — geen onbedoelde `.m4a` bestanden raken. Bij twijfel: bevestiging vragen.
 
 #### 4g. Confluence-publicatie
 
@@ -155,7 +172,8 @@ Als de gebruiker bevestigt:
    - Agenda-tabel: Duur, Onderwerp, Wie, Notities, Acties
 3. **Humanizer**: roep de `humanizer` skill aan op alle tekst — dit is een public-facing document
 4. **Publiceren**: gebruik `confluence_create_page` in space `AI` onder de bevestigde parent page
-5. **Stijlverschillen t.o.v. vault-note**:
+5. **Label toevoegen (VERPLICHT — NIET OVERSLAAN)**: roep direct na `confluence_create_page` de tool `confluence_add_label` aan met `page_id` = id van zojuist aangemaakte pagina en `name` = `meeting-notes`. Dit is een aparte tool-call, geen optie. Publicatie pas voltooid wanneer label-call succesvol is. Verifieer response bevat `"name": "meeting-notes"`. Vermeld in afsluitend overzicht expliciet "label `meeting-notes` toegevoegd".
+6. **Stijlverschillen t.o.v. vault-note**:
    - Formeel, geen interne bedenkingen
    - Geen `[[wikilinks]]` — gebruik platte tekst
    - @mentions voor aanwezigen waar Confluence-gebruikers bestaan

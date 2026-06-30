@@ -18,9 +18,9 @@ This skill expects:
 The output is a markdown block to be placed directly under the meeting `##` header in the daily note. Structure:
 
 ```markdown
-Aanwezigen: [[Persoon 1]], [[Persoon 2]], [[Persoon 3]]
-
 {Een scherpe zin die het doel of de kern van de meeting samenvat. Deze eerste paragraaf wordt opgepikt door project-MOC dataview-queries als "recent activity" — maak hem zelfstandig leesbaar.}
+
+Aanwezigen: [[Persoon 1]], [[Persoon 2]], [[Persoon 3]]
 
 - {Key takeaway 1}
 - {Key takeaway 2}
@@ -31,11 +31,12 @@ Verslag: [[YYYY-MM-DD-beschrijving]]
 
 ## Regels
 
+- **Volgorde is verplicht**: eerste regel onder de `##` header MOET de samenvattende zin zijn, NIET de aanwezigenlijst. De dataview in project-MOC's pakt de eerste niet-lege regel onder de matching header en toont die als "recent activity". Als daar `Aanwezigen: ...` staat, is de Recent Activity-feed waardeloos.
 - **Ultra-kort**: doel + maximaal 5 bullets. Dit is een geheugensteuntje, geen verslag.
 - **Geen acties**: die staan in de meeting note
 - **Geen details**: enkel wat nodig is om bij herlezen te weten "ah ja, dat was die meeting"
-- **Eerste paragraaf is kritiek**: dit wordt de one-liner in project-MOC "Recent Activity" via dataview. Moet zelfstandig leesbaar zijn zonder de bullets.
-- **Aanwezigen**: als `[[wikilinks]]`, komma-gescheiden op een lijn
+- **Eerste paragraaf is kritiek**: dit wordt de one-liner in project-MOC "Recent Activity" via dataview. Moet zelfstandig leesbaar zijn zonder de bullets — geen "Aanwezigen:" prefix, geen frontmatter-achtige opsomming.
+- **Aanwezigen**: als `[[wikilinks]]`, komma-gescheiden op een lijn, ONDER de samenvattende zin
 - **Link naar verslag**: altijd als laatste regel
 
 ## Plaatsing in Daily Note
