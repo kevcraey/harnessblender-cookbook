@@ -22,8 +22,8 @@ Scan these directories to build a matching index:
 # People (exact filenames without .md)
 ls ~/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain/3-people/ | sed 's/.md$//'
 
-# Project MOCs
-find ~/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain/ -name "project-moc-*.md" -maxdepth 2 | sed 's/.*\///' | sed 's/.md$//'
+# Project MOCs (maxdepth 3: MOCs kunnen in een projectsubfolder zitten, bv. 7-projects/<project>/project-moc-<project>.md)
+find ~/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain/ -name "project-moc-*.md" -maxdepth 3 | sed 's/.*\///' | sed 's/.md$//'
 
 # Concept notes
 ls ~/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain/1-notes/ | sed 's/.md$//'
