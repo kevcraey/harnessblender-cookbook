@@ -1,5 +1,6 @@
 ---
 name: sb-parse-whisper
+user-invocable: false
 description: Parse Whisper transcription files (.whisper ZIP archives) into readable text with speaker labels and timestamps.
 ---
 

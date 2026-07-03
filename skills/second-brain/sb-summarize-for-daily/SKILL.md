@@ -1,5 +1,6 @@
 ---
 name: sb-summarize-for-daily
+user-invocable: false
 description: Write an ultra-short meeting summary for the daily note. Output is a markdown block that replaces existing content under the meeting header.
 ---
 

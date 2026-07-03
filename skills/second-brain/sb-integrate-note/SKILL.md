@@ -1,5 +1,6 @@
 ---
 name: sb-integrate-note
+user-invocable: false
 description: |
   Integrate a note into the Obsidian vault by adding wikilinks to existing people, projects,
   and concepts. Generic skill — works for meeting notes, concept notes, or any vault content.

@@ -1,5 +1,6 @@
 ---
 name: sb-screen-decisions
+user-invocable: false
 description: |
   Screen verwerkte input (meeting note, daily-note-sectie, losse note) op registerwaardige
   beslissingen en leg bevestigde kandidaten vast als decision note in 2-events.

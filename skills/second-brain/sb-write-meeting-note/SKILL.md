@@ -1,5 +1,6 @@
 ---
 name: sb-write-meeting-note
+user-invocable: false
 description: Generate a structured meeting note for the Obsidian vault from a parsed transcript, attendee list, and meeting context.
 ---
 
