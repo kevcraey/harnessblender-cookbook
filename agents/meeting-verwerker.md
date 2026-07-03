@@ -9,6 +9,7 @@ skills:
   - sb-write-meeting-note
   - sb-summarize-for-daily
   - sb-integrate-note
+  - sb-screen-decisions
   - humanizer
 ---
 
@@ -125,6 +126,8 @@ Roep `sb-write-meeting-note` aan met:
 #### 4d. Vault-integratie
 Roep `sb-integrate-note` aan op de zojuist aangemaakte meeting note.
 
+**Link toevoegen in project-MOC.** Als de meeting-header (in de daily note) verwijst naar een note die zelf een project-MOC is — herkenbaar aan `tags: type/project` + `MOC` in frontmatter — voeg dan altijd een link naar het verslag toe in de `## Meetings`-sectie van die MOC (sectie aanmaken als ze nog niet bestaat). Dit is verplicht, niet optioneel, en staat los van wat `sb-integrate-note` doet (die skill bewerkt enkel de meeting note zelf, niet de MOC).
+
 #### 4e. Daily note updaten
 Roep `sb-summarize-for-daily` aan om de samenvatting in de daily note te plaatsen.
 
@@ -178,6 +181,19 @@ Als de gebruiker bevestigt:
    - Geen `[[wikilinks]]` — gebruik platte tekst
    - @mentions voor aanwezigen waar Confluence-gebruikers bestaan
 
+#### 4h. Actie-suggesties
+
+Overloop de `## Acties`-sectie van de meeting note en stel voor welke acties het waard zijn om als effectieve vault-taak (Obsidian Tasks-formaat, `- [ ] ...`) te worden aangemaakt — bv. in de daily note, project-MOC of een andere geschikte plek.
+
+- **Filter**: enkel acties met een concrete eigenaar/deadline of duidelijke opvolging zijn kandidaat. Louter informatieve punten of acties die al ergens als taak bestaan, niet voorstellen.
+- **Toon een lijst** met voorstel per actie: tekst, voorgestelde locatie, evt. `due::` datum.
+- **Vraag bevestiging** voor je taken effectief aanmaakt — nooit automatisch aanmaken zonder akkoord (zelfde regel als Confluence-publicatie).
+- Als de gebruiker akkoord geeft, maak de gekozen taken aan op de voorgestelde plek.
+
+#### 4i. Beslissingsscreening
+
+Roep `sb-screen-decisions` aan op de meeting note. Kandidaat-beslissingen worden in bulk ter bevestiging voorgelegd; bevestigde kandidaten worden decision notes in `2-events`, gelinkt aan de project-MOC via `is-part-of` (de MOC-dataview pikt ze automatisch op). Nooit autonoom aanmaken.
+
 ### Stap 5: Afsluiting
 
 Geef een overzicht van wat er is verwerkt:
@@ -190,12 +206,14 @@ Verwerkt: 2 meetings
    - Daily note: updated
    - Transcript: verplaatst naar Transcripts Processed/
    - Confluence: niet gepubliceerd
+   - Actie-suggesties: 2 voorgesteld, wachten op bevestiging
 
 2. MIA vergadering
    - Meeting note: [[2026-05-06-mia-vergadering]]
    - Daily note: updated
    - Transcript: verplaatst naar Transcripts Processed/
    - Confluence: gepubliceerd op AI > MIA > Verslagen
+   - Actie-suggesties: geen kandidaten
 ```
 
 ## Autonomie-regels
@@ -209,6 +227,8 @@ Verwerkt: 2 meetings
 | Aanwezigenlijst samenstellen | Autonoom, toon resultaat in meeting note |
 | Confluence publicatie | **Altijd vragen** |
 | Parent page Confluence | Voorstel doen, bevestiging vragen |
+| Acties omzetten naar vault-taken | Voorstel doen, **altijd bevestiging vragen** voor aanmaak |
+| Beslissingsscreening | Kandidaten in bulk voorleggen, **altijd bevestiging vragen** voor aanmaak |
 
 ## Beperkingen
 

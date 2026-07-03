@@ -18,26 +18,33 @@ This skill expects:
 The output is a markdown block to be placed directly under the meeting `##` header in the daily note. Structure:
 
 ```markdown
-{Een scherpe zin die het doel of de kern van de meeting samenvat. Deze eerste paragraaf wordt opgepikt door project-MOC dataview-queries als "recent activity" — maak hem zelfstandig leesbaar.}
-
-Aanwezigen: [[Persoon 1]], [[Persoon 2]], [[Persoon 3]]
+{Eén scherpe zin die het doel/de kern samenvat. Wordt opgepikt door project-MOC dataview als "recent activity" — zelfstandig leesbaar, max 1 zin.}
 
 - {Key takeaway 1}
 - {Key takeaway 2}
-- {Key takeaway 3 — maximaal 5 bullets}
+- {Key takeaway 3 — maximaal 3 bullets}
 
 Verslag: [[YYYY-MM-DD-beschrijving]]
 ```
 
 ## Regels
 
-- **Volgorde is verplicht**: eerste regel onder de `##` header MOET de samenvattende zin zijn, NIET de aanwezigenlijst. De dataview in project-MOC's pakt de eerste niet-lege regel onder de matching header en toont die als "recent activity". Als daar `Aanwezigen: ...` staat, is de Recent Activity-feed waardeloos.
-- **Ultra-kort**: doel + maximaal 5 bullets. Dit is een geheugensteuntje, geen verslag.
+- **Volgorde is verplicht**: eerste regel onder de `##` header MOET de samenvattende zin zijn — niks anders. De dataview in project-MOC's pakt de eerste niet-lege regel onder de matching header en toont die als "recent activity".
+- **Ultra-kort**: 1 samenvattende zin + maximaal 3 bullets. Dit is een geheugensteuntje, geen verslag.
 - **Geen acties**: die staan in de meeting note
 - **Geen details**: enkel wat nodig is om bij herlezen te weten "ah ja, dat was die meeting"
-- **Eerste paragraaf is kritiek**: dit wordt de one-liner in project-MOC "Recent Activity" via dataview. Moet zelfstandig leesbaar zijn zonder de bullets — geen "Aanwezigen:" prefix, geen frontmatter-achtige opsomming.
-- **Aanwezigen**: als `[[wikilinks]]`, komma-gescheiden op een lijn, ONDER de samenvattende zin
+- **Eerste paragraaf is kritiek**: dit wordt de one-liner in project-MOC "Recent Activity" via dataview. Moet zelfstandig leesbaar zijn zonder de bullets, geen frontmatter-achtige opsomming.
+- **Geen aanwezigen in daily note**: deelnemerslijst hoort enkel in het verslag (`2-events/`), nooit in de daily note. Nooit een "Aanwezigen:"-regel toevoegen.
 - **Link naar verslag**: altijd als laatste regel
+- **FOUT-voorbeeld (niet doen)**:
+  ```
+  [[Persoon 1]], [[Persoon 2]]
+
+  Verslag: [[...]]
+
+  Lange paragraaf met alle details van de meeting...
+  ```
+  Dit breekt de recent-activity feed (pakt aanwezigenlijst i.p.v. samenvatting) en is geen "ultra-kort" geheugensteuntje.
 
 ## Plaatsing in Daily Note
 

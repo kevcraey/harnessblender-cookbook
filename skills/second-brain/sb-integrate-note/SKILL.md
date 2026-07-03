@@ -40,7 +40,7 @@ For each item in the index, check if it (or a recognizable variant) appears in t
 - **Projects**: match on project title words (strip `project-moc-` prefix)
 - **Concepts**: match on note title (strip hyphens, compare words)
 
-**Confidence threshold:** >= 7/10 for all links (per vault CLAUDE.md rules)
+**Confidence threshold:** >= 7/10 for all links
 
 ### 3. Add inline wikilinks
 
