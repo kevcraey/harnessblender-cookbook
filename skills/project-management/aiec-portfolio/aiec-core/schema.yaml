@@ -1,0 +1,259 @@
+# schema.yaml — het ene model van het AIEC-portfolio.
+# Hieruit volgen het details-blok, de sjabloon- en overzichtspagina, de validatieregels en de
+# groepering in rapporten. Wijzig hier; nergens anders staan enums of pijlers.
+version: 1
+
+details_id: aiec-initiatief          # ac:parameter "id" van het details-blok (Page Properties)
+label: ai-initiatief                 # label op elke initiatiefpagina; cql van de overzichten
+page_title: "[{ai_key}] {titel}"     # titel van nieuwe pagina's — te verifiëren tegen bestaande
+overview_title: "AI-initiatieven — register"
+template_title: "Sjabloon AI-initiatief"
+
+# Artefacten zijn subpagina's met precies één van deze labels. Geen subpagina zonder artefact.
+artefact_labels:
+  captatierapport: AI-captatierapport (fase Captatie → Analyse)
+  verkenningsrapport: AI-verkenningsrapport (fase Analyse → Planning)
+  decisions: beslissingsverslag, ook bij parkeren of stopzetting (bestaand label van de ≥25 Beslissingen-pagina's)
+  verslag: overleg- of stuurgroepverslag
+  opleveringsverslag: opleveringsverslag (Implementatie → Uitvoering)
+
+# Vier strategische pijlers plus één cross-cutting. Code is de waarheid in het details-blok; de
+# naam mag herformuleerd worden. Set en omschrijvingen door Kenzo vastgelegd op 2026-09-16,
+# bij het lezen van de presentatie — herziening van de set uit de grilling-sessie.
+pijlers:
+  - code: P1
+    naam: Fundament & Dataveiligheid
+    toelichting: de technische en juridische basis — veilige infrastructuur, eigen getunede modellen, privacy, cost management, governance; de harde voorwaarde waarbinnen teams veilig experimenteren en bouwen
+  - code: P2
+    naam: Mens & Adoptie
+    toelichting: de menselijke kant — cultuur, opleiding, vaardigheden, change management, netwerken zoals de AI-guild; wie de cultuur omarmt en vaardig is, gebruikt de tooling vanzelf
+  - code: P3
+    naam: Interne Operaties & Productiviteit
+    toelichting: hoe de interne organisatie slimmer, sneller en efficiënter werkt — interne toepassingen, de staart van de backlog, geautomatiseerde administratieve stromen
+  - code: P4
+    naam: Externe Dienstverlening & Beleid
+    toelichting: wat de organisatie naar buiten brengt — slimme systemen voor burgers en ketenpartners, natuurlijke taal op openbare data, AI als vast onderdeel van de publieke dienstverlening
+  - code: OMK
+    naam: Omkadering
+    toelichting: cross-cutting; doorlopende eigen werking van het expertisecentrum
+    cross_cutting: true
+
+# Volgorde = fase-volgorde (index 0..6). "jira" is de letterlijke statusnaam op de instance;
+# hernoemt Kenzo de statussen, dan wijzigt enkel die kolom.
+statussen:
+  - jira: Captatie
+    naam: Captatie
+  - jira: In Analyse
+    naam: Analyse
+  - jira: Prioritering en planning
+    naam: Planning
+  - jira: implementatie
+    naam: Implementatie
+  - jira: Run
+    naam: Uitvoering
+  - jira: afbouw
+    naam: Afbouw
+  - jira: Closed
+    naam: Afgesloten
+    eind: true
+
+# Jira-resolutions bij Afgesloten (datamodel §3). Categorie → resolution-namen op de instance
+# (lijst live gelezen 2026-09-16: 30 namen, geen 'uitgevoerd/stopgezet/geannuleerd'). Welke naam
+# bij welke categorie hoort is een VOORSTEL, te bevestigen door Kenzo. Onbekende naam → geen categorie
+# → 'geen-stopreden' meldt het initiatief.
+resoluties:
+  uitgevoerd:
+    tekst: volledig uitgevoerd
+    jira: [Gerealiseerd, Afgehandeld, Done, Fixed, Goedgekeurd]
+  stopgezet:
+    tekst: na opstart gestopt
+    jira: [Stopgezet, "Wordt niet verder behandeld", Inactief]
+  geannuleerd:
+    tekst: nooit opgestart
+    jira: [Ingetrokken, Declined, "Won't Do", Geweigerd, Dubbel, Duplicate]
+
+# Eigenschappen van een initiatief (rijen van het details-blok, in deze volgorde).
+#   key            sleutel in JSON en voorstel-bestanden
+#   label          tekst in de eerste kolom van het blok en kolomkop in overzichten
+#   type           text | enum | multi | pijler
+#   required       altijd verplicht
+#   required_when  lijst van voorwaarden die allemaal moeten gelden (soort, fase_min, status,
+#                  resolution_not, filled) vóór het veld verplicht is
+#   not_inferable  een agent kan dit niet afleiden; blijft leeg met markering KENZO
+fields:
+  - key: ai_key
+    label: AI-key
+    groep: Identiteit & plaats
+    type: text
+    pattern: "^AI-\\d+$"
+    required: true
+    hint: join-sleutel naar Jira; status, uren en kost komen daar live vandaan
+  - key: eag_key
+    label: EAG-key
+    groep: Identiteit & plaats
+    type: text
+    pattern: "^EAG-\\d+$"
+    required_when:
+      - soort: afgebakend
+    hint: counterpart in het centrale demandregister; doorlopende werking heeft er geen
+  - key: soort
+    label: Soort
+    groep: Identiteit & plaats
+    type: enum
+    values: [afgebakend, doorlopend]
+    required: true
+    hint: doorlopend = staande functie (omkadering, kennisdeling, governance); valt buiten de funnel
+  - key: pijler
+    label: Pijler
+    groep: Identiteit & plaats
+    type: pijler
+    required: true
+  - key: vrager
+    label: Vrager
+    groep: Herkomst
+    type: text
+    required_when:
+      - soort: afgebakend
+    hint: persoon die de vraag stelde
+  - key: afdeling
+    label: Afdeling
+    groep: Herkomst
+    type: text
+    required_when:
+      - soort: afgebakend
+    hint: afdeling of entiteit van de vrager; filter voor de heatmap
+  - key: herkomst
+    label: Herkomst
+    groep: Herkomst
+    type: enum
+    values: [bottom-up, management, regelgeving, vendor]
+    required_when:
+      - soort: afgebakend
+  - key: toepassingstype
+    label: Toepassingstype
+    groep: Classificatie
+    type: multi
+    values:
+      - Conversationele interface
+      - Documentverwerking
+      - Kennisontsluiting & zoeken
+      - Beeld- & sensoranalyse
+      - Voorspellen & detecteren
+      - Beslissingsondersteuning
+      - Procesautomatisering
+      - Other
+    required_when:
+      - soort: afgebakend
+      - fase_min: Analyse
+  - key: ai_techniek
+    label: AI-techniek
+    groep: Classificatie
+    type: multi
+    values:
+      - Generative AI
+      - Agentic AI
+      - NLP
+      - Computer Vision
+      - Classification
+      - Regression
+      - Clustering
+      - Anomaly detection
+      - Time series forecasting
+      - Recommender system
+      - Reinforcement learning
+      - Other
+    required_when:
+      - soort: afgebakend
+      - fase_min: Analyse
+  - key: delivery_mode
+    label: Delivery-mode
+    groep: Classificatie
+    type: enum
+    values: [eigen bouw, extern/vendor, AI-feature in COTS, hergebruik intern]
+    required_when:
+      - soort: afgebakend
+      - fase_min: Planning
+  - key: ai_act_klasse
+    label: AI Act-klasse
+    groep: Risico
+    type: enum
+    values: [verboden, hoog, beperkt, minimaal, te bepalen]
+    required: true
+    hint: "'te bepalen' mag tot en met Analyse; vanaf Planning wordt het gemeld"
+  - key: persoonsgegevens
+    label: Persoonsgegevens
+    groep: Risico
+    type: enum
+    values: [ja, nee, onbekend]
+    required: true
+    hint: ja → DPO betrekken (artefact, geen veld)
+  - key: batenclaim
+    label: Batenclaim
+    groep: Waarde
+    type: text
+    not_inferable: true
+    required_when:
+      - soort: afgebakend
+      - fase_min: Planning
+    hint: één claim in manuren per jaar, geen euro's
+  - key: aanname
+    label: Aanname
+    groep: Waarde
+    type: text
+    not_inferable: true
+    required_when:
+      - filled: batenclaim
+    hint: de veronderstelling onder de claim (volume × tijd per stuk)
+  - key: opgeleverd
+    label: Opgeleverd
+    groep: Waarde
+    type: text
+    required_when:
+      - fase_min: Uitvoering
+    hint: wat er effectief staat (product, dienst, beleid)
+  - key: gebruikers
+    label: Gebruikers
+    groep: Waarde
+    type: text
+    required_when:
+      - fase_min: Uitvoering
+    hint: wie het gebruikt (afdelingen, aantallen als bekend)
+  - key: stopreden
+    label: Stopreden
+    groep: Afsluiting
+    type: enum
+    values:
+      - geen capaciteit
+      - geen business owner
+      - geen data
+      - technisch niet haalbaar
+      - geen meerwaarde
+      - risico of regelgeving
+      - overgenomen door ander traject
+      - andere
+    required_when:
+      - status: Afgesloten
+      - resolution_not: uitgevoerd
+    hint: categorie voor de funnel-analyse; de beslissing zelf is een artefact met label beslissing
+
+# Vaste kopjes van een initiatiefpagina, onder het details-blok. type bepaalt de macro.
+page_sections:
+  - kop: Waarover gaat het
+    type: tekst
+    placeholder: probleem en beoogde oplossing in twee of drie zinnen
+  - kop: Stand van zaken
+    type: jira-issue          # jira-macro op de AI-key (status, assignee, updated)
+  - kop: Artefacten
+    type: children            # children-macro: subpagina's met artefactlabel
+  - kop: Beslissingen
+    type: detailssummary      # cql: label = "decisions" and ancestor = currentContent()
+    label: decisions
+
+# Overzichtspagina: per pijler een detailssummary met deze kolommen, plus één Jira-macro.
+# Page Properties Report filtert op pagina's (cql), niet op celwaarden: dus één rapport met Pijler
+# als eerste kolom en daarop gesorteerd, plus één Jira-macro voor status.
+overzicht:
+  kolommen: [pijler, soort, afdeling, ai_act_klasse, persoonsgegevens, eag_key]
+  sorteer: pijler
+  jira_jql: "project = AI AND issuetype = Initiative ORDER BY key"
+  jira_kolommen: [key, summary, status, assignee, updated]

@@ -1,0 +1,361 @@
+{
+ "AI-4": {
+  "startAt": 0,
+  "maxResults": 4,
+  "total": 4,
+  "histories": [
+   {
+    "id": "6034890",
+    "created": "2026-04-09T21:10:20.452+0200",
+    "items": [
+     {
+      "field": "Link",
+      "fieldtype": "jira",
+      "fromString": null,
+      "toString": "This issue is gerelateerd aan EAG-917"
+     }
+    ]
+   },
+   {
+    "id": "6068246",
+    "created": "2026-04-29T13:34:00.009+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "Backlog",
+      "toString": "Captatie"
+     }
+    ]
+   },
+   {
+    "id": "6204607",
+    "created": "2026-07-23T15:41:04.443+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "Captatie",
+      "toString": "implementatie"
+     }
+    ]
+   },
+   {
+    "id": "6207627",
+    "created": "2026-07-27T14:01:08.919+0200",
+    "items": [
+     {
+      "field": "Link",
+      "fieldtype": "jira",
+      "fromString": null,
+      "toString": "This issue includes AI-62"
+     }
+    ]
+   }
+  ]
+ },
+ "AI-5": {
+  "startAt": 0,
+  "maxResults": 5,
+  "total": 5,
+  "histories": [
+   {
+    "id": "5991845",
+    "created": "2026-03-20T12:01:58.461+0100",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "Backlog",
+      "toString": "In voorbereiding"
+     }
+    ]
+   },
+   {
+    "id": "6034892",
+    "created": "2026-04-09T21:10:21.216+0200",
+    "items": [
+     {
+      "field": "Link",
+      "fieldtype": "jira",
+      "fromString": null,
+      "toString": "This issue is gerelateerd aan EAG-918"
+     }
+    ]
+   },
+   {
+    "id": "6067433",
+    "created": "2026-04-29T10:00:24.552+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "In voorbereiding",
+      "toString": "In Progress"
+     }
+    ]
+   },
+   {
+    "id": "6068252",
+    "created": "2026-04-29T13:34:00.975+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "In Progress",
+      "toString": "implementatie"
+     }
+    ]
+   },
+   {
+    "id": "6207761",
+    "created": "2026-07-27T14:22:30.555+0200",
+    "items": [
+     {
+      "field": "Link",
+      "fieldtype": "jira",
+      "fromString": null,
+      "toString": "This issue includes OB-1"
+     }
+    ]
+   }
+  ]
+ },
+ "AI-6": {
+  "startAt": 0,
+  "maxResults": 4,
+  "total": 4,
+  "histories": [
+   {
+    "id": "5991846",
+    "created": "2026-03-20T12:02:04.050+0100",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "Backlog",
+      "toString": "In voorbereiding"
+     }
+    ]
+   },
+   {
+    "id": "6067428",
+    "created": "2026-04-29T10:00:22.224+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "In voorbereiding",
+      "toString": "In Progress"
+     }
+    ]
+   },
+   {
+    "id": "6068253",
+    "created": "2026-04-29T13:34:01.158+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "In Progress",
+      "toString": "implementatie"
+     }
+    ]
+   },
+   {
+    "id": "6150944",
+    "created": "2026-06-17T09:43:54.011+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "implementatie",
+      "toString": "Closed"
+     }
+    ]
+   }
+  ]
+ },
+ "AI-19": {
+  "startAt": 0,
+  "maxResults": 1,
+  "total": 1,
+  "histories": [
+   {
+    "id": "6079571",
+    "created": "2026-05-06T14:56:36.111+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "Captatie",
+      "toString": "Closed"
+     }
+    ]
+   }
+  ]
+ },
+ "AI-25": {
+  "startAt": 0,
+  "maxResults": 2,
+  "total": 2,
+  "histories": [
+   {
+    "id": "6079490",
+    "created": "2026-05-06T14:37:22.781+0200",
+    "items": [
+     {
+      "field": "Link",
+      "fieldtype": "jira",
+      "fromString": null,
+      "toString": "This issue is gerelateerd aan EAG-927"
+     }
+    ]
+   },
+   {
+    "id": "6204625",
+    "created": "2026-07-23T15:42:35.608+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "Captatie",
+      "toString": "In Analyse"
+     }
+    ]
+   }
+  ]
+ },
+ "AI-48": {
+  "startAt": 0,
+  "maxResults": 1,
+  "total": 1,
+  "histories": [
+   {
+    "id": "6207442",
+    "created": "2026-07-27T12:50:48.750+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "Backlog",
+      "toString": "Run"
+     }
+    ]
+   }
+  ]
+ },
+ "AI-50": {
+  "startAt": 0,
+  "maxResults": 1,
+  "total": 1,
+  "histories": [
+   {
+    "id": "6209714",
+    "created": "2026-07-29T08:35:12.634+0200",
+    "items": [
+     {
+      "field": "resolution",
+      "fieldtype": "jira",
+      "fromString": null,
+      "toString": "Fixed"
+     },
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "Backlog",
+      "toString": "Closed"
+     }
+    ]
+   }
+  ]
+ },
+ "AI-62": {
+  "startAt": 0,
+  "maxResults": 1,
+  "total": 1,
+  "histories": [
+   {
+    "id": "6207626",
+    "created": "2026-07-27T14:01:08.907+0200",
+    "items": [
+     {
+      "field": "Link",
+      "fieldtype": "jira",
+      "fromString": null,
+      "toString": "This issue is part of AI-4"
+     }
+    ]
+   }
+  ]
+ },
+ "AI-67": {
+  "startAt": 0,
+  "maxResults": 1,
+  "total": 1,
+  "histories": [
+   {
+    "id": "6209340",
+    "created": "2026-07-28T16:03:29.233+0200",
+    "items": [
+     {
+      "field": "Link",
+      "fieldtype": "jira",
+      "fromString": null,
+      "toString": "This issue is part of AI-59"
+     }
+    ]
+   }
+  ]
+ },
+ "AI-68": {
+  "startAt": 0,
+  "maxResults": 2,
+  "total": 2,
+  "histories": [
+   {
+    "id": "6259555",
+    "created": "2026-09-01T10:38:27.041+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "Backlog",
+      "toString": "In Progress"
+     }
+    ]
+   },
+   {
+    "id": "6259563",
+    "created": "2026-09-01T10:39:06.436+0200",
+    "items": [
+     {
+      "field": "status",
+      "fieldtype": "jira",
+      "fromString": "In Progress",
+      "toString": "In Review"
+     }
+    ]
+   }
+  ]
+ },
+ "OB-1": {
+  "startAt": 0,
+  "maxResults": 1,
+  "total": 1,
+  "histories": [
+   {
+    "id": "6207760",
+    "created": "2026-07-27T14:22:30.543+0200",
+    "items": [
+     {
+      "field": "Link",
+      "fieldtype": "jira",
+      "fromString": null,
+      "toString": "This issue is part of AI-5"
+     }
+    ]
+   }
+  ]
+ }
+}

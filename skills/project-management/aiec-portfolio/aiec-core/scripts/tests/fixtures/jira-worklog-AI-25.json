@@ -1,0 +1,16 @@
+{
+ "startAt": 0,
+ "maxResults": 1,
+ "total": 1,
+ "worklogs": [
+  {
+   "id": "783863",
+   "issueId": "976423",
+   "started": "2026-09-02T09:00:00.000+0200",
+   "timeSpent": "12m",
+   "timeSpentSeconds": 720,
+   "created": "2026-09-02T21:09:34.943+0200",
+   "updated": "2026-09-02T21:09:34.943+0200"
+  }
+ ]
+}

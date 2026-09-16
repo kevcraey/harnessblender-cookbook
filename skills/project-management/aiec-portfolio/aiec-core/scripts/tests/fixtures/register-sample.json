@@ -1,0 +1,882 @@
+{
+ "generated": "2026-09-16T10:00:00",
+ "space": "AI",
+ "pages": [
+  {
+   "page_id": "431293003",
+   "title": "[AI-3] verwerking inspraakreacties openbaar onderzoek",
+   "ai_key": "AI-3",
+   "version": 9,
+   "last_modified": "2026-09-14T11:00:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293003",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-3",
+    "eag_key": "EAG-916",
+    "soort": "afgebakend",
+    "pijler": "P2",
+    "vrager": "teamhoofd handhaving",
+    "afdeling": "Afdeling Handhaving",
+    "herkomst": "management",
+    "toepassingstype": [
+     "Documentverwerking"
+    ],
+    "ai_techniek": [
+     "Generative AI"
+    ],
+    "delivery_mode": "eigen bouw",
+    "ai_act_klasse": "beperkt",
+    "persoonsgegevens": "ja",
+    "batenclaim": "400 manuren per jaar",
+    "aanname": "2000 dossiers x 12 minuten",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-3",
+    "EAG-key": "EAG-916",
+    "Soort": "afgebakend",
+    "Pijler": "P2 — Mens & Adoptie",
+    "Vrager": "teamhoofd handhaving",
+    "Afdeling": "Afdeling Handhaving",
+    "Herkomst": "management",
+    "Toepassingstype": "Documentverwerking",
+    "AI-techniek": "Generative AI",
+    "Delivery-mode": "eigen bouw",
+    "AI Act-klasse": "beperkt",
+    "Persoonsgegevens": "ja",
+    "Batenclaim": "400 manuren per jaar",
+    "Aanname": "2000 dossiers x 12 minuten"
+   },
+   "details_problems": [],
+   "children": [
+    {
+     "page_id": "431293103",
+     "title": "[AI-3] Captatierapport",
+     "labels": [
+      "captatierapport"
+     ],
+     "last_modified": "2026-04-02T10:00:00"
+    },
+    {
+     "page_id": "431293104",
+     "title": "[AI-3] Verkenningsrapport",
+     "labels": [
+      "verkenningsrapport"
+     ],
+     "last_modified": "2026-06-05T10:00:00"
+    }
+   ],
+   "last_activity": "2026-09-14T11:00:00"
+  },
+  {
+   "page_id": "431293060",
+   "title": "[AI-4] AI Coding Agents",
+   "ai_key": "AI-4",
+   "version": 12,
+   "last_modified": "2026-09-10T16:30:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293060",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-4",
+    "eag_key": "EAG-917",
+    "soort": "afgebakend",
+    "pijler": "P1",
+    "vrager": "vrager 3",
+    "afdeling": "DIGITALISERING",
+    "herkomst": "management",
+    "toepassingstype": [
+     "Procesautomatisering"
+    ],
+    "ai_techniek": [
+     "Agentic AI"
+    ],
+    "delivery_mode": "AI-feature in COTS",
+    "ai_act_klasse": "minimaal",
+    "persoonsgegevens": "nee",
+    "batenclaim": "",
+    "aanname": "",
+    "opgeleverd": "Copilot-licenties uitgerold",
+    "gebruikers": "40 ontwikkelaars",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-4",
+    "Pijler": "P1 — Fundament & Dataveiligheid"
+   },
+   "details_problems": [],
+   "children": [],
+   "last_activity": "2026-09-10T16:30:00"
+  },
+  {
+   "page_id": "431293005",
+   "title": "[AI-5] Obscuro",
+   "ai_key": "AI-5",
+   "version": 4,
+   "last_modified": "2026-05-04T15:00:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293005",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-5",
+    "eag_key": "EAG-918",
+    "soort": "afgebakend",
+    "pijler": "P1",
+    "vrager": "teamhoofd handhaving",
+    "afdeling": "Afdeling Handhaving",
+    "herkomst": "management",
+    "toepassingstype": [
+     "Documentverwerking"
+    ],
+    "ai_techniek": [
+     "Generative AI"
+    ],
+    "delivery_mode": "eigen bouw",
+    "ai_act_klasse": "beperkt",
+    "persoonsgegevens": "ja",
+    "batenclaim": "400 manuren per jaar",
+    "aanname": "2000 dossiers x 12 minuten",
+    "opgeleverd": "niets opgeleverd, traject gestopt",
+    "gebruikers": "geen",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-5",
+    "EAG-key": "EAG-918",
+    "Soort": "afgebakend",
+    "Pijler": "P1 — Fundament & Dataveiligheid",
+    "Vrager": "teamhoofd handhaving",
+    "Afdeling": "Afdeling Handhaving",
+    "Herkomst": "management",
+    "Toepassingstype": "Documentverwerking",
+    "AI-techniek": "Generative AI",
+    "Delivery-mode": "eigen bouw",
+    "AI Act-klasse": "beperkt",
+    "Persoonsgegevens": "ja",
+    "Batenclaim": "400 manuren per jaar",
+    "Aanname": "2000 dossiers x 12 minuten",
+    "Opgeleverd": "niets opgeleverd, traject gestopt",
+    "Gebruikers": "geen"
+   },
+   "details_problems": [],
+   "children": [
+    {
+     "page_id": "431293105",
+     "title": "[AI-5] Captatierapport",
+     "labels": [
+      "captatierapport"
+     ],
+     "last_modified": "2026-02-01T10:00:00"
+    },
+    {
+     "page_id": "431293106",
+     "title": "[AI-5] Verkenningsrapport",
+     "labels": [
+      "verkenningsrapport"
+     ],
+     "last_modified": "2026-03-01T10:00:00"
+    },
+    {
+     "page_id": "431293107",
+     "title": "[AI-5] Beslissing stopzetting",
+     "labels": [
+      "decisions"
+     ],
+     "last_modified": "2026-05-04T14:00:00"
+    }
+   ],
+   "last_activity": "2026-05-04T15:00:00"
+  },
+  {
+   "page_id": "431293050",
+   "title": "[AI-6] Slim zoeken in regelgeving",
+   "ai_key": "AI-6",
+   "version": 5,
+   "last_modified": "2026-06-17T10:00:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293050",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-6",
+    "eag_key": "EAG-921",
+    "soort": "afgebakend",
+    "pijler": "P1",
+    "vrager": "vrager 2",
+    "afdeling": "GOP",
+    "herkomst": "bottom-up",
+    "toepassingstype": [
+     "Kennisontsluiting & zoeken"
+    ],
+    "ai_techniek": [
+     "Generative AI"
+    ],
+    "delivery_mode": "extern/vendor",
+    "ai_act_klasse": "minimaal",
+    "persoonsgegevens": "nee",
+    "batenclaim": "",
+    "aanname": "",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": "geen capaciteit"
+   },
+   "details_raw": {
+    "AI-key": "AI-6",
+    "Pijler": "P1 — Fundament & Dataveiligheid"
+   },
+   "details_problems": [],
+   "children": [],
+   "last_activity": "2026-06-17T10:00:00"
+  },
+  {
+   "page_id": "431293007",
+   "title": "[AI-7] Gezond uit eigen grond",
+   "ai_key": "AI-7",
+   "version": 6,
+   "last_modified": "2026-09-08T16:30:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293007",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-7",
+    "eag_key": "EAG-919",
+    "soort": "afgebakend",
+    "pijler": "P2",
+    "vrager": "teamhoofd handhaving",
+    "afdeling": "Afdeling Handhaving",
+    "herkomst": "management",
+    "toepassingstype": [
+     "Documentverwerking"
+    ],
+    "ai_techniek": [
+     "Generative AI"
+    ],
+    "delivery_mode": "eigen bouw",
+    "ai_act_klasse": "beperkt",
+    "persoonsgegevens": "ja",
+    "batenclaim": "400 manuren per jaar",
+    "aanname": "2000 dossiers x 12 minuten",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-7",
+    "EAG-key": "EAG-919",
+    "Soort": "afgebakend",
+    "Pijler": "P2 — Mens & Adoptie",
+    "Vrager": "teamhoofd handhaving",
+    "Afdeling": "Afdeling Handhaving",
+    "Herkomst": "management",
+    "Toepassingstype": "Documentverwerking",
+    "AI-techniek": "Generative AI",
+    "Delivery-mode": "eigen bouw",
+    "AI Act-klasse": "beperkt",
+    "Persoonsgegevens": "ja",
+    "Batenclaim": "400 manuren per jaar",
+    "Aanname": "2000 dossiers x 12 minuten"
+   },
+   "details_problems": [],
+   "children": [
+    {
+     "page_id": "431293117",
+     "title": "[AI-7] Captatierapport",
+     "labels": [
+      "captatierapport"
+     ],
+     "last_modified": "2026-03-11T10:00:00"
+    }
+   ],
+   "last_activity": "2026-09-08T16:30:00"
+  },
+  {
+   "page_id": "431293014",
+   "title": "[AI-14] MDO campagne tool",
+   "ai_key": "AI-14",
+   "version": 2,
+   "last_modified": "2026-09-10T14:00:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293014",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-14",
+    "eag_key": "EAG-915",
+    "soort": "afgebakend",
+    "pijler": "P2",
+    "vrager": "",
+    "afdeling": "Afdeling Communicatie",
+    "herkomst": "bottom-up",
+    "toepassingstype": [],
+    "ai_techniek": [],
+    "delivery_mode": "",
+    "ai_act_klasse": "minimaal",
+    "persoonsgegevens": "nee",
+    "batenclaim": "",
+    "aanname": "",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-14",
+    "EAG-key": "EAG-915",
+    "Soort": "afgebakend",
+    "Pijler": "P2 — Mens & Adoptie",
+    "Afdeling": "Afdeling Communicatie",
+    "Herkomst": "bottom-up",
+    "AI Act-klasse": "minimaal",
+    "Persoonsgegevens": "nee"
+   },
+   "details_problems": [],
+   "children": [],
+   "last_activity": "2026-09-10T14:00:00"
+  },
+  {
+   "page_id": "431293016",
+   "title": "[AI-16] Detectie illegale dierenverkoop",
+   "ai_key": "AI-16",
+   "version": 3,
+   "last_modified": "2026-09-01T09:30:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293016",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-16",
+    "eag_key": "EAG-921",
+    "soort": "afgebakend",
+    "pijler": "P2",
+    "vrager": "dossierbeheerder dierenwelzijn",
+    "afdeling": "Afdeling Handhaving",
+    "herkomst": "regelgeving",
+    "toepassingstype": [
+     "Beeld- & sensoranalyse"
+    ],
+    "ai_techniek": [
+     "Computer Vision"
+    ],
+    "delivery_mode": "",
+    "ai_act_klasse": "hoog",
+    "persoonsgegevens": "ja",
+    "batenclaim": "",
+    "aanname": "",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-16",
+    "EAG-key": "EAG-921",
+    "Soort": "afgebakend",
+    "Pijler": "P2 — Mens & Adoptie",
+    "Vrager": "dossierbeheerder dierenwelzijn",
+    "Afdeling": "Afdeling Handhaving",
+    "Herkomst": "regelgeving",
+    "Toepassingstype": "Beeld- & sensoranalyse",
+    "AI-techniek": "Computer Vision",
+    "AI Act-klasse": "hoog",
+    "Persoonsgegevens": "ja"
+   },
+   "details_problems": [],
+   "children": [],
+   "last_activity": "2026-09-01T09:30:00"
+  },
+  {
+   "page_id": "431293017",
+   "title": "AI-ondersteuning bij verwerking publieksvragen",
+   "ai_key": "AI-17",
+   "version": 2,
+   "last_modified": "2026-09-05T08:30:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293017",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-17",
+    "eag_key": "EAG-999",
+    "soort": "afgebakend",
+    "pijler": "P1",
+    "vrager": "teamhoofd communicatie",
+    "afdeling": "Afdeling Communicatie",
+    "herkomst": "bottom-up",
+    "toepassingstype": [],
+    "ai_techniek": [],
+    "delivery_mode": "",
+    "ai_act_klasse": "beperkt",
+    "persoonsgegevens": "nee",
+    "batenclaim": "",
+    "aanname": "",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-17",
+    "EAG-key": "EAG-999",
+    "Soort": "afgebakend",
+    "Pijler": "P1 — Fundament & Dataveiligheid",
+    "Vrager": "teamhoofd communicatie",
+    "Afdeling": "Afdeling Communicatie",
+    "Herkomst": "bottom-up",
+    "AI Act-klasse": "beperkt",
+    "Persoonsgegevens": "nee"
+   },
+   "details_problems": [],
+   "children": [],
+   "last_activity": "2026-09-05T08:30:00"
+  },
+  {
+   "page_id": "431293021",
+   "title": "[AI-21] Dierenwelzijnscontroles in slachthuizen met AI-camera",
+   "ai_key": "AI-21",
+   "version": 1,
+   "last_modified": "2026-04-02T10:30:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293021",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-21",
+    "eag_key": "",
+    "soort": "afgebakend",
+    "pijler": "P2",
+    "vrager": "teamhoofd dierenwelzijn",
+    "afdeling": "Afdeling Handhaving",
+    "herkomst": "topdown",
+    "toepassingstype": [],
+    "ai_techniek": [],
+    "delivery_mode": "",
+    "ai_act_klasse": "hoog",
+    "persoonsgegevens": "nee",
+    "batenclaim": "",
+    "aanname": "",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-21",
+    "Soort": "afgebakend",
+    "Pijler": "P2 — Mens & Adoptie",
+    "Vrager": "teamhoofd dierenwelzijn",
+    "Afdeling": "Afdeling Handhaving",
+    "Herkomst": "topdown",
+    "AI Act-klasse": "hoog",
+    "Persoonsgegevens": "nee"
+   },
+   "details_problems": [
+    "herkomst: 'topdown' niet in bottom-up, management, regelgeving, vendor"
+   ],
+   "children": [],
+   "last_activity": "2026-04-02T10:30:00"
+  },
+  {
+   "page_id": "431293025",
+   "title": "[AI-25] AI-ondersteuning Milieu-Investerings-Aftrek (MIA)",
+   "ai_key": "AI-25",
+   "version": 7,
+   "last_modified": "2026-09-02T09:12:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293025",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-25",
+    "eag_key": "EAG-927",
+    "soort": "afgebakend",
+    "pijler": "P2",
+    "vrager": "vrager 1",
+    "afdeling": "BELEID",
+    "herkomst": "management",
+    "toepassingstype": [
+     "Documentverwerking",
+     "Beslissingsondersteuning"
+    ],
+    "ai_techniek": [
+     "Generative AI"
+    ],
+    "delivery_mode": "eigen bouw",
+    "ai_act_klasse": "beperkt",
+    "persoonsgegevens": "ja",
+    "batenclaim": "500 manuren per jaar",
+    "aanname": "2000 aanvragen x 15 minuten",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-25",
+    "Pijler": "P2 — Mens & Adoptie"
+   },
+   "details_problems": [],
+   "children": [
+    {
+     "page_id": "431293026",
+     "title": "[AI-25] Beoordeling Initiatie",
+     "labels": [
+      "captatierapport"
+     ],
+     "last_modified": "2026-06-12T08:00:00"
+    }
+   ],
+   "last_activity": "2026-09-02T09:12:00"
+  },
+  {
+   "page_id": "431293027",
+   "title": "[AI-27] Q&A-assistent op de webpagina — Dierenwelzijn",
+   "ai_key": "AI-27",
+   "version": 5,
+   "last_modified": "2026-09-02T09:12:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293027",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-27",
+    "eag_key": "EAG-928",
+    "soort": "afgebakend",
+    "pijler": "P2",
+    "vrager": "webredacteur dierenwelzijn",
+    "afdeling": "Afdeling Communicatie",
+    "herkomst": "management",
+    "toepassingstype": [
+     "Conversationele interface"
+    ],
+    "ai_techniek": [
+     "Generative AI"
+    ],
+    "delivery_mode": "",
+    "ai_act_klasse": "beperkt",
+    "persoonsgegevens": "ja",
+    "batenclaim": "",
+    "aanname": "",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-27",
+    "EAG-key": "EAG-928",
+    "Soort": "afgebakend",
+    "Pijler": "P2 — Slimme oplossingen",
+    "Vrager": "webredacteur dierenwelzijn",
+    "Afdeling": "Afdeling Communicatie",
+    "Herkomst": "management",
+    "Toepassingstype": "Conversationele interface",
+    "AI-techniek": "Generative AI",
+    "AI Act-klasse": "beperkt",
+    "Persoonsgegevens": "ja"
+   },
+   "details_problems": [],
+   "children": [
+    {
+     "page_id": "431293127",
+     "title": "[AI-27] Captatierapport",
+     "labels": [
+      "captatierapport"
+     ],
+     "last_modified": "2026-06-18T10:00:00"
+    },
+    {
+     "page_id": "431293128",
+     "title": "[AI-27] Logboek",
+     "labels": [],
+     "last_modified": "2026-08-30T10:00:00"
+    }
+   ],
+   "last_activity": "2026-09-02T09:12:00"
+  },
+  {
+   "page_id": "431293047",
+   "title": "[AI-47] Rosetta: intelligent document processing",
+   "ai_key": "AI-47",
+   "version": 12,
+   "last_modified": "2026-06-30T17:30:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293047",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-47",
+    "eag_key": "EAG-930",
+    "soort": "afgebakend",
+    "pijler": "P2",
+    "vrager": "teamhoofd handhaving",
+    "afdeling": "Afdeling Handhaving",
+    "herkomst": "management",
+    "toepassingstype": [
+     "Documentverwerking"
+    ],
+    "ai_techniek": [
+     "Generative AI"
+    ],
+    "delivery_mode": "eigen bouw",
+    "ai_act_klasse": "beperkt",
+    "persoonsgegevens": "ja",
+    "batenclaim": "400 manuren per jaar",
+    "aanname": "2000 dossiers x 12 minuten",
+    "opgeleverd": "documentverwerkingsdienst in productie",
+    "gebruikers": "twee afdelingen, ongeveer 40 dossierbehandelaars",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-47",
+    "EAG-key": "EAG-930",
+    "Soort": "afgebakend",
+    "Pijler": "P2 — Mens & Adoptie",
+    "Vrager": "teamhoofd handhaving",
+    "Afdeling": "Afdeling Handhaving",
+    "Herkomst": "management",
+    "Toepassingstype": "Documentverwerking",
+    "AI-techniek": "Generative AI",
+    "Delivery-mode": "eigen bouw",
+    "AI Act-klasse": "beperkt",
+    "Persoonsgegevens": "ja",
+    "Batenclaim": "400 manuren per jaar",
+    "Aanname": "2000 dossiers x 12 minuten",
+    "Opgeleverd": "documentverwerkingsdienst in productie",
+    "Gebruikers": "twee afdelingen, ongeveer 40 dossierbehandelaars"
+   },
+   "details_problems": [],
+   "children": [
+    {
+     "page_id": "431293147",
+     "title": "[AI-47] Captatierapport",
+     "labels": [
+      "captatierapport"
+     ],
+     "last_modified": "2025-10-02T10:00:00"
+    },
+    {
+     "page_id": "431293148",
+     "title": "[AI-47] Verkenningsrapport",
+     "labels": [
+      "verkenningsrapport"
+     ],
+     "last_modified": "2025-12-02T10:00:00"
+    },
+    {
+     "page_id": "431293149",
+     "title": "[AI-47] Opleveringsverslag",
+     "labels": [
+      "opleveringsverslag"
+     ],
+     "last_modified": "2026-06-30T10:00:00"
+    }
+   ],
+   "last_activity": "2026-06-30T17:30:00"
+  },
+  {
+   "page_id": "431293040",
+   "title": "[AI-48] Algemene Omkadering AI-Expertisecentrum",
+   "ai_key": "AI-48",
+   "version": 3,
+   "last_modified": "2026-08-20T11:00:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293040",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-48",
+    "eag_key": "",
+    "soort": "doorlopend",
+    "pijler": "OMK",
+    "vrager": "",
+    "afdeling": "",
+    "herkomst": "",
+    "toepassingstype": [],
+    "ai_techniek": [],
+    "delivery_mode": "",
+    "ai_act_klasse": "minimaal",
+    "persoonsgegevens": "nee",
+    "batenclaim": "",
+    "aanname": "",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-48",
+    "Pijler": "OMK — Omkadering"
+   },
+   "details_problems": [],
+   "children": [],
+   "last_activity": "2026-08-20T11:00:00"
+  },
+  {
+   "page_id": "431293049",
+   "title": "[AI-49] Natuur in je school - AI assistentie bij dossierbehandeling",
+   "ai_key": "AI-49",
+   "version": 4,
+   "last_modified": "2026-09-11T11:30:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293049",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-49",
+    "eag_key": "EAG-940",
+    "soort": "afgebakend",
+    "pijler": "P2",
+    "vrager": "dossierbeheerder natuur",
+    "afdeling": "Afdeling Natuur",
+    "herkomst": "bottom-up",
+    "toepassingstype": [
+     "Documentverwerking"
+    ],
+    "ai_techniek": [
+     "Generative AI"
+    ],
+    "delivery_mode": "",
+    "ai_act_klasse": "beperkt",
+    "persoonsgegevens": "ja",
+    "batenclaim": "120 manuren per jaar",
+    "aanname": "",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-49",
+    "EAG-key": "EAG-940",
+    "Soort": "afgebakend",
+    "Pijler": "P2 — Mens & Adoptie",
+    "Vrager": "dossierbeheerder natuur",
+    "Afdeling": "Afdeling Natuur",
+    "Herkomst": "bottom-up",
+    "Toepassingstype": "Documentverwerking",
+    "AI-techniek": "Generative AI",
+    "AI Act-klasse": "beperkt",
+    "Persoonsgegevens": "ja",
+    "Batenclaim": "120 manuren per jaar"
+   },
+   "details_problems": [],
+   "children": [
+    {
+     "page_id": "431293149b",
+     "title": "[AI-49] Captatierapport",
+     "labels": [
+      "captatierapport"
+     ],
+     "last_modified": "2026-07-14T10:00:00"
+    }
+   ],
+   "last_activity": "2026-09-11T11:30:00"
+  },
+  {
+   "page_id": "431293052",
+   "title": "[AI-52] Kennisdeling",
+   "ai_key": "AI-52",
+   "version": 8,
+   "last_modified": "2026-09-12T16:00:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293052",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-52",
+    "eag_key": "",
+    "soort": "doorlopend",
+    "pijler": "OMK",
+    "vrager": "",
+    "afdeling": "",
+    "herkomst": "",
+    "toepassingstype": [],
+    "ai_techniek": [],
+    "delivery_mode": "",
+    "ai_act_klasse": "minimaal",
+    "persoonsgegevens": "nee",
+    "batenclaim": "",
+    "aanname": "",
+    "opgeleverd": "leergemeenschap, demo's en opleidingsaanbod",
+    "gebruikers": "departement breed",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-52",
+    "Soort": "doorlopend",
+    "Pijler": "OMK — Omkadering",
+    "AI Act-klasse": "minimaal",
+    "Persoonsgegevens": "nee",
+    "Opgeleverd": "leergemeenschap, demo's en opleidingsaanbod",
+    "Gebruikers": "departement breed"
+   },
+   "details_problems": [],
+   "children": [
+    {
+     "page_id": "431293152",
+     "title": "[AI-52] Captatierapport",
+     "labels": [
+      "captatierapport"
+     ],
+     "last_modified": "2026-01-06T10:00:00"
+    }
+   ],
+   "last_activity": "2026-09-12T16:00:00"
+  },
+  {
+   "page_id": "431293099",
+   "title": "[AI-99] Verkenning spraakassistent loket",
+   "ai_key": "AI-99",
+   "version": 1,
+   "last_modified": "2026-08-20T09:00:00",
+   "labels": [
+    "ai-initiatief"
+   ],
+   "url": "https://confluence.omgeving.vlaanderen.be/confluence/pages/431293099",
+   "has_details": true,
+   "details": {
+    "ai_key": "AI-99",
+    "eag_key": "",
+    "soort": "doorlopend",
+    "pijler": "P1",
+    "vrager": "",
+    "afdeling": "",
+    "herkomst": "",
+    "toepassingstype": [],
+    "ai_techniek": [],
+    "delivery_mode": "",
+    "ai_act_klasse": "minimaal",
+    "persoonsgegevens": "nee",
+    "batenclaim": "",
+    "aanname": "",
+    "opgeleverd": "",
+    "gebruikers": "",
+    "stopreden": ""
+   },
+   "details_raw": {
+    "AI-key": "AI-99",
+    "Soort": "doorlopend",
+    "Pijler": "P1 — Fundament & Dataveiligheid",
+    "AI Act-klasse": "minimaal",
+    "Persoonsgegevens": "nee"
+   },
+   "details_problems": [],
+   "children": [],
+   "last_activity": "2026-08-20T09:00:00"
+  }
+ ]
+}

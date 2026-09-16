@@ -1,0 +1,901 @@
+{
+ "startAt": 0,
+ "maxResults": 100,
+ "total": 16,
+ "issues": [
+  {
+   "id": "967186",
+   "key": "AI-4",
+   "fields": {
+    "summary": "AI Coding Agents",
+    "issuetype": {
+     "name": "Initiative",
+     "id": "13506",
+     "subtask": false
+    },
+    "status": {
+     "name": "implementatie"
+    },
+    "resolution": null,
+    "created": "2026-03-20T08:43:20.000+0100",
+    "updated": "2026-07-27T14:01:08.000+0200",
+    "labels": [],
+    "timespent": null,
+    "issuelinks": [
+     {
+      "id": "348480",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "inwardIssue": {
+       "id": "995958",
+       "key": "AI-62",
+       "fields": {
+        "issuetype": {
+         "name": "Epic",
+         "id": "14",
+         "subtask": false
+        },
+        "status": {
+         "name": "Backlog"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     },
+     {
+      "id": "348481",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "inwardIssue": {
+       "id": "995962",
+       "key": "AI-63",
+       "fields": {
+        "issuetype": {
+         "name": "Epic",
+         "id": "14",
+         "subtask": false
+        },
+        "status": {
+         "name": "Backlog"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     },
+     {
+      "id": "348482",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "inwardIssue": {
+       "id": "995963",
+       "key": "AI-64",
+       "fields": {
+        "issuetype": {
+         "name": "Epic",
+         "id": "14",
+         "subtask": false
+        },
+        "status": {
+         "name": "Backlog"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     },
+     {
+      "id": "348558",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "inwardIssue": {
+       "id": "996109",
+       "key": "AI-67",
+       "fields": {
+        "issuetype": {
+         "name": "Epic",
+         "id": "14",
+         "subtask": false
+        },
+        "status": {
+         "name": "Backlog"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     }
+    ],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": "Zie [register|https://confluence.omgeving.vlaanderen.be/confluence/pages/431293030] en [oud|https://confluence.omgeving.vlaanderen.be/confluence/pages/viewpage.action?pageId=431293031]"
+   }
+  },
+  {
+   "id": "967246",
+   "key": "AI-5",
+   "fields": {
+    "summary": "Obscuro",
+    "issuetype": {
+     "name": "Initiative",
+     "id": "13506",
+     "subtask": false
+    },
+    "status": {
+     "name": "implementatie"
+    },
+    "resolution": null,
+    "created": "2026-03-20T11:10:11.000+0100",
+    "updated": "2026-08-31T13:34:29.000+0200",
+    "labels": [],
+    "timespent": 338040,
+    "issuelinks": [
+     {
+      "id": "339050",
+      "type": {
+       "name": "Gerelateerd",
+       "inward": "is gerelateerd aan",
+       "outward": "is gerelateerd aan"
+      },
+      "outwardIssue": {
+       "id": "971364",
+       "key": "EAG-918",
+       "fields": {
+        "issuetype": {
+         "name": "Enterprise Requirement",
+         "id": "12103",
+         "subtask": false
+        },
+        "status": {
+         "name": "Open"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     },
+     {
+      "id": "348516",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "inwardIssue": {
+       "id": "995967",
+       "key": "OB-1",
+       "fields": {
+        "issuetype": {
+         "name": "Epic",
+         "id": "14",
+         "subtask": false
+        },
+        "status": {
+         "name": "Backlog"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     }
+    ],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "967254",
+   "key": "AI-6",
+   "fields": {
+    "summary": "Grup arresten migreren naar tech stack dOMG",
+    "issuetype": {
+     "name": "Initiative",
+     "id": "13506",
+     "subtask": false
+    },
+    "status": {
+     "name": "Closed"
+    },
+    "resolution": null,
+    "created": "2026-03-20T11:36:24.000+0100",
+    "updated": "2026-07-23T15:28:59.000+0200",
+    "labels": [
+     "AI-engineered-software"
+    ],
+    "timespent": 58320,
+    "issuelinks": [],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "975186",
+   "key": "AI-19",
+   "fields": {
+    "summary": "intake",
+    "issuetype": {
+     "name": "Subtask",
+     "id": "10100",
+     "subtask": true
+    },
+    "status": {
+     "name": "Closed"
+    },
+    "resolution": null,
+    "created": "2026-04-30T09:35:37.000+0200",
+    "updated": "2026-05-06T14:56:58.000+0200",
+    "labels": [],
+    "timespent": 10800,
+    "issuelinks": [],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": null,
+    "customfield_14415": "2026-04-17",
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "976423",
+   "key": "AI-25",
+   "fields": {
+    "summary": "AI-ondersteuning Milieu-Investerings-Aftrek (MIA)",
+    "issuetype": {
+     "name": "Initiative",
+     "id": "13506",
+     "subtask": false
+    },
+    "status": {
+     "name": "In Analyse"
+    },
+    "resolution": null,
+    "created": "2026-05-06T14:36:58.000+0200",
+    "updated": "2026-09-02T21:09:34.000+0200",
+    "labels": [],
+    "timespent": 720,
+    "issuelinks": [
+     {
+      "id": "341365",
+      "type": {
+       "name": "Gerelateerd",
+       "inward": "is gerelateerd aan",
+       "outward": "is gerelateerd aan"
+      },
+      "outwardIssue": {
+       "id": "976424",
+       "key": "EAG-927",
+       "fields": {
+        "issuetype": {
+         "name": "Enterprise Requirement",
+         "id": "12103",
+         "subtask": false
+        },
+        "status": {
+         "name": "Verkenning"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     },
+     {
+      "id": "352735",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "inwardIssue": {
+       "id": "1007067",
+       "key": "AI-92",
+       "fields": {
+        "issuetype": {
+         "name": "Epic",
+         "id": "14",
+         "subtask": false
+        },
+        "status": {
+         "name": "Backlog"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     }
+    ],
+    "subtasks": [
+     {
+      "id": "975186",
+      "key": "AI-19",
+      "fields": {
+       "issuetype": {
+        "name": "Subtask",
+        "id": "10100",
+        "subtask": true
+       },
+       "status": {
+        "name": "Closed"
+       },
+       "summary": "(ingekort)"
+      }
+     }
+    ],
+    "customfield_12012": null,
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": "Zie Confluence mini-space: [Track|https://confluence.omgeving.vlaanderen.be/confluence/pages/viewpage.action?pageId=431293025]"
+   }
+  },
+  {
+   "id": "991471",
+   "key": "AI-46",
+   "fields": {
+    "summary": "SBI",
+    "issuetype": {
+     "name": "Story",
+     "id": "15",
+     "subtask": false
+    },
+    "status": {
+     "name": "Backlog"
+    },
+    "resolution": null,
+    "created": "2026-07-02T09:27:00.000+0200",
+    "updated": "2026-08-31T13:34:15.000+0200",
+    "labels": [],
+    "timespent": 41760,
+    "issuelinks": [],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": "AI-75",
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "993887",
+   "key": "AI-48",
+   "fields": {
+    "summary": "Algemene Omkadering AI-Expertisecentrum",
+    "issuetype": {
+     "name": "Initiative",
+     "id": "13506",
+     "subtask": false
+    },
+    "status": {
+     "name": "Run"
+    },
+    "resolution": null,
+    "created": "2026-07-13T15:48:43.000+0200",
+    "updated": "2026-09-15T07:35:38.000+0200",
+    "labels": [],
+    "timespent": 700920,
+    "issuelinks": [
+     {
+      "id": "348633",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "inwardIssue": {
+       "id": "996269",
+       "key": "AI-75",
+       "fields": {
+        "issuetype": {
+         "name": "Epic",
+         "id": "14",
+         "subtask": false
+        },
+        "status": {
+         "name": "Backlog"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     }
+    ],
+    "subtasks": [],
+    "customfield_12012": {
+     "id": "1189",
+     "key": "AI-OMKADERING",
+     "name": "AI Omkadering"
+    },
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "995270",
+   "key": "AI-50",
+   "fields": {
+    "summary": "Voorstel beleid MCP-servers uitwerken",
+    "issuetype": {
+     "name": "Story",
+     "id": "15",
+     "subtask": false
+    },
+    "status": {
+     "name": "Closed"
+    },
+    "resolution": {
+     "name": "Fixed"
+    },
+    "created": "2026-07-22T11:34:47.000+0200",
+    "updated": "2026-09-09T21:44:54.000+0200",
+    "labels": [],
+    "timespent": 43920,
+    "issuelinks": [],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": "AI-67",
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "995958",
+   "key": "AI-62",
+   "fields": {
+    "summary": "Pilootproject Github Copilot",
+    "issuetype": {
+     "name": "Epic",
+     "id": "14",
+     "subtask": false
+    },
+    "status": {
+     "name": "Backlog"
+    },
+    "resolution": null,
+    "created": "2026-07-27T14:00:53.000+0200",
+    "updated": "2026-07-27T14:01:08.000+0200",
+    "labels": [],
+    "timespent": null,
+    "issuelinks": [
+     {
+      "id": "348480",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "outwardIssue": {
+       "id": "967186",
+       "key": "AI-4",
+       "fields": {
+        "issuetype": {
+         "name": "Initiative",
+         "id": "13506",
+         "subtask": false
+        },
+        "status": {
+         "name": "implementatie"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     }
+    ],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "995962",
+   "key": "AI-63",
+   "fields": {
+    "summary": "Setup Github Copilot via eigen organisatie",
+    "issuetype": {
+     "name": "Epic",
+     "id": "14",
+     "subtask": false
+    },
+    "status": {
+     "name": "Backlog"
+    },
+    "resolution": null,
+    "created": "2026-07-27T14:05:09.000+0200",
+    "updated": "2026-07-27T14:05:09.000+0200",
+    "labels": [],
+    "timespent": null,
+    "issuelinks": [
+     {
+      "id": "348481",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "outwardIssue": {
+       "id": "967186",
+       "key": "AI-4",
+       "fields": {
+        "issuetype": {
+         "name": "Initiative",
+         "id": "13506",
+         "subtask": false
+        },
+        "status": {
+         "name": "implementatie"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     }
+    ],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "995963",
+   "key": "AI-64",
+   "fields": {
+    "summary": "Claude",
+    "issuetype": {
+     "name": "Epic",
+     "id": "14",
+     "subtask": false
+    },
+    "status": {
+     "name": "Backlog"
+    },
+    "resolution": null,
+    "created": "2026-07-27T14:05:19.000+0200",
+    "updated": "2026-09-11T07:31:58.000+0200",
+    "labels": [],
+    "timespent": 46800,
+    "issuelinks": [
+     {
+      "id": "348482",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "outwardIssue": {
+       "id": "967186",
+       "key": "AI-4",
+       "fields": {
+        "issuetype": {
+         "name": "Initiative",
+         "id": "13506",
+         "subtask": false
+        },
+        "status": {
+         "name": "implementatie"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     }
+    ],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "996109",
+   "key": "AI-67",
+   "fields": {
+    "summary": "mcp-server",
+    "issuetype": {
+     "name": "Epic",
+     "id": "14",
+     "subtask": false
+    },
+    "status": {
+     "name": "Backlog"
+    },
+    "resolution": null,
+    "created": "2026-07-28T11:33:52.000+0200",
+    "updated": "2026-09-11T07:31:58.000+0200",
+    "labels": [],
+    "timespent": 34920,
+    "issuelinks": [
+     {
+      "id": "348558",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "outwardIssue": {
+       "id": "967186",
+       "key": "AI-4",
+       "fields": {
+        "issuetype": {
+         "name": "Initiative",
+         "id": "13506",
+         "subtask": false
+        },
+        "status": {
+         "name": "implementatie"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     },
+     {
+      "id": "348625",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "outwardIssue": {
+       "id": "995953",
+       "key": "AI-59",
+       "fields": {
+        "issuetype": {
+         "name": "Initiative",
+         "id": "13506",
+         "subtask": false
+        },
+        "status": {
+         "name": "Run"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     }
+    ],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "996110",
+   "key": "AI-68",
+   "fields": {
+    "summary": "voorstel beleid afstemmen met Sander",
+    "issuetype": {
+     "name": "Story",
+     "id": "15",
+     "subtask": false
+    },
+    "status": {
+     "name": "In Review"
+    },
+    "resolution": null,
+    "created": "2026-07-28T11:34:52.000+0200",
+    "updated": "2026-09-01T10:39:06.000+0200",
+    "labels": [],
+    "timespent": 5400,
+    "issuelinks": [],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": "AI-67",
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "996269",
+   "key": "AI-75",
+   "fields": {
+    "summary": "Advisering bij proof-of-concepts",
+    "issuetype": {
+     "name": "Epic",
+     "id": "14",
+     "subtask": false
+    },
+    "status": {
+     "name": "Backlog"
+    },
+    "resolution": null,
+    "created": "2026-07-29T08:34:10.000+0200",
+    "updated": "2026-07-29T08:34:22.000+0200",
+    "labels": [],
+    "timespent": null,
+    "issuelinks": [
+     {
+      "id": "348633",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "outwardIssue": {
+       "id": "993887",
+       "key": "AI-48",
+       "fields": {
+        "issuetype": {
+         "name": "Initiative",
+         "id": "13506",
+         "subtask": false
+        },
+        "status": {
+         "name": "Run"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     }
+    ],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "1007067",
+   "key": "AI-92",
+   "fields": {
+    "summary": "verkenning MIA",
+    "issuetype": {
+     "name": "Epic",
+     "id": "14",
+     "subtask": false
+    },
+    "status": {
+     "name": "Backlog"
+    },
+    "resolution": null,
+    "created": "2026-09-14T07:33:05.000+0200",
+    "updated": "2026-09-15T07:35:41.000+0200",
+    "labels": [],
+    "timespent": 6120,
+    "issuelinks": [
+     {
+      "id": "352735",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "outwardIssue": {
+       "id": "976423",
+       "key": "AI-25",
+       "fields": {
+        "issuetype": {
+         "name": "Initiative",
+         "id": "13506",
+         "subtask": false
+        },
+        "status": {
+         "name": "In Analyse"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     }
+    ],
+    "subtasks": [],
+    "customfield_12012": {
+     "id": "1189",
+     "key": "AI-OMKADERING",
+     "name": "AI Omkadering"
+    },
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  },
+  {
+   "id": "995967",
+   "key": "OB-1",
+   "fields": {
+    "summary": "prototype obscuro",
+    "issuetype": {
+     "name": "Epic",
+     "id": "14",
+     "subtask": false
+    },
+    "status": {
+     "name": "Backlog"
+    },
+    "resolution": null,
+    "created": "2026-07-27T14:22:10.000+0200",
+    "updated": "2026-07-27T14:25:09.000+0200",
+    "labels": [],
+    "timespent": null,
+    "issuelinks": [
+     {
+      "id": "348516",
+      "type": {
+       "name": "Hierarchy",
+       "inward": "includes",
+       "outward": "is part of"
+      },
+      "outwardIssue": {
+       "id": "967246",
+       "key": "AI-5",
+       "fields": {
+        "issuetype": {
+         "name": "Initiative",
+         "id": "13506",
+         "subtask": false
+        },
+        "status": {
+         "name": "implementatie"
+        },
+        "summary": "(ingekort)"
+       }
+      }
+     }
+    ],
+    "subtasks": [],
+    "customfield_12012": null,
+    "customfield_10510": null,
+    "customfield_14415": null,
+    "assignee": null,
+    "customfield_10614": null,
+    "customfield_19014": null,
+    "description": ""
+   }
+  }
+ ]
+}

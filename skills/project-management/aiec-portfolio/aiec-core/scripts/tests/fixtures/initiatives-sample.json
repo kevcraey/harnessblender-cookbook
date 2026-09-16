@@ -1,0 +1,463 @@
+{
+ "generated": "2026-09-16T08:00:00",
+ "issues": [
+  {
+   "key": "AI-3",
+   "summary": "verwerking inspraakreacties openbaar onderzoek",
+   "status_raw": "implementatie",
+   "status": "Implementatie",
+   "fase": 3,
+   "resolution": null,
+   "created": "2026-03-20T08:13:50.000+0100",
+   "updated": "2026-09-15T07:35:43.000+0200",
+   "last_transition": "2026-06-11T10:02:00.000+0200",
+   "eag_keys": [
+    "EAG-916"
+   ],
+   "links": [
+    {
+     "type": "Gerelateerd",
+     "key": "EAG-916",
+     "direction": "outward"
+    }
+   ],
+   "children": [
+    "AI-30"
+   ],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293003"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-3"
+  },
+  {
+   "key": "AI-4",
+   "summary": "AI Coding Agents",
+   "status_raw": "implementatie",
+   "status": "Implementatie",
+   "fase": 3,
+   "resolution": null,
+   "created": "2026-01-20T08:00:00.000+0100",
+   "updated": "2026-09-10T16:00:00.000+0200",
+   "last_transition": "2026-04-18T09:00:00.000+0200",
+   "eag_keys": [
+    "EAG-917"
+   ],
+   "links": [
+    {
+     "type": "Gerelateerd",
+     "key": "EAG-917",
+     "direction": "outward"
+    }
+   ],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293060"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-4"
+  },
+  {
+   "key": "AI-5",
+   "summary": "Obscuro",
+   "status_raw": "Closed",
+   "status": "Afgesloten",
+   "fase": 6,
+   "resolution": "stopgezet",
+   "created": "2026-01-08T09:00:00.000+0100",
+   "updated": "2026-05-04T14:20:00.000+0200",
+   "last_transition": "2026-05-04T14:20:00.000+0200",
+   "eag_keys": [
+    "EAG-918"
+   ],
+   "links": [
+    {
+     "type": "Gerelateerd",
+     "key": "EAG-918",
+     "direction": "outward"
+    }
+   ],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293005"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-5"
+  },
+  {
+   "key": "AI-6",
+   "summary": "Slim zoeken in regelgeving",
+   "status_raw": "Closed",
+   "status": "Afgesloten",
+   "fase": 6,
+   "resolution": "stopgezet",
+   "created": "2025-11-12T09:00:00.000+0100",
+   "updated": "2026-06-17T10:00:00.000+0200",
+   "last_transition": "2026-06-17T10:00:00.000+0200",
+   "eag_keys": [
+    "EAG-921"
+   ],
+   "links": [
+    {
+     "type": "Gerelateerd",
+     "key": "EAG-921",
+     "direction": "outward"
+    }
+   ],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293050"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-6"
+  },
+  {
+   "key": "AI-7",
+   "summary": "Gezond uit eigen grond",
+   "status_raw": "implementatie",
+   "status": "Implementatie",
+   "fase": 3,
+   "resolution": null,
+   "created": "2026-02-11T11:41:00.000+0100",
+   "updated": "2026-09-08T16:03:00.000+0200",
+   "last_transition": "2026-07-22T09:15:00.000+0200",
+   "eag_keys": [
+    "EAG-919"
+   ],
+   "links": [
+    {
+     "type": "Gerelateerd",
+     "key": "EAG-919",
+     "direction": "outward"
+    }
+   ],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293007"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-7"
+  },
+  {
+   "key": "AI-14",
+   "summary": "MDO campagne tool",
+   "status_raw": "Captatie",
+   "status": "Captatie",
+   "fase": 0,
+   "resolution": null,
+   "created": "2026-06-02T08:30:00.000+0200",
+   "updated": "2026-09-10T13:44:00.000+0200",
+   "last_transition": null,
+   "eag_keys": [
+    "EAG-915"
+   ],
+   "links": [
+    {
+     "type": "Gerelateerd",
+     "key": "EAG-915",
+     "direction": "outward"
+    }
+   ],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-14"
+  },
+  {
+   "key": "AI-16",
+   "summary": "Detectie van illegale dierenverkoop",
+   "status_raw": "In Analyse",
+   "status": "Analyse",
+   "fase": 1,
+   "resolution": null,
+   "created": "2026-04-15T10:00:00.000+0200",
+   "updated": "2026-09-01T09:00:00.000+0200",
+   "last_transition": "2026-08-12T11:30:00.000+0200",
+   "eag_keys": [],
+   "links": [],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293016"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-16"
+  },
+  {
+   "key": "AI-17",
+   "summary": "AI-ondersteuning bij verwerking publieksvragen",
+   "status_raw": "Captatie",
+   "status": "Captatie",
+   "fase": 0,
+   "resolution": null,
+   "created": "2026-07-01T14:00:00.000+0200",
+   "updated": "2026-09-05T08:12:00.000+0200",
+   "last_transition": null,
+   "eag_keys": [
+    "EAG-922"
+   ],
+   "links": [
+    {
+     "type": "Gerelateerd",
+     "key": "EAG-922",
+     "direction": "outward"
+    }
+   ],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293017"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-17"
+  },
+  {
+   "key": "AI-21",
+   "summary": "Dierenwelzijnscontroles in slachthuizen met AI-camera",
+   "status_raw": "Captatie",
+   "status": "Captatie",
+   "fase": 0,
+   "resolution": null,
+   "created": "2026-03-30T09:20:00.000+0200",
+   "updated": "2026-04-02T10:05:00.000+0200",
+   "last_transition": null,
+   "eag_keys": [],
+   "links": [],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293021"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-21"
+  },
+  {
+   "key": "AI-25",
+   "summary": "AI-ondersteuning Milieu-Investerings-Aftrek (MIA)",
+   "status_raw": "In Analyse",
+   "status": "Analyse",
+   "fase": 1,
+   "resolution": null,
+   "created": "2026-05-06T13:00:00.000+0200",
+   "updated": "2026-09-02T09:12:00.000+0200",
+   "last_transition": "2026-07-01T08:45:00.000+0200",
+   "eag_keys": [
+    "EAG-927"
+   ],
+   "links": [
+    {
+     "type": "Gerelateerd",
+     "key": "EAG-927",
+     "direction": "outward"
+    }
+   ],
+   "children": [
+    "AI-92"
+   ],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293025"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-25"
+  },
+  {
+   "key": "AI-27",
+   "summary": "Q&A-assistent op de webpagina — Dierenwelzijn",
+   "status_raw": "In Analyse",
+   "status": "Analyse",
+   "fase": 1,
+   "resolution": null,
+   "created": "2026-05-06T13:00:00.000+0200",
+   "updated": "2026-09-02T09:12:00.000+0200",
+   "last_transition": "2026-07-01T08:45:00.000+0200",
+   "eag_keys": [
+    "EAG-928"
+   ],
+   "links": [
+    {
+     "type": "Gerelateerd",
+     "key": "EAG-928",
+     "direction": "outward"
+    }
+   ],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293027"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-27"
+  },
+  {
+   "key": "AI-47",
+   "summary": "Rosetta: intelligent document processing",
+   "status_raw": "Closed",
+   "status": "Afgesloten",
+   "fase": 6,
+   "resolution": "uitgevoerd",
+   "created": "2025-09-18T09:00:00.000+0200",
+   "updated": "2026-06-30T17:00:00.000+0200",
+   "last_transition": "2026-06-30T17:00:00.000+0200",
+   "eag_keys": [
+    "EAG-930"
+   ],
+   "links": [
+    {
+     "type": "Gerelateerd",
+     "key": "EAG-930",
+     "direction": "outward"
+    }
+   ],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293047"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-47"
+  },
+  {
+   "key": "AI-48",
+   "summary": "Algemene Omkadering AI-Expertisecentrum",
+   "status_raw": "Run",
+   "status": "Uitvoering",
+   "fase": 4,
+   "resolution": null,
+   "created": "2025-11-04T08:00:00.000+0100",
+   "updated": "2026-09-12T15:30:00.000+0200",
+   "last_transition": "2026-01-06T09:00:00.000+0100",
+   "eag_keys": [],
+   "links": [],
+   "children": [
+    "AI-75"
+   ],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293040"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-48"
+  },
+  {
+   "key": "AI-49",
+   "summary": "Natuur in je school - AI assistentie bij dossierbehandeling",
+   "status_raw": "In Analyse",
+   "status": "Analyse",
+   "fase": 1,
+   "resolution": null,
+   "created": "2026-06-20T10:00:00.000+0200",
+   "updated": "2026-09-11T11:11:00.000+0200",
+   "last_transition": "2026-08-28T14:00:00.000+0200",
+   "eag_keys": [
+    "EAG-940"
+   ],
+   "links": [
+    {
+     "type": "Gerelateerd",
+     "key": "EAG-940",
+     "direction": "outward"
+    }
+   ],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293049"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-49"
+  },
+  {
+   "key": "AI-52",
+   "summary": "Kennisdeling",
+   "status_raw": "Run",
+   "status": "Uitvoering",
+   "fase": 4,
+   "resolution": null,
+   "created": "2025-11-04T08:00:00.000+0100",
+   "updated": "2026-09-12T15:30:00.000+0200",
+   "last_transition": "2026-01-06T09:00:00.000+0100",
+   "eag_keys": [],
+   "links": [],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [
+    "431293052"
+   ],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-52"
+  },
+  {
+   "key": "AI-82",
+   "summary": "Digitale Assistent Departement Omgeving",
+   "status_raw": "In Analyse",
+   "status": "Analyse",
+   "fase": 1,
+   "resolution": null,
+   "created": "2026-08-19T09:00:00.000+0200",
+   "updated": "2026-09-14T10:00:00.000+0200",
+   "last_transition": "2026-09-01T09:00:00.000+0200",
+   "eag_keys": [],
+   "links": [],
+   "children": [],
+   "billingkey": null,
+   "labels": [],
+   "assignee": null,
+   "trekker": null,
+   "verantwoordelijke": null,
+   "confluence_page_ids": [],
+   "url": "https://jira.omgeving.vlaanderen.be/jira/browse/AI-82"
+  }
+ ]
+}
