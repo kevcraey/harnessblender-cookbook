@@ -17,5 +17,5 @@ selections:
     - source: pantry/skills/second-brain/routine/onthouden
       as: onthouden
   agents: []
-  richtlijnen: []
+  guidelines: []
   mcps: []

@@ -41,8 +41,8 @@ selections:
     - source: store/humanizer
       as: humanizer
   agents: []
-  richtlijnen:
-    - source: pantry/richtlijnen/documentation-guidelines.md
+  guidelines:
+    - source: pantry/guidelines/documentation-guidelines.md
       as: documentation-guidelines.md
     - source: store/team-decibel/richtlijnen/README.md
       as: CLAUDE.md

@@ -17,5 +17,5 @@ selections:
   agents:
     - source: pantry/skills/aiec-portfolio/agents/ai-track-intake-analyzer.md
       as: ai-track-intake-analyzer.md
-  richtlijnen: []
+  guidelines: []
   mcps: []

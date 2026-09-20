@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "kevcraey-cookbook",
-  "description": "Personal cookbook: blended skills + agents + richtlijnen + mcp servers",
+  "description": "Personal cookbook: blended skills + agents + guidelines + mcp servers",
   "owner": {
     "name": "Kenzo",
     "url": ""

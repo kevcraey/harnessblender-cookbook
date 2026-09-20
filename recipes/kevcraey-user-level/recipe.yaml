@@ -14,12 +14,10 @@ selections:
       as: defuddle
     - source: store/herdr/skills/herdr
       as: herdr
-    - source: pantry/skills/general-purpose/harnessblender
-      as: harnessblender
     - source: pantry/skills/writing/maak-presentatie
       as: maak-presentatie
   agents: []
-  richtlijnen: []
+  guidelines: []
   mcps:
     - source: pantry/mcp-servers/open-brain-mcp/.mcp.json
       as: open-brain-mcp

@@ -3,7 +3,7 @@ version: 0.1.0
 selections:
   skills: []
   agents: []
-  richtlijnen: []
+  guidelines: []
   mcps:
     - source: pantry/mcp-servers/strava-mcp/.claude-plugin/.mcp.json
       as: strava-mcp
