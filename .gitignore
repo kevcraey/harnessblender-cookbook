@@ -4,7 +4,9 @@
 
 # store/: gitignored checkouts of external sources declared in store.yaml.
 # Fetched on demand (`harnessblender fetch`), not tracked — regenerable, like node_modules.
-store/
+# Folder itself stays tracked (.gitkeep) so a fresh checkout shows it exists.
+store/*
+!store/.gitkeep
 
 # recipes/<naam>/blend/: generated output per recipe (copied pantry/store items + plugin.json +
 # provenance). Regenerable from recipes/<naam>/recipe.yaml + pantry/ + store/ via
