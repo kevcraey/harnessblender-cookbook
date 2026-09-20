@@ -9,28 +9,28 @@
   "plugins": [
     {
       "name": "aiec-portfolio",
-      "description": "AI Expertisecentrum portfolio \u2014 intake en register (Confluence details-blokken), grooming, kwartaaltoelichting en standvanzakenmail; status, uren en kost live uit Jira. Schema op \u00e9\u00e9n plek (aiec-core/schema.yaml).",
+      "description": "AI Expertisecentrum portfolio",
       "source": "./recipes/aiec-portfolio/blend"
     },
     {
-      "name": "dev",
-      "description": "Dev-recipe \u2014 samenvoeging van de oude kevcraey-dev + light-dev, opgebouwd met wat nu bestaat (geen gearchiveerde agents/skills, geen dode paden)",
-      "source": "./recipes/dev/blend"
+      "name": "atlassian",
+      "description": "",
+      "source": "./recipes/atlassian/blend"
     },
     {
-      "name": "kevcraey-obsidian",
+      "name": "dev-core",
+      "description": "",
+      "source": "./recipes/dev-core/blend"
+    },
+    {
+      "name": "dev-domg",
+      "description": "",
+      "source": "./recipes/dev-domg/blend"
+    },
+    {
+      "name": "obsidian",
       "description": "obsidian plugin setup",
-      "source": "./recipes/kevcraey-obsidian/blend"
-    },
-    {
-      "name": "kevcraey-user-level",
-      "description": "user-level basisset \u2014 Open Brain MCP (capture/search/update/delete) + grill-skills + herdr-skill",
-      "source": "./recipes/kevcraey-user-level/blend"
-    },
-    {
-      "name": "quiet",
-      "description": "Quiet: conversation-only transcript presentation for Claude Code. /quiet hides tool rows and short mid-turn working notes and replaces the working row with a sailboat. Ported from Firstmate's Calm mode; loads only when CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1.",
-      "source": "./recipes/kevcraey-user-level/plugins/quiet"
+      "source": "./recipes/obsidian/blend"
     },
     {
       "name": "routine",
@@ -41,6 +41,16 @@
       "name": "training",
       "description": "Marathon-coach tooling \u2014 toegang tot Strava, Garmin Connect en Google Calendar",
       "source": "./recipes/training/blend"
+    },
+    {
+      "name": "user-level",
+      "description": "user-level basisset \u2014 Open Brain MCP (capture/search/update/delete) + grill-skills + herdr-skill",
+      "source": "./recipes/user-level/blend"
+    },
+    {
+      "name": "quiet",
+      "description": "Quiet: conversation-only transcript presentation for Claude Code. /quiet hides tool rows and short mid-turn working notes and replaces the working row with a sailboat. Ported from Firstmate's Calm mode; loads only when CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1.",
+      "source": "./recipes/user-level/plugins/quiet"
     }
   ]
 }

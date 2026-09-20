@@ -1,0 +1,50 @@
+description: "user-level basisset \u2014 Open Brain MCP (capture/search/update/delete)\
+  \ + grill-skills + herdr-skill"
+version: 0.3.0
+selections:
+  skills:
+  - source: store/mattpocock/skills/productivity/grilling
+    as: grilling
+  - source: store/mattpocock/skills/engineering/grill-with-docs
+    as: grill-with-docs
+  - source: store/herdr/skills/herdr
+    as: herdr
+  - source: pantry/skills/writing/maak-presentatie
+    as: maak-presentatie
+  - source: pantry/skills/writing/write-like-kenzo
+    as: write-like-kenzo
+  - source: store/mattpocock/skills/productivity/grill-me
+    as: grill-me
+  - source: store/mattpocock/skills/productivity/wait-what
+    as: wait-what
+  - source: pantry/skills/general-purpose/create-changelog
+    as: create-changelog
+  - source: pantry/skills/general-purpose/handoff
+    as: handoff
+  - source: pantry/skills/general-purpose/orchestreer
+    as: orchestreer
+  - source: pantry/skills/general-purpose/pickup
+    as: pickup
+  - source: pantry/skills/general-purpose/pre-mortem
+    as: pre-mortem
+  - source: pantry/skills/general-purpose/reflect-and-improve
+    as: reflect-and-improve
+  - source: pantry/skills/writing/humanizer
+    as: humanizer
+  - source: store/mattpocock/skills/engineering/domain-modeling
+    as: domain-modeling
+  agents: []
+  guidelines: []
+  mcps:
+  - source: pantry/mcp-servers/open-brain-mcp/.mcp.json
+    as: open-brain-mcp
+  - source: pantry/mcp-servers/google-calendar-mcp/.claude-plugin/.mcp.json
+    as: google-calendar-mcp
+  - source: pantry/mcp-servers/miro-mcp/.claude-plugin/.mcp.json
+    as: miro-mcp
+  plugins:
+  - source: pantry/plugins/quiet
+    as: quiet
+drinkers:
+- path: /Users/kenzo
+  scope: user

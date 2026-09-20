@@ -1,0 +1,31 @@
+description: obsidian plugin setup
+version: 0.1.0
+selections:
+  skills:
+  - source: store/mattpocock/skills/productivity/teach
+    as: teach
+  - source: store/obsidian-skills/skills/obsidian-cli
+    as: obsidian-cli
+  - source: store/obsidian-skills/skills/obsidian-markdown
+    as: obsidian-markdown
+  - source: store/obsidian-skills/skills/defuddle
+    as: defuddle
+  - source: pantry/skills/second-brain/bouwstenen/sb-integrate-note
+    as: sb-integrate-note
+  - source: pantry/skills/second-brain/bouwstenen/sb-parse-whisper
+    as: sb-parse-whisper
+  - source: pantry/skills/second-brain/bouwstenen/sb-screen-decisions
+    as: sb-screen-decisions
+  - source: pantry/skills/second-brain/bouwstenen/sb-summarize-for-daily
+    as: sb-summarize-for-daily
+  - source: pantry/skills/second-brain/daily-digest
+    as: daily-digest
+  agents: []
+  guidelines: []
+  mcps:
+  - source: pantry/mcp-servers/mermaid-mcp/.claude-plugin/.mcp.json
+    as: mermaid-mcp
+  plugins: []
+drinkers:
+- path: /Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain/
+  scope: local

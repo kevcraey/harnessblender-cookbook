@@ -1,21 +1,36 @@
-description: "Ochtend- en avondroutine — verzamelen (mail, agenda, Teams, Rocket.Chat, Jira, Confluence, Chrome, git, Claude-sessies, vault), digest naar daily notes, agenda-voorbereiding, tijdschrijven in Tempo, kennis naar Open Brain; dunne orchestrator, één Herdr-pane per onderdeel"
+description: "Ochtend- en avondroutine \u2014 verzamelen (mail, agenda, Teams, Rocket.Chat,\
+  \ Jira, Confluence, Chrome, git, Claude-sessies, vault), digest naar daily notes,\
+  \ agenda-voorbereiding, tijdschrijven in Tempo, kennis naar Open Brain; dunne orchestrator,\
+  \ \xE9\xE9n Herdr-pane per onderdeel"
 version: 0.2.0
 selections:
   skills:
-    - source: pantry/skills/second-brain/routine/routine-core
-      as: routine-core
-    - source: pantry/skills/second-brain/routine/ochtend
-      as: ochtend
-    - source: pantry/skills/second-brain/routine/avond
-      as: avond
-    - source: pantry/skills/second-brain/routine/digest
-      as: digest
-    - source: pantry/skills/second-brain/routine/agenda
-      as: agenda
-    - source: pantry/skills/second-brain/routine/tijdschrijven
-      as: tijdschrijven
-    - source: pantry/skills/second-brain/routine/onthouden
-      as: onthouden
+  - source: pantry/skills/second-brain/capture/capture-mail
+    as: capture-mail
+  - source: pantry/skills/second-brain/capture/capture-session
+    as: capture-session
+  - source: pantry/skills/second-brain/capture/capture-vault
+    as: capture-vault
+  - source: pantry/skills/second-brain/routine/agenda
+    as: agenda
+  - source: pantry/skills/second-brain/routine/avond
+    as: avond
+  - source: pantry/skills/second-brain/routine/digest
+    as: digest
+  - source: pantry/skills/second-brain/routine/ochtend
+    as: ochtend
+  - source: pantry/skills/second-brain/routine/onthouden
+    as: onthouden
+  - source: pantry/skills/second-brain/routine/routine-core
+    as: routine-core
+  - source: pantry/skills/second-brain/routine/tijdschrijven
+    as: tijdschrijven
+  - source: pantry/skills/second-brain/routine/verwerk-meeting
+    as: verwerk-meeting
   agents: []
   guidelines: []
   mcps: []
+  plugins: []
+drinkers:
+- path: /Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain/
+  scope: local

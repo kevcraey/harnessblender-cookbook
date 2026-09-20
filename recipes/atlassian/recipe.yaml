@@ -1,0 +1,13 @@
+description: ''
+version: 0.1.0
+selections:
+  skills: []
+  agents: []
+  guidelines: []
+  mcps:
+  - source: pantry/mcp-servers/atlassian-mcp/.claude-plugin/.mcp.json
+    as: atlassian-mcp
+  plugins: []
+drinkers:
+- path: /Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain/
+  scope: local

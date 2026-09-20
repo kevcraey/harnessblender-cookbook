@@ -1,0 +1,17 @@
+description: ''
+version: 0.1.0
+selections:
+  skills:
+  - source: pantry/skills/software-engineering/refine-user-story
+    as: refine-user-story
+  - source: pantry/skills/software-engineering/spec-to-stories-breakdown
+    as: spec-to-stories-breakdown
+  - source: pantry/skills/software-engineering/write-user-story
+    as: write-user-story
+  agents: []
+  guidelines: []
+  mcps: []
+  plugins: []
+drinkers:
+- path: /Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/4-Coding/bezwaarschriften/
+  scope: local

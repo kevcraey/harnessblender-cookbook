@@ -1,13 +1,16 @@
-description: Marathon-coach tooling — toegang tot Strava, Garmin Connect en Google Calendar
+description: "Marathon-coach tooling \u2014 toegang tot Strava, Garmin Connect en\
+  \ Google Calendar"
 version: 0.1.0
 selections:
   skills: []
   agents: []
   guidelines: []
   mcps:
-    - source: pantry/mcp-servers/strava-mcp/.claude-plugin/.mcp.json
-      as: strava-mcp
-    - source: pantry/mcp-servers/google-calendar-mcp/.claude-plugin/.mcp.json
-      as: google-calendar-mcp
-    - source: pantry/mcp-servers/garmin-mcp/.claude-plugin/.mcp.json
-      as: garmin-mcp
+  - source: pantry/mcp-servers/strava-mcp/.claude-plugin/.mcp.json
+    as: strava-mcp
+  - source: pantry/mcp-servers/garmin-mcp/.claude-plugin/.mcp.json
+    as: garmin-mcp
+  plugins: []
+drinkers:
+- path: /Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/5-Storage/43-projects/project-0245/
+  scope: local
