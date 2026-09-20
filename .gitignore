@@ -1,3 +1,12 @@
 .DS_Store
 .worktrees
 .agent
+
+# store/: gitignored checkouts of external sources declared in store.yaml.
+# Fetched on demand (`harnessblender fetch`), not tracked — regenerable, like node_modules.
+store/
+
+# recipes/<naam>/blend/: generated output per recipe (copied pantry/store items + plugin.json +
+# provenance). Regenerable from recipes/<naam>/recipe.yaml + pantry/ + store/ via
+# `harnessblender blend <naam>`. recipe.yaml itself IS tracked.
+recipes/*/blend/

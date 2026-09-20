@@ -1,0 +1,19 @@
+# Deze file markeert de root van een harnessblender-cookbook (marker-file lookup:
+# harnessblender zoekt dit bestand vanaf de huidige map omhoog, tenzij --cookbook is
+# gegeven). Structuur eronder is vast, geen scan_bases meer nodig:
+#   pantry/{skills,mcp-servers,richtlijnen}  — eigen ingredients
+#   store/<name>/                            — externe ingredients (zie store.yaml), gitignored
+#   recipes/<naam>.yaml                      — opgeslagen selecties
+#   blends/<naam>/                           — gegenereerde output per recipe, gitignored
+name: kevcraey-cookbook   # marketplace-naam; recipes installeren als <recipe>@<name>
+owner:
+  name: Kenzo
+  url: ""
+
+# Map-namen die nooit gescand worden binnen pantry/ of store/<name>/ (extra bovenop de
+# ingebouwde: node_modules, .git, __pycache__, venv en alle verborgen mappen).
+exclude_dirs:
+  - archief
+  - archived
+  - _archived
+  - deprecated

@@ -1,0 +1,25 @@
+# Externe bronnen die harnessblender kan halen ("store items"). Elke `name` wordt
+# gekloond naar `store/<name>/` (gitignored) — `harnessblender fetch` doet clone-als-
+# nog-niet-aanwezig, en ff-only pull als de checkout al bestaat.
+#
+# LET OP: `marky` (was git@github.com... lavish-axi) ontbreekt hier — de map was
+# tijdens deze migratie al verdwenen uit `external/` (niet door harnessblender
+# verwijderd, gewoon niet meer aangetroffen). Voeg terug toe met zijn url als je
+# hem nog nodig hebt.
+sources:
+  - name: caveman
+    url: git@github.com:JuliusBrussee/caveman.git
+  - name: herdr
+    url: https://github.com/herdrdev/herdr.git
+  - name: humanizer
+    url: git@github.com:blader/humanizer.git
+  - name: mattpocock
+    url: git@github.com:mattpocock/skills.git
+  - name: obsidian-skills
+    url: https://github.com/kepano/obsidian-skills.git
+  - name: team-decibel
+    url: ssh://git@git.omgeving.vlaanderen.be:2222/git/development/team-decibel.git
+  - name: codebase-memory-mcp
+    url: git@github.com:DeusData/codebase-memory-mcp.git
+  - name: trace-mcp
+    url: git@github.com:nikolai-vysotskyi/trace-mcp.git

@@ -1,0 +1,4 @@
+{
+  "description": "Quiet hooks module: registers /quiet and the transcript presentation. Loads only through Claude Code's early-access function-hooks surface (CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1).",
+  "modules": ["./register.ts"]
+}

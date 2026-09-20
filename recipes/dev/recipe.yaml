@@ -1,0 +1,91 @@
+description: "Dev-recipe — samenvoeging van de oude kevcraey-dev + light-dev, opgebouwd met wat nu bestaat (geen gearchiveerde agents/skills, geen dode paden)"
+version: 0.1.0
+selections:
+  skills:
+    - source: pantry/skills/general-purpose/reflect-and-improve
+      as: reflect-and-improve
+    - source: pantry/skills/software-engineering/write-user-story
+      as: write-user-story
+    - source: pantry/skills/general-purpose/handoff
+      as: handoff
+    - source: pantry/skills/general-purpose/pickup
+      as: pickup
+    - source: pantry/skills/general-purpose/orchestreer
+      as: orchestreer
+    - source: pantry/skills/general-purpose/create-changelog
+      as: create-changelog
+    - source: store/caveman/skills/caveman
+      as: caveman
+    - source: store/mattpocock/skills/engineering/grill-with-docs
+      as: grill-with-docs
+    - source: store/mattpocock/skills/engineering/tdd
+      as: tdd
+    - source: store/mattpocock/skills/engineering/improve-codebase-architecture
+      as: improve-codebase-architecture
+    - source: store/mattpocock/skills/engineering/domain-modeling
+      as: domain-modeling
+    - source: store/mattpocock/skills/engineering/prototype
+      as: prototype
+    - source: store/mattpocock/skills/engineering/to-spec
+      as: to-spec
+    - source: store/mattpocock/skills/engineering/to-tickets
+      as: to-tickets
+    - source: store/mattpocock/skills/engineering/wayfinder
+      as: wayfinder
+    - source: store/mattpocock/skills/engineering/implement
+      as: implement
+    - source: store/mattpocock/skills/productivity/grilling
+      as: grilling
+    - source: store/team-decibel/skills/code-review-aanvragen
+      as: code-review-aanvragen
+    - source: store/humanizer
+      as: humanizer
+  agents: []
+  richtlijnen:
+    - source: pantry/richtlijnen/documentation-guidelines.md
+      as: documentation-guidelines.md
+    - source: store/team-decibel/richtlijnen/README.md
+      as: CLAUDE.md
+    - source: store/team-decibel/richtlijnen/accessibility.md
+      as: accessibility.md
+    - source: store/team-decibel/richtlijnen/batch-migraties.md
+      as: batch-migraties.md
+    - source: store/team-decibel/richtlijnen/css.md
+      as: css.md
+    - source: store/team-decibel/richtlijnen/cypress-component.md
+      as: cypress-component.md
+    - source: store/team-decibel/richtlijnen/cypress-e2e.md
+      as: cypress-e2e.md
+    - source: store/team-decibel/richtlijnen/database.md
+      as: database.md
+    - source: store/team-decibel/richtlijnen/documentation.md
+      as: documentation.md
+    - source: store/team-decibel/richtlijnen/frontend.md
+      as: frontend.md
+    - source: store/team-decibel/richtlijnen/general-development.md
+      as: general-development.md
+    - source: store/team-decibel/richtlijnen/java-unit-testing.md
+      as: java-unit-testing.md
+    - source: store/team-decibel/richtlijnen/java.md
+      as: java.md
+    - source: store/team-decibel/richtlijnen/javascript.md
+      as: javascript.md
+    - source: store/team-decibel/richtlijnen/lit.md
+      as: lit.md
+    - source: store/team-decibel/richtlijnen/spring-boot.md
+      as: spring-boot.md
+    - source: store/team-decibel/richtlijnen/spring-core.md
+      as: spring-core.md
+    - source: store/team-decibel/richtlijnen/spring-data.md
+      as: spring-data.md
+    - source: store/team-decibel/richtlijnen/spring-rest-docs.md
+      as: spring-rest-docs.md
+    - source: store/team-decibel/richtlijnen/spring-security.md
+      as: spring-security.md
+    - source: store/team-decibel/richtlijnen/spring-web.md
+      as: spring-web.md
+    - source: store/team-decibel/richtlijnen/testing.md
+      as: testing.md
+  mcps:
+    - source: store/codebase-memory-mcp/server.json
+      as: codebase-memory-mcp

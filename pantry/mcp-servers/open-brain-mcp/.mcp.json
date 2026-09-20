@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "open-brain": {
+      "type": "http",
+      "url": "https://sprcigogvwvulkkbevxj.supabase.co/functions/v1/open-brain-mcp",
+      "headersHelper": "/Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/4-Coding/ai-tooling-repos/cookbook/pantry/mcp-servers/open-brain-mcp/open-brain-headers.sh"
+    },
+    "open-brain-update": {
+      "type": "http",
+      "url": "https://sprcigogvwvulkkbevxj.supabase.co/functions/v1/update-thought-mcp",
+      "headersHelper": "/Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/4-Coding/ai-tooling-repos/cookbook/pantry/mcp-servers/open-brain-mcp/open-brain-headers.sh"
+    },
+    "open-brain-delete": {
+      "type": "http",
+      "url": "https://sprcigogvwvulkkbevxj.supabase.co/functions/v1/delete-thought-mcp",
+      "headersHelper": "/Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/4-Coding/ai-tooling-repos/cookbook/pantry/mcp-servers/open-brain-mcp/open-brain-headers.sh"
+    }
+  }
+}

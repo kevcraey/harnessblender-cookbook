@@ -1,0 +1,21 @@
+description: "Ochtend- en avondroutine — verzamelen (mail, agenda, Teams, Rocket.Chat, Jira, Confluence, Chrome, git, Claude-sessies, vault), digest naar daily notes, agenda-voorbereiding, tijdschrijven in Tempo, kennis naar Open Brain; dunne orchestrator, één Herdr-pane per onderdeel"
+version: 0.2.0
+selections:
+  skills:
+    - source: pantry/skills/second-brain/routine/routine-core
+      as: routine-core
+    - source: pantry/skills/second-brain/routine/ochtend
+      as: ochtend
+    - source: pantry/skills/second-brain/routine/avond
+      as: avond
+    - source: pantry/skills/second-brain/routine/digest
+      as: digest
+    - source: pantry/skills/second-brain/routine/agenda
+      as: agenda
+    - source: pantry/skills/second-brain/routine/tijdschrijven
+      as: tijdschrijven
+    - source: pantry/skills/second-brain/routine/onthouden
+      as: onthouden
+  agents: []
+  richtlijnen: []
+  mcps: []

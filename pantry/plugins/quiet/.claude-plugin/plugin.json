@@ -1,0 +1,8 @@
+{
+  "name": "quiet",
+  "version": "1.0.0",
+  "description": "Quiet: conversation-only transcript presentation for Claude Code. /quiet hides tool rows and short mid-turn working notes and replaces the working row with a sailboat. Ported from Firstmate's Calm mode; loads only when CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1.",
+  "author": {
+    "name": "Kenzo Van Craeynest"
+  }
+}

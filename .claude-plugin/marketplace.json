@@ -1,0 +1,46 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "kevcraey-cookbook",
+  "description": "Personal cookbook: blended skills + agents + richtlijnen + mcp servers",
+  "owner": {
+    "name": "Kenzo",
+    "url": ""
+  },
+  "plugins": [
+    {
+      "name": "aiec-portfolio",
+      "description": "AI Expertisecentrum portfolio \u2014 intake en register (Confluence details-blokken), grooming, kwartaaltoelichting en standvanzakenmail; status, uren en kost live uit Jira. Schema op \u00e9\u00e9n plek (aiec-core/schema.yaml).",
+      "source": "./recipes/aiec-portfolio/blend"
+    },
+    {
+      "name": "dev",
+      "description": "Dev-recipe \u2014 samenvoeging van de oude kevcraey-dev + light-dev, opgebouwd met wat nu bestaat (geen gearchiveerde agents/skills, geen dode paden)",
+      "source": "./recipes/dev/blend"
+    },
+    {
+      "name": "kevcraey-obsidian",
+      "description": "obsidian plugin setup",
+      "source": "./recipes/kevcraey-obsidian/blend"
+    },
+    {
+      "name": "kevcraey-user-level",
+      "description": "user-level basisset \u2014 Open Brain MCP (capture/search/update/delete) + grill-skills + herdr-skill",
+      "source": "./recipes/kevcraey-user-level/blend"
+    },
+    {
+      "name": "quiet",
+      "description": "Quiet: conversation-only transcript presentation for Claude Code. /quiet hides tool rows and short mid-turn working notes and replaces the working row with a sailboat. Ported from Firstmate's Calm mode; loads only when CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1.",
+      "source": "./recipes/kevcraey-user-level/plugins/quiet"
+    },
+    {
+      "name": "routine",
+      "description": "Ochtend- en avondroutine \u2014 verzamelen (mail, agenda, Teams, Rocket.Chat, Jira, Confluence, Chrome, git, Claude-sessies, vault), digest naar daily notes, agenda-voorbereiding, tijdschrijven in Tempo, kennis naar Open Brain; dunne orchestrator, \u00e9\u00e9n Herdr-pane per onderdeel",
+      "source": "./recipes/routine/blend"
+    },
+    {
+      "name": "training",
+      "description": "Marathon-coach tooling \u2014 toegang tot Strava, Garmin Connect en Google Calendar",
+      "source": "./recipes/training/blend"
+    }
+  ]
+}

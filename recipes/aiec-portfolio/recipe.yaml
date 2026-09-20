@@ -1,0 +1,21 @@
+description: "AI Expertisecentrum portfolio — intake en register (Confluence details-blokken), grooming, kwartaaltoelichting en standvanzakenmail; status, uren en kost live uit Jira. Schema op één plek (aiec-core/schema.yaml)."
+version: 0.1.0
+selections:
+  skills:
+    - source: pantry/skills/aiec-portfolio/aiec-core
+      as: aiec-core
+    - source: pantry/skills/aiec-portfolio/aiec-initiatief
+      as: aiec-initiatief
+    - source: pantry/skills/aiec-portfolio/aiec-groom
+      as: aiec-groom
+    - source: pantry/skills/aiec-portfolio/aiec-rapport
+      as: aiec-rapport
+    - source: pantry/skills/writing/write-like-kenzo
+      as: write-like-kenzo
+    - source: store/humanizer
+      as: humanizer
+  agents:
+    - source: pantry/skills/aiec-portfolio/agents/ai-track-intake-analyzer.md
+      as: ai-track-intake-analyzer.md
+  richtlijnen: []
+  mcps: []
