@@ -82,7 +82,8 @@ Markdown uit een bronnote mapt zo:
 
 ### Fase 2: Verhaallijn en slide-indeling
 
-Richtgrootte: **8–15 slides**. Eén boodschap per slide.
+Richtgrootte: **8–15 slides**. Eén boodschap per slide. Past de inhoud van één boodschap
+niet op één slide, splits ze over twee in plaats van tekst of figuur te verkleinen.
 
 **Figuur eerst, tekst als het niet anders kan.** Benoem per slide welke structuur de
 inhoud heeft en kies daarna pas het type. Een lijst is wat je overhoudt als er geen
@@ -120,6 +121,10 @@ van de types die je niet gebruikt; dupliceer de types die je meermaals nodig heb
 | `s-figure`    | figuur           | schema als inline SVG; scaffolds in [references/figuren.md](references/figuren.md) |
 | `s-image`     | beeld volvlak    | foto, base64 ingebed                                   |
 | `s-end`       | slot             | de vraag, het besluit, of wat u van hen verwacht       |
+
+Gebruikt u meerdere `s-section`-slides, laat elk deel op zich een afgerond stuk van het
+verhaal zijn — een hoofdstuk, geen tussenkopje. Fragmenteer één verhaallijn niet in veel
+kleine secties: dat maakt hem net moeilijker te volgen, niet makkelijker.
 
 ### Fase 3: Template invullen
 
