@@ -20,18 +20,24 @@ Argument = run-map (`$ROUTINE_RUN_DIR` als het ontbreekt). Lees enkel `days/<van
 
 **Welke events**: alles van vandaag, behalve `[geannuleerd]`, `[afgewezen]`, `[dagvullend]` (die voeden tijdschrijven), `[zonder deelnemers]`, en `[terugkerend]` met ≤30 min (standup, dagstart). Extra uitsluitingen op titel staan in `~/.config/routine/agenda-ignore.txt` (één patroon per regel), als dat bestaat.
 
-**Header** — geen tijdstip, maximaal linken:
+**Vorm** — geen tijdstip in de header, maximaal linken:
 
 ```
-## <Onderwerp> met [[Voornaam Naam]], [[Voornaam Naam]] — [[project-moc-…]]
+## <Onderwerp>
+<one-liner>
+
+aanwezigen: [[Voornaam Naam]], [[Voornaam Naam]]
+
+### voorbereiding
+<voorbereiding>
 ```
 
-- Deelnemers **altijd** als `[[Naam]]`, ook zonder People-note (Obsidian toont dan een lege link; Kenzo maakt de note als hij wil). Schrijf de naam zoals de vault ze schrijft als er een note bestaat (`03 - Resources/031 - People/`); anders zoals Graph ze geeft. Bij >6 deelnemers: de organisator en de bekende collega's, dan "e.a.".
-- Project/area **enkel bij match** op een bestaande note: zoek op onderwerp-woorden in `01 - Projects/project-moc-*.md` en `02 - Areas/*.md` (bestandsnaam en aliases). Geen match → geen projectlink, geen gok.
+- **Onderwerp**: de titel van het event, verder niets. Geen deelnemers, geen tijdstip, geen projectlink in de header.
+- **One-liner**: één zin over waar dit overleg over gaat en wat er vandaag op het spel staat. Is er een match op een bestaande note, dan hoort de link daar thuis: zoek op onderwerp-woorden in `01 - Projects/project-moc-*.md` en `02 - Areas/*.md` (bestandsnaam en aliases). Geen match → geen link, geen gok.
+- **aanwezigen**: deelnemers **altijd** als `[[Naam]]`, ook zonder People-note (Obsidian toont dan een lege link; Kenzo maakt de note als hij wil). Schrijf de naam zoals de vault ze schrijft als er een note bestaat (`03 - Resources/031 - People/`); anders zoals Graph ze geeft. Bij >10 deelnemers: de organisator en de bekende collega's, dan "e.a.".
+- **voorbereiding**: wat Kenzo nodig heeft om binnen te stappen — waar staat het (laatste beslissing, open vraag), wat hij moet meebrengen of beslissen, relevante recente signalen (mail/chat van een deelnemer). Zo lang als het onderwerp vraagt: één regel bij een routineoverleg, een halve alinea of enkele bullets bij een overleg waar iets te beslissen valt. Bronnen: `search_thoughts` (Open Brain) op onderwerp en deelnemers, grep in de vault (`01 - Projects`, `02 - Areas`, recente daily notes), en de mail-sectie van vandaag/gisteren. Niets gevonden → laat de `### voorbereiding`-sectie weg; geen opvulling.
 
-**Voorbereiding** — max 3 bullets onder de header: waar staat het (laatste beslissing, open vraag), wat Kenzo moet meebrengen of beslissen, één relevant recent signaal (mail/chat van een deelnemer). Bronnen: `search_thoughts` (Open Brain) op onderwerp en deelnemers, grep in de vault (`01 - Projects`, `02 - Areas`, recente daily notes), en de mail-sectie van vandaag/gisteren. Niets gevonden → header zonder bullets; geen opvulling.
-
-**Samenvoegen met wat Kenzo zelf schreef.** Staat er in de note al een header of bullet die dit overleg raakt (match op onderwerp of deelnemer) — vaak een snelle voorbereiding — dan: nieuwe header maakt, zijn tekst en jouw voorbereiding **samengevoegd** eronder, zijn oude header weg. Zijn feiten (namen, cijfers, vragen) blijven allemaal staan; enkel de vorm mag veranderen.
+**Samenvoegen met wat Kenzo zelf schreef.** Staat er in de note al een header of bullet die dit overleg raakt (match op onderwerp of deelnemer) — vaak een snelle voorbereiding — dan: nieuwe header maakt, zijn tekst en jouw voorbereiding **samengevoegd** onder `### voorbereiding`, zijn oude header weg. Zijn feiten (namen, cijfers, vragen) blijven allemaal staan; enkel de vorm mag veranderen.
 
 **Plaats**: boven `## 📋 Logs`, na wat er al staat, in agendavolgorde. Note ontbreekt → `S/note.py ensure <vandaag>`, maar enkel als er minstens één header te schrijven is. **Geen commit** — dat doet de orchestrator.
 

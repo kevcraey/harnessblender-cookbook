@@ -2,7 +2,7 @@ description: "Ochtend- en avondroutine \u2014 verzamelen (mail, agenda, Teams, R
   \ Jira, Confluence, Chrome, git, Claude-sessies, vault), digest naar daily notes,\
   \ agenda-voorbereiding, tijdschrijven in Tempo, kennis naar Open Brain; dunne orchestrator,\
   \ \xE9\xE9n Herdr-pane per onderdeel"
-version: 0.2.0
+version: 0.2.2
 selections:
   skills:
   - source: pantry/skills/second-brain/capture/capture-mail

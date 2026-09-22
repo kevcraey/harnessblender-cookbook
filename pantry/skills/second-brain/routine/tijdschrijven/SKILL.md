@@ -33,7 +33,7 @@ Billable boekingen: een fout ticket is duurder dan een gat. Daarom **altijd eers
 ## Stappen
 
 1. **Gaten**: `S/tempo.py gaps --days 30` (of `day <datum>`).
-2. **Bewijs per dag**, in deze volgorde en niet meer dan nodig: de daily note (`S/note.py body <dag>` — de digest heeft ze net geschreven of Kenzo zelf), de dagmap in de run-map als die bestaat (`days/<dag>/graph.md` voor dagvullende events en overleggen, `atlassian.md` voor tickets), anders niets ophalen dat er niet is. Voor vandaag zonder daily note: `bundle.md` van vandaag.
+2. **Bewijs per dag**, in deze volgorde en niet meer dan nodig: de daily note (`S/note.py body <dag>` — de digest heeft ze net geschreven of Kenzo zelf), de dagmap in de run-map als die bestaat (`days/<dag>/graph.md` voor dagvullende events en overleggen, `atlassian.md` voor tickets, `claude.md` voor Claude-sessies die dag), anders niets ophalen dat er niet is. Voor vandaag zonder daily note: `bundle.md` van vandaag.
 3. **Voorstel** naar `<run>/tijdschrijven.md` in het tabelformaat van `tempo.py book` (kolommen op naam; `titel` is voor Kenzo, wordt niet geboekt):
 
    ```
