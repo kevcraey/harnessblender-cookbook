@@ -1,6 +1,6 @@
 description: "user-level basisset \u2014 Open Brain MCP (capture/search/update/delete)\
   \ + grill-skills + herdr-skill"
-version: 0.3.0
+version: 0.5.0
 selections:
   skills:
   - source: store/mattpocock/skills/productivity/grilling

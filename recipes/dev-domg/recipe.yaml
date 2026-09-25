@@ -1,5 +1,5 @@
 description: ''
-version: 0.1.0
+version: 0.2.0
 selections:
   skills: []
   agents: []
@@ -48,7 +48,9 @@ selections:
     as: spring-web.md
   - source: store/team-decibel/richtlijnen/testing.md
     as: testing.md
-  mcps: []
+  mcps:
+  - source: pantry/mcp-servers/jenking-mcp/.claude-plugin/.mcp.json
+    as: jenking-mcp
   plugins: []
 drinkers:
 - path: /Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/4-Coding/bezwaarschriften/
