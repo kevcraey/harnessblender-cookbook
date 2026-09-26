@@ -45,6 +45,4 @@ selections:
   plugins:
   - source: pantry/plugins/quiet
     as: quiet
-drinkers:
-- path: /Users/kenzo
-  scope: user
+content_hash: a2c2d791809afc7e

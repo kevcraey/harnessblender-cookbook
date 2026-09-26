@@ -8,6 +8,4 @@ selections:
   - source: pantry/mcp-servers/atlassian-mcp/.claude-plugin/.mcp.json
     as: atlassian-mcp
   plugins: []
-drinkers:
-- path: /Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain/
-  scope: local
+content_hash: 176fc3556957e726

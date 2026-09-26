@@ -11,6 +11,4 @@ selections:
   - source: pantry/mcp-servers/garmin-mcp/.claude-plugin/.mcp.json
     as: garmin-mcp
   plugins: []
-drinkers:
-- path: /Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/5-Storage/43-projects/project-0245/
-  scope: local
+content_hash: 31886ae013097083

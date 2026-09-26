@@ -26,6 +26,4 @@ selections:
   - source: pantry/mcp-servers/mermaid-mcp/.claude-plugin/.mcp.json
     as: mermaid-mcp
   plugins: []
-drinkers:
-- path: /Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain/
-  scope: local
+content_hash: d243ab67cbfa0e17

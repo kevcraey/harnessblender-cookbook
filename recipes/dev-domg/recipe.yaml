@@ -52,6 +52,4 @@ selections:
   - source: pantry/mcp-servers/jenking-mcp/.claude-plugin/.mcp.json
     as: jenking-mcp
   plugins: []
-drinkers:
-- path: /Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/4-Coding/bezwaarschriften/
-  scope: local
+content_hash: e7ace121c418f1b0
