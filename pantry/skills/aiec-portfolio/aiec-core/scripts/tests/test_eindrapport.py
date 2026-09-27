@@ -33,6 +33,7 @@ def test_final_report_reads_last_measurement_without_adding_one(env):
     assert r['complete'] and r['measurement'] is None
     assert r['history_guard']['report'] == 'vooruitgang' and r['history_guard']['head'] == last['hash']
     assert all(v is None for v in r['chart_data']['forward']+r['chart_data']['expected_scope'])
+    assert r['chart_data']['closed'] and 'blauw gestippeld' not in r['storage']
     assert [a['filename'] for a in r['assets']] == ['aiec-eindrapport-por-1-2026-09-scope.png', 'aiec-eindrapport-por-1-2026-09-effort.png']
     s = r['storage']
     assert s.index('<h2>Samenvatting</h2>') < s.index('<h3>Context</h3>') < s.index('<h2>Verloop</h2>') < s.index('<h3>Milestones</h3>')

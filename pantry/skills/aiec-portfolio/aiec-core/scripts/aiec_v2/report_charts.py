@@ -37,7 +37,7 @@ def series(state, history):
     budget = Decimal(base['budget_md'])
     def pct(value, denominator):
         return None if value is None else float(Decimal(value)*100/denominator)
-    data = {'periods': periods, 'as_of': state['period'], 'reported': [m in records for m in periods]}
+    data = {'periods': periods, 'as_of': state['period'], 'reported': [m in records for m in periods], 'closed': bool(state.get('closed'))}
     for name, metric, denominator in [('delivered', 'delivered_md', scope), ('estimated', 'estimated_md', scope),
                                        ('assumed', 'assumed_md', scope), ('actual', 'actual_md', budget)]:
         data[name] = [pct(records[m]['metrics'][metric], denominator) if m in records else None for m in periods]
@@ -137,7 +137,7 @@ def png(data, kind, width=1000):
     label(34, 13, 'Scope' if scope else 'Inzet', 26)
     items = [(BLACK, 'Plan (oorspronkelijk)', False, False), (BLUE, 'Opgeleverd' if scope else 'Werkelijk besteed', False, False)]
     if scope:
-        items += [(BLUE, 'Opgeleverd incl. lopend', True, False), (TEAL, 'Goedgekeurde scope', True, False)]
+        items += ([] if data.get('closed') else [(BLUE, 'Opgeleverd incl. lopend', True, False)])+[(TEAL, 'Goedgekeurde scope', True, False)]
     if not scope and any(v is not None for v in data.get('forward',[])):
         items.append((ORANGE, 'Actuele inzetplanning', True, False))
     if scope and any(v is not None for v in data['assumed']):
@@ -201,11 +201,15 @@ def png(data, kind, width=1000):
         if len(steps) > 1:
             line(steps, TEAL, 2, True)
         plot(data.get('expected_scope', [None]*count), ORANGE, True, True)
-        plot(data['estimated'], BLUE, True, True)
+        if not data.get('closed'):plot(data['estimated'], BLUE, True, True)
         plot(data['assumed'], GRAY, True, True)
     # The planning starts at the current Actual: draw it first so the measured point stays visible on top.
     if not scope:plot(data.get('forward',[None]*count), ORANGE, True, True)
-    plot(data['delivered' if scope else 'actual'], BLUE)
+    # A closed project reads as one gradual line: delivered including running work, delivered where no estimate exists.
+    if scope and data.get('closed'):
+        plot([d if e is None else e for d, e in zip(data['delivered'], data['estimated'])], BLUE)
+    else:
+        plot(data['delivered' if scope else 'actual'], BLUE)
     stream = BytesIO()
     image.save(stream, format='PNG', optimize=False, compress_level=9)
     return stream.getvalue()
@@ -257,7 +261,8 @@ def figures(data, assets, summary, lead):
     preview = lead+'<div class="report-charts">'
     for asset in assets:
         title = 'Scope' if asset['kind'] == 'scope' else 'Inzet'
-        alt = title+' — '+summary+' Legende: zwart Plan; blauw vol Opgeleverd of Werkelijk besteed; blauw gestippeld Opgeleverd incl. lopend.'
+        legend = 'zwart Plan; blauw Opgeleverd of Werkelijk besteed.' if data.get('closed') else 'zwart Plan; blauw vol Opgeleverd of Werkelijk besteed; blauw gestippeld Opgeleverd incl. lopend.'
+        alt = title+' — '+summary+' Legende: '+legend
         storage += '<p><ac:image ac:width="900" ac:alt="'+escape(alt, quote=True)+'"><ri:attachment ri:filename="'+escape(asset['filename'], quote=True)+'"/></ac:image></p>'
         mobile = base64.b64encode(png(data, asset['kind'], width=600)).decode()
         preview += '<figure><picture><source media="(max-width:600px)" srcset="data:image/png;base64,'+mobile+'"/><img alt="'+escape(alt, quote=True)+'" src="data:image/png;base64,'+asset['content_base64']+'"/></picture></figure>'
