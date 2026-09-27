@@ -134,21 +134,21 @@ def test_added_backlog_keeps_explicit_remaining(env):
     assert any('Remaining ontbreekt' in q['question'] for q in prepared(env, data=data, measure=measure)['questions'])
 
 
-def test_early_assumption_explicit_and_only_in_reported_month(env):
+def test_early_assumption_is_automatic_and_only_in_reported_month(env):
     data = five_answers(1)
     data['milestones'][0].update(status='Bezig', actual_md=2, remaining_md=None)
-    measure = five_basis(); measure['assume_on_plan'] = True
-    p = prepared(env, 1, data, measure)
+    p = prepared(env, 1, data, five_basis())  # No toggle needed: nothing delivered and no complete estimate.
     assert not p['questions'] and p['state']['metrics']['assumed_md'] == '20'
     assert p['state']['metrics']['estimated_md'] is None
     d = report_charts.series(p['state'], [])
     assert d['assumed'] == [None, 20, None, None, None, None, None, None, None]
     assert d['delivered'][0] is None and d['actual'][2] is None
-    with pytest.raises(ValueError, match='eerste formele'):
-        prepared(env, measure=measure)
-    data = five_answers(0)
-    with pytest.raises(ValueError, match='Actual/Remaining'):
-        prepared(env, 0, data, measure)
+    # After the first delivery, or with a complete Actual/Remaining estimate, there is no assumption.
+    assert prepared(env, measure=five_basis())['state']['metrics']['assumed_md'] is None
+    assert prepared(env, 0, five_answers(0), five_basis())['state']['metrics']['assumed_md'] is None
+    # The former manual toggle in old files is ignored, not an error.
+    measure = five_basis(); measure['assume_on_plan'] = True
+    assert prepared(env, measure=measure)['state']['metrics']['assumed_md'] is None
 
 
 def test_metadata_unknown_and_bad_numbers_refused(env):
@@ -162,12 +162,16 @@ def test_metadata_unknown_and_bad_numbers_refused(env):
 
 def test_complete_publication_has_three_journalled_actions_and_portable_history(env):
     plan, outcome = publish(env)
-    assert [a['kind'] for a in plan['actions']] == ['page.create', 'page.attachment', 'page.attachment']
+    assert [a['kind'] for a in plan['actions']] == ['page.create', 'page.attachment', 'page.attachment', 'meetstand.archive']
     assert 'data:image/png;base64,' in plan['preview_html']
     assert 'content_base64": "iVBOR' not in plan_markdown(plan)
     page_id = outcome['results'][0]['result']['id']
     cat, cfg, b, tmp = env
     assert len(b.data['objects']['attachments'][page_id]) == 2
+    # The measurement lives in the archive, not on the page; Confluence only shows the progress history.
+    storage = b.data['objects']['page'][page_id]['body']['storage']['value']
+    assert 'aiec-meetstand' not in storage and 'Vooruitgangshistoriek' in storage and 'Meetbasis' not in storage
+    assert [e['page_id'] for e in b.data['meetstanden']] == [page_id]
     history = report_history.load(cat.reports['vooruitgang'], b.collect(), 'POR-1', 'AI-38')
     assert len(history['records']) == 1
     # Reload from the fixture on disk: history is not merely process-local state.
@@ -182,7 +186,7 @@ def test_second_month_freezes_old_snapshot_and_gaps(env):
     b = env[2]; first_id = out['results'][0]['result']['id']; before = copy.deepcopy(b.get('page', first_id))
     result = render(env[0], b.collect(), 'vooruitgang', 'POR-1', '2026-04', five_answers(3), env[1], tracking={})
     assert result['complete'] and result['chart_data']['delivered'][:4] == [None, 20, None, 60]
-    assert result['measurement']['previous_hash'] == report_history.extract(before['body']['storage']['value'])['hash']
+    assert result['measurement']['previous_hash'] == b.data['meetstanden'][0]['record']['hash']
     publish(env, '2026-04', five_answers(3), {})
     assert b.get('page', first_id) == before
     with pytest.raises(ValueError, match='bestaat al'):
@@ -208,9 +212,8 @@ def test_manual_content_change_requires_review(env, suffix):
 
 def test_record_tamper_and_missing_history_detected(env):
     _, out = publish(env)
-    page = env[2].data['objects']['page'][out['results'][0]['result']['id']]
-    page['body']['storage']['value'] = page['body']['storage']['value'].replace('Fictieve goedgekeurde planning', 'Stiekem aangepaste planning')
-    with pytest.raises(ValueError): report_history.load(env[0].reports['vooruitgang'], env[2].collect(), 'POR-1', 'AI-38')
+    env[2].data['meetstanden'][0]['record']['baseline']['source'] = 'Stiekem aangepaste planning'
+    with pytest.raises(ValueError, match='gewijzigd'): report_history.load(env[0].reports['vooruitgang'], env[2].collect(), 'POR-1', 'AI-38')
 
 
 def test_server_macro_ids_and_cdata_text_do_not_break_integrity(env):
@@ -353,8 +356,13 @@ def test_old_collector_snapshot_requires_fresh_history(env):
 def test_missing_chain_link_is_not_silently_skipped(env):
     _, first = publish(env, '2026-02', five_answers(1), five_basis())
     publish(env, '2026-04', five_answers(3), {})
-    env[2].data['objects']['page'].pop(first['results'][0]['result']['id'])
+    removed = env[2].data['meetstanden'].pop(0)
     with pytest.raises(ValueError, match='Onderbroken'):
+        report_history.load(env[0].reports['vooruitgang'], env[2].collect(), 'POR-1', 'AI-38')
+    # A page that disappears while its measurement remains is not skipped either.
+    env[2].data['meetstanden'].insert(0, removed)
+    env[2].data['objects']['page'].pop(first['results'][0]['result']['id'])
+    with pytest.raises(ValueError, match='ontbreekt'):
         report_history.load(env[0].reports['vooruitgang'], env[2].collect(), 'POR-1', 'AI-38')
 
 
@@ -411,11 +419,23 @@ def test_cli_outputs_self_contained_html_without_writes(env):
 
 def test_history_with_old_forecast_name_still_loads(env):
     _, out = publish(env)
-    page = env[2].data['objects']['page'][out['results'][0]['result']['id']]
-    storage = page['body']['storage']['value']
-    record = report_history.extract(storage)
+    record = env[2].data['meetstanden'][0]['record']
     for row in [*record['milestones'], *record['inputs']['milestones']]:row['forecast_md'] = row.pop('baseline_md')
-    head = storage[:storage.index('<ac:structured-macro ac:name="expand"><ac:parameter ac:name="title">Technische meetstand')]
-    page['body']['storage']['value'], _ = report_history.embed(head, {k: v for k, v in record.items() if k not in ('hash', 'content_hash')})
+    record['hash'] = digest({k: v for k, v in record.items() if k != 'hash'})
     loaded = report_history.load(env[0].reports['vooruitgang'], env[2].collect(), 'POR-1', 'AI-38')['records'][0]
     assert all('forecast_md' not in r and 'baseline_md' in r for r in [*loaded['milestones'], *loaded['inputs']['milestones']])
+
+
+def test_live_archive_writes_one_commit_and_never_overwrites(tmp_path):
+    from aiec_v2.backend import archive
+    root = tmp_path/'meetstanden'; root.mkdir()
+    subprocess.run(['git', 'init', '-q', str(root)], check=True)
+    subprocess.run(['git', '-C', str(root), 'config', 'user.email', 'test@example.invalid'], check=True)
+    subprocess.run(['git', '-C', str(root), 'config', 'user.name', 'Test'], check=True)
+    cfg = {'meetstanden': {'path': str(root), 'push': False}}
+    record = {'report': 'vooruitgang', 'target': 'POR-1', 'period': '2026-09', 'hash': 'x'}
+    result = archive(cfg, '123', record)
+    assert result['archive'] == 'vooruitgang/POR-1/2026-09.json' and result['commit']
+    assert report_history.read_archive(root) == [{'page_id': '123', 'record': record}]
+    with pytest.raises(FileExistsError):archive(cfg, '124', record)
+    with pytest.raises(ValueError, match='geen git-repo'):report_history.read_archive(tmp_path)

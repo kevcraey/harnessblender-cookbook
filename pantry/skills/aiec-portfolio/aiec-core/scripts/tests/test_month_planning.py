@@ -128,7 +128,7 @@ def test_plan_appears_in_report_and_is_not_actual_or_rebaseline(env):
     assert data['forward'][positions['2026-06']]==70
     assert data['forward'][positions['2026-07']]==75
     assert data['forward'][positions['2026-08']]==80
-    assert data['forward'][positions['2026-09']] is None
+    assert data['forward'][positions['2026-09']]==80  # No planned effort that month: flat, not a gap.
     assert data['forward'][positions['2026-10']]==90
     assert data['actual'][positions['2026-10']] is None and data['plan_effort'][positions['2026-10']] is None
     assert data['y_max_scope']>=140 and data['y_max_effort']>=140 and 'Inzet deze maand (md)' not in result['storage']  # The planning shows in the charts only.
@@ -240,3 +240,16 @@ def test_report_shows_ratio_and_factor(env):
     result=render(cat,b.collect(),'vooruitgang','POR-1','2026-06',answers,cfg,tracking=tracked)
     assert 1.12 <= result['measurement']['effort_ratio'] <= 1.13
     assert 'Backlog is in de projectie geschaald met factor 2,00.' in result['storage']
+
+
+def test_months_without_planning_are_flat_until_the_end(env):
+    cat,cfg,b,_=env
+    on_plan=[{'period':'2026-07','effort_md':5},{'period':'2026-08','effort_md':5},{'period':'2026-09','effort_md':20}]
+    def chart(planning):
+        return render(cat,b.collect(),'vooruitgang','POR-1','2026-06',five_answers(5),cfg,tracking=dict(five_basis(),planning=planning))['chart_data']
+    full=chart(on_plan)
+    assert all(v is None for v in full['forward'])  # Identical to the plan: nothing extra to show.
+    assert [round(v) for v in chart(on_plan[:2])['forward'] if v is not None]==[70,75,80,80]  # Stops at 80% while the plan reaches 100%.
+    empty=chart([])
+    assert [round(v) for v in empty['forward'] if v is not None]==[70,70,70,70]  # No effort planned: flat until the end.
+    assert len({round(v,6) for v in empty['expected_scope'] if v is not None})==1  # No effort, no extra delivered scope.

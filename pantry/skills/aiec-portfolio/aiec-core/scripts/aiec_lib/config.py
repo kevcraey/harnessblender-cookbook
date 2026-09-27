@@ -38,6 +38,11 @@ frigo_dagen = 90
 
 [vault]
 path = "~/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain"
+
+# Vaste meetstanden van vooruitgangsrapporten: eigen git-repo, niet in Confluence.
+[meetstanden]
+path = "~/Library/CloudStorage/Dropbox/1-Kenzo/2-Work/26-ai-expertisecentrum/aiec-meetstanden"
+push = true
 """
 
 DEFAULTS: dict = tomllib.loads(DEFAULT_CONFIG_TOML)

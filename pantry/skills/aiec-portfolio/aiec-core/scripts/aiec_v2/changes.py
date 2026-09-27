@@ -204,6 +204,7 @@ def make_plan(cat,backend,cfg,request):
                 payload={k:v for k,v in asset.items() if k!='kind'}
                 payload['page_action']=created
                 action('page.attachment',parent['space']['key'],payload)
+            if result.get('measurement'):action('meetstand.archive','meetstanden',{'page_action':created,'record':result['measurement']})
             observe('issue',result['initiative'])
             if result['scope']=='project':observe('issue',result['target'])
         notes.append('Rapport wordt als nieuwe momentopname gemaakt, niet over een bestaand rapport heen geschreven.')
@@ -231,6 +232,7 @@ def plan_markdown(plan):
     for a in plan['actions']:
         payload=dict(a['payload']) if isinstance(a['payload'],dict) else a['payload']
         if a['kind']=='page.attachment':payload['content_base64']='[Exacte PNG-bytes in het JSON-voorstel; beoordeel de bijbehorende HTML-preview. SHA-256 hierboven.]'
+        if a['kind']=='meetstand.archive':payload['record']=f"[Meetstand {payload['record']['target']} {payload['record']['period']}, hash {payload['record']['hash']}; volledig in het JSON-voorstel]"
         lines += [f"## {a['id']}. {a['kind']} · {a.get('key') or 'nieuw'}",f"Scope: {a['scope']}",'```json',__import__('json').dumps(payload,ensure_ascii=False,indent=2),'```','']
         if a['kind']=='page.update':
             before=next(p['before']['body']['storage']['value'] for p in plan['preconditions'] if p['kind']=='page' and p['key']==a['key'])

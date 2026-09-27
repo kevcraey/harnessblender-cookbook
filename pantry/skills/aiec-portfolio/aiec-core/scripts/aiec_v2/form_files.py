@@ -129,7 +129,7 @@ def evaluate(cat, doc):
     """Recompute local periods using Python. Local closure is not publication."""
     doc=upgrade(doc)
     spec = cat.reports['vooruitgang']; section = next(s for s in spec['sections'] if s['id']=='milestones')
-    snapshot = {'report_pages':[], 'collected_at':None}; results = []
+    snapshot = {'report_pages':[], 'meetstanden':[], 'collected_at':None}; results = []
     for p in doc['periods']:
         try:
             _, _, questions = render_input(spec, section, p['inputs']['milestones'])
@@ -141,8 +141,9 @@ def evaluate(cat, doc):
             results.append({'period':p['period'], 'state':prepared['state'], 'questions':questions, 'notes':prepared['notes']})
             if questions or not prepared['state']:break
             state = prepared['state']; state['title'] = 'Lokale maand '+p['period']
-            storage, record = report_history.embed('', state)
-            snapshot['report_pages'].append({'page_id':str(len(results)), 'title':state['title'], 'labels':[spec['label']], 'storage':storage, 'revision':digest(record)})
+            record = report_history.seal('', state)
+            snapshot['report_pages'].append({'page_id':str(len(results)), 'title':state['title'], 'labels':[spec['label']], 'storage':'', 'revision':digest(record)})
+            snapshot['meetstanden'].append({'page_id':str(len(results)), 'record':record})
         except (ValueError, KeyError, TypeError) as exc:
             results.append({'period':p['period'], 'state':None, 'questions':[{'section':'milestones','question':str(exc)}], 'notes':[]})
             break
@@ -163,7 +164,7 @@ def new_rows(base):
 def export_project(cat, snapshot, key, period, supplied=None):
     project, initiative = _project(cat, snapshot, key)
     spec = cat.reports['vooruitgang']; history = report_history.load(spec, snapshot, key, initiative)
-    if 'report_pages' not in snapshot:raise ValueError('Verzamel opnieuw: rapporthistoriek ontbreekt')
+    if 'report_pages' not in snapshot or 'meetstanden' not in snapshot:raise ValueError('Verzamel opnieuw: rapporthistoriek of meetstanden ontbreken')
     tracking.month(period); supplied = supplied or {}
     _object(supplied, ['baseline','scope_changes','assume_on_plan','corrections','legacy_ack','planning','future_factor'], [], 'Meetinvoer')
     if history['records']:
@@ -204,7 +205,7 @@ def import_request(cat, snapshot, doc, period=None):
     doc=upgrade(doc)
     key = doc['project']['key']; _, initiative = _project(cat, snapshot, key)
     history = report_history.load(cat.reports['vooruitgang'], snapshot, key, initiative)
-    if 'report_pages' not in snapshot:raise ValueError('Verzamel opnieuw: rapporthistoriek ontbreekt')
+    if 'report_pages' not in snapshot or 'meetstanden' not in snapshot:raise ValueError('Verzamel opnieuw: rapporthistoriek of meetstanden ontbreken')
     period = period or doc['periods'][-1]['period']
     chosen = next((p for p in doc['periods'] if p['period']==period),None)
     if not chosen:raise ValueError('Gekozen maand ontbreekt in bestand')

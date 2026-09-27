@@ -45,7 +45,7 @@ def monthly_template(report):
                       '- Extra scope vraagt een formeel besluit, goedkeuringsmaand en vast positief gewicht. Nieuwe scope met oorspronkelijk plan nul vraagt een expliciete Remaining.',
                       '- Elke grafiek heeft een legende: **zwart Plan**, **blauw vol Opgeleverd**, **blauw gestippeld Opgeleverd incl. lopend**. Bij inzet: **Werkelijk besteed**.',
                       '- Blauwgroen is goedgekeurde scope. Lichtgroen is **±10 procentpunt** rond het oorspronkelijke plan. Scope en inzet mogen boven 100% uitkomen.',
-                      '- Ontbrekende maanden blijven gaten. Een vroege planaanname wordt alleen na expliciete keuze getoond, grijs en als aanname benoemd.',
+                      '- Ontbrekende maanden blijven gaten. Zolang niets is opgeleverd en er geen volledige Actual/Remaining is, toont de grafiek automatisch een grijze aanname volgens plan.',
                       '- Bovenaan het rapport staan de vlag, de opgeleverde scope en het besteed budget, telkens als percentage van de meetbasis. De maandplanning zie je als oranje lijnen; meetbasis, scopebesluiten en vaste maandstanden staan ingeklapt als bijlage.',
                       '- Klaar betekent dat alle goedgekeurde milestones zijn opgeleverd. Een berekende schatting sluit niets af.',
                       '- De HTML-preview wordt beoordeeld vóór publicatie. Gepubliceerde maandstanden bewaren hun meetbasis en historiek; een nieuwe schatting verandert geen oude grafiekpunten.', '',

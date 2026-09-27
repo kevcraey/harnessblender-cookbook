@@ -157,6 +157,9 @@ def prepare(report, snapshot, target, initiative, period, inputs, supplied=None)
     spec = report['tracking']; fields = spec['fields']; sid = spec['section']
     supplied = {} if supplied is None else supplied
     _keys(supplied, {'baseline', 'scope_changes', 'assume_on_plan', 'legacy_ack', 'corrections', 'planning', 'future_factor'}, 'Meetinvoer')
+    if 'report_pages' not in snapshot or 'meetstanden' not in snapshot:
+        return {'inputs': deepcopy(inputs), 'questions': [{'section': sid, 'question': 'Deze bronmomentopname mist rapporthistoriek of meetstanden; verzamel opnieuw met de huidige collector.'}],
+                'notes': [], 'state': None, 'history': None, 'guard': None}
     history = report_history.load(report, snapshot, target, initiative)
     previous = history['records'][-1] if history['records'] else None
     if previous and period <= previous['period']:
@@ -165,9 +168,6 @@ def prepare(report, snapshot, target, initiative, period, inputs, supplied=None)
               'history': history, 'guard': report_history.guard(report, snapshot, target, initiative)}
     def ask(message):
         result['questions'].append({'section': sid, 'question': message})
-    if 'report_pages' not in snapshot:
-        ask('Deze bronmomentopname mist rapporthistoriek; verzamel opnieuw met de huidige collector.')
-        return result
     base = baseline(previous['baseline']) if previous else None
     if supplied.get('baseline') is not None:
         candidate = baseline(supplied['baseline'])
@@ -224,8 +224,8 @@ def prepare(report, snapshot, target, initiative, period, inputs, supplied=None)
             raise ValueError('Dubbele of onbekende milestone in correctietoelichting')
         reasons[ident] = _text(item.get('reason'), 'Correctiereden')
         result['notes'].append(f'Expliciete correctietoelichting milestone {ident}: '+reasons[ident])
-    assume = supplied.get('assume_on_plan', False)
-    if type(assume) is not bool:
+    # Old files may still carry the former manual toggle; the assumption is now derived, so the value is ignored.
+    if type(supplied.get('assume_on_plan', False)) is not bool:
         raise ValueError('assume_on_plan moet true of false zijn')
     rows = result['inputs'].get(sid, [])
     if not isinstance(rows, list):
@@ -299,17 +299,14 @@ def prepare(report, snapshot, target, initiative, period, inputs, supplied=None)
             fraction = Decimal(row['actual_md'])/(Decimal(row['actual_md'])+Decimal(row['remaining_md']))
         estimate += Decimal(row['weight_md'])*fraction
     effort = None if any(r['actual_md'] is None for r in normalized) else sum((Decimal(r['actual_md']) for r in normalized), Decimal(0))
+    # Before the first delivery and without a complete Actual/Remaining estimate, progress is assumed to follow the plan.
+    point = next((p for p in base['plan'] if p['period'] == period), None)
+    assume = (not delivered and not any(Decimal(r['metrics']['delivered_md']) for r in history['records'])
+              and estimate is None and point is not None)
     assumed = None
     if assume:
-        if delivered or any(Decimal(r['metrics']['delivered_md']) for r in history['records']):
-            raise ValueError('Aanname volgens plan kan alleen vóór de eerste formele oplevering')
-        if estimate is not None:
-            raise ValueError('Er is al een Actual/Remaining-inschatting; die niet vervangen door een planaanname')
-        point = next((p for p in base['plan'] if p['period'] == period), None)
-        if point is None:
-            raise ValueError('Geen oorspronkelijk planpunt voor deze maand; geen aanname interpoleren')
         assumed = point['scope_md']
-        result['notes'].append('Expliciete vroege aanname: volgens plan. Actual/Remaining zijn nog niet betrouwbaar beschikbaar; dit is geen gemeten voortgang.')
+        result['notes'].append('Nog niets opgeleverd en geen volledige Actual/Remaining: aanname volgens plan, geen gemeten voortgang.')
     else:
         for question, _ in remaining_questions:
             ask(question)

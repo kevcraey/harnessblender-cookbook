@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 from aiec_lib import confluence as conf, jira, http
 from .catalog import digest
+from . import report_history
 
 
 def now(): return datetime.now(timezone.utc).isoformat(timespec='seconds')
@@ -35,7 +36,9 @@ class FixtureBackend:
     def get(self,kind,key):
         return deepcopy(self.data.get('objects',{}).get(kind,{}).get(str(key)))
     def collect(self,**kwargs):
-        return normalize(self.cat,self.cfg,self.data['objects'],self.identity)
+        snap=normalize(self.cat,self.cfg,self.data['objects'],self.identity)
+        snap['meetstanden']=deepcopy(self.data.get('meetstanden',[]))
+        return snap
     def transitions(self,key):return deepcopy(self.data.get('transitions',{}).get(key,[]))
     def title_exists(self,space,title):
         return any(p['space']['key']==space and p['title']==title for p in self.data['objects'].get('page',{}).values())
@@ -76,6 +79,12 @@ class FixtureBackend:
             if payload['filename'] in files:raise ValueError('Bijlage bestaat al; niet overschrijven')
             files[payload['filename']]=payload
             result={'page_id':key,'filename':payload['filename'],'sha256':payload['sha256']}
+        elif kind=='meetstand.archive':
+            from .report_history import archive_name
+            if key not in objects['page']:raise ValueError('Rapportpagina bij meetstand ontbreekt')
+            entries=self.data.setdefault('meetstanden',[]);name=archive_name(payload['record'])
+            if any(archive_name(e['record'])==name for e in entries):raise ValueError('Meetstand bestaat al; niet overschrijven')
+            entries.append({'page_id':key,'record':payload['record']});result={'page_id':key,'archive':name}
         elif kind=='issue.create':
             project=payload['fields']['project']['key'];keys=[int(x.split('-')[1]) for x in objects['issue'] if x.startswith(project+'-')]
             key=f'{project}-{max(keys+[0])+1}';payload['fields'].update(status={'name':'Captatie'},updated=now(),created=now())
@@ -152,9 +161,11 @@ class LiveBackend:
                 per[key]={'period_h':round(total,4),'direct_h':round(direct,4),'issues':sorted(tree)}
             snap['hours']={'since':since,'until':until,'per_initiative':per}
             snap['gaps']=[g for g in snap['gaps'] if not g.startswith('Uren zijn niet')]
+        snap['meetstanden']=report_history.read_archive(self.cfg['meetstanden']['path'])
         return snap
     def mutate(self,action):
         kind=action['kind'];key=action.get('key');scope=action['scope']
+        if kind=='meetstand.archive':return archive(self.cfg,key,action['payload']['record'])
         client=http.writer(self.cfg,'confluence' if kind.startswith('page.') else 'jira',scope,True)
         if kind=='page.attachment':
             from .report_assets import attachment_bytes
@@ -174,6 +185,20 @@ class LiveBackend:
         labels=action['payload'].get('metadata',{}).get('labels') if kind=='page.create' else None
         if labels:result['labels']=client.request('POST',f"/rest/api/content/{result['id']}/label",body=labels)
         return result
+
+
+def archive(cfg,page_id,record):
+    """Write one measurement to the git archive, commit it and push it. Never overwrites."""
+    import subprocess
+    root=Path(cfg['meetstanden']['path']).expanduser()
+    report_history.read_archive(root)  # Refuses a missing or inconsistent archive before writing.
+    name=report_history.archive_name(record);path=root/name
+    path.parent.mkdir(parents=True,exist_ok=True)
+    with path.open('x',encoding='utf-8') as f:f.write(json.dumps({'page_id':str(page_id),'record':record},ensure_ascii=False,sort_keys=True,indent=2)+'\n')
+    git=lambda *args:subprocess.run(['git','-C',str(root),*args],check=True,capture_output=True,text=True)
+    git('add','--',name);git('commit','-m',f"meetstand {record['target']} {record['period']} (pagina {page_id})")
+    if cfg['meetstanden'].get('push',True):git('push','origin','HEAD')
+    return {'page_id':str(page_id),'archive':name,'commit':git('rev-parse','HEAD').stdout.strip()}
 
 
 # A project page is a folder under the initiative: 'POR-123 - <summary>'. Its children are that project's artefacts.

@@ -1,13 +1,15 @@
-"""Portable, append-only report measurements embedded in approved report pages.
+"""Append-only report measurements, kept in a dedicated git archive next to the report pages.
 
+Each measurement is sealed with the content hash of its approved page and chained to the previous one.
 Checksums detect accidental/manual edits, not a hostile editor who recomputes hashes.
-No page is repaired, normalized in place, or overwritten by this module.
+No page or archive entry is repaired, normalized in place, or overwritten by this module.
 """
 from __future__ import annotations
 from copy import deepcopy
 from html import escape
 from html.entities import html5
 import json
+from pathlib import Path
 import re
 import xml.etree.ElementTree as ET
 from .catalog import digest
@@ -64,66 +66,69 @@ def content_hash(storage):
     return digest(ET.canonicalize(xml, strip_text=True, rewrite_prefixes=True))
 
 
-def embed(storage, state):
+def seal(storage, state):
+    """The measurement for an approved page: the state plus the page content hash, hashed as a whole."""
     record = deepcopy(state)
     record['content_hash'] = content_hash(storage)
     record['hash'] = digest(record)
-    # JSON escapes round-trip exactly, without leaving HTML-looking user text in storage.
-    text = json.dumps(record, ensure_ascii=False, sort_keys=True, indent=2)
-    for char, code in [('<', '003c'), ('>', '003e'), ('&', '0026')]:
-        text = text.replace(char, '\\u'+code)
-    macro = ('<ac:structured-macro ac:name="expand"><ac:parameter ac:name="title">'
-             'Technische meetstand — vaste referentie, niet handmatig aanpassen</ac:parameter>'
-             '<ac:rich-text-body><ac:structured-macro ac:name="code">'
-             '<ac:parameter ac:name="title">'+MARKER+'</ac:parameter>'
-             '<ac:parameter ac:name="language">json</ac:parameter><ac:plain-text-body><![CDATA['+
-             text+']]></ac:plain-text-body></ac:structured-macro></ac:rich-text-body></ac:structured-macro>')
-    return storage+macro, record
-
-
-def extract(storage):
-    if MARKER not in storage:
-        return None
-    blocks = _blocks(_xml(storage))
-    if len(blocks) != 1:
-        raise ValueError('Verwacht precies één technische meetstand; eerst reviewen')
-    body = blocks[0][0].find(AC+'plain-text-body')
-    try:
-        record = json.loads(body.text if body is not None else '')
-    except (ValueError, TypeError) as exc:
-        raise ValueError('Technische meetstand is geen geldige JSON; eerst reviewen') from exc
-    if not isinstance(record, dict):
-        raise ValueError('Technische meetstand moet een object zijn')
     return record
 
 
+def archive_name(record):
+    return f"{record['report']}/{record['target']}/{record['period']}.json"
+
+
+def read_archive(root):
+    """All archived measurements as {'page_id', 'record'} entries; a missing archive is an error, not empty history."""
+    root = Path(root).expanduser()
+    if not (root/'.git').exists():
+        raise ValueError(f'Meetstandenarchief ontbreekt of is geen git-repo: {root}')
+    entries = []
+    for path in sorted(root.glob('*/*/*.json')):
+        entry = json.loads(path.read_text())
+        if not isinstance(entry, dict) or set(entry) != {'page_id', 'record'} or not isinstance(entry['record'], dict):
+            raise ValueError(f'Ongeldige meetstand in archief: {path.relative_to(root)}')
+        if archive_name(entry['record']) != str(path.relative_to(root)):
+            raise ValueError(f'Meetstand staat op een verkeerde plaats in het archief: {path.relative_to(root)}')
+        entries.append(entry)
+    return entries
+
+
 def load(spec, snapshot, target, initiative):
-    records, legacy, pages = [], [], []
-    for page in snapshot.get('report_pages', []):
-        record = extract(page['storage'])
-        if record is None:
-            title = page.get('title', '')
-            refs = {r.upper() for r in re.findall(r'(?<![\w-])'+re.escape(target.rsplit('-', 1)[0])+r'-\d+(?![\w-])', title, re.I)}
-            relevant = target in refs if refs else any(re.search(r'(?<![\w-])'+re.escape(key)+r'(?![\w-])', title, re.I) for key in (target, initiative) if key)
-            if spec.get('label') in page.get('labels', []) and relevant:
-                legacy.append(str(page['page_id']))
-                pages.append({'page_id': str(page['page_id']), 'revision': page['revision']})
-            continue
+    if 'meetstanden' not in snapshot:
+        raise ValueError('Verzamel opnieuw: meetstanden uit het archief ontbreken')
+    pages_by_id = {str(p['page_id']): p for p in snapshot.get('report_pages', [])}
+    records, legacy, pages, linked = [], [], [], set()
+    for entry in snapshot['meetstanden']:
+        record = entry['record']
         if record.get('report') != spec['id'] or record.get('target') != target:
             continue
-        ident = str(page['page_id'])
+        ident = str(entry['page_id'])
         if record.get('version') != 1 or record.get('model') != 'milestone_effort':
-            raise ValueError(f'Onbekende meetstandversie op pagina {ident}')
+            raise ValueError(f'Onbekende meetstandversie voor pagina {ident}')
         if digest({k: v for k, v in record.items() if k != 'hash'}) != record.get('hash'):
-            raise ValueError(f'Meetstand op pagina {ident} is gewijzigd; eerst reviewen')
+            raise ValueError(f'Meetstand voor pagina {ident} is gewijzigd; eerst reviewen')
+        page = pages_by_id.get(ident)
+        if page is None:
+            raise ValueError(f'Rapportpagina {ident} bij meetstand {record.get("period")} ontbreekt; eerst reviewen')
         if record.get('content_hash') != content_hash(page['storage']):
             raise ValueError(f'Rapportinhoud op pagina {ident} is handmatig gewijzigd; niet stilzwijgend overnemen')
         if record.get('title') != page['title'] or record.get('initiative') != initiative:
             raise ValueError(f'Titel of initiatief wijkt af van meetstand op pagina {ident}')
         if not re.fullmatch(r'\d{4}-(0[1-9]|1[0-2])', str(record.get('period', ''))):
             raise ValueError('Ongeldige periode in historische meetstand')
-        records.append(record)
+        records.append(deepcopy(record)); linked.add(ident)
         pages.append({'page_id': ident, 'revision': page['revision']})
+    for page in snapshot.get('report_pages', []):
+        ident = str(page['page_id'])
+        if ident in linked:
+            continue
+        title = page.get('title', '')
+        refs = {r.upper() for r in re.findall(r'(?<![\w-])'+re.escape(target.rsplit('-', 1)[0])+r'-\d+(?![\w-])', title, re.I)}
+        relevant = target in refs if refs else any(re.search(r'(?<![\w-])'+re.escape(key)+r'(?![\w-])', title, re.I) for key in (target, initiative) if key)
+        if spec.get('label') in page.get('labels', []) and relevant:
+            legacy.append(ident)
+            pages.append({'page_id': ident, 'revision': page['revision']})
     records.sort(key=lambda r: r['period'])
     for record in records:
         # Before the rename, the fixed original estimate was stored as forecast_md; the hash above covers the stored form.

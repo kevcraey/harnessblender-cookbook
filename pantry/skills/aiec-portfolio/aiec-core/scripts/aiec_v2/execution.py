@@ -50,6 +50,10 @@ def validate_plan(plan,cat,cfg,backend):
                 raise Refused('Bijlage moet verwijzen naar een eerdere nieuwe pagina in dezelfde scope')
             if (ref,filename) in filenames:raise Refused('Dubbele rapportbijlage')
             filenames.add((ref,filename))
+        if action['kind']=='meetstand.archive':
+            ref=action['payload'].get('page_action')
+            if action.get('key') is not None or ref not in creates or not isinstance(action['payload'].get('record'),dict):
+                raise Refused('Meetstand moet verwijzen naar een eerdere nieuwe rapportpagina')
 
 
 def approve(plan,cat,cfg,backend,by,evidence,ack):
@@ -111,7 +115,7 @@ def execute(plan,receipt,cat,cfg,backend,state_dir):
                     updated.add(tag)
                 append(journal,{'event':'started','action':a['id'],'kind':a['kind']})
                 effective=a
-                if a['kind']=='page.attachment':
+                if a['kind'] in ('page.attachment','meetstand.archive'):
                     from copy import deepcopy
                     created=new_pages[a['payload']['page_action']]
                     if revision(backend.get('page',created['key']))!=created['revision']:
@@ -120,14 +124,14 @@ def execute(plan,receipt,cat,cfg,backend,state_dir):
                 result=backend.mutate(effective)
                 results.append({'action':a['id'],'result':result})
                 append(journal,{'event':'succeeded','action':a['id'],'result':result})
-                if a['kind']=='page.create' and any(x['kind']=='page.attachment' and x['payload']['page_action']==a['id'] for x in plan['actions']):
-                    from .report_history import content_hash, extract
+                if a['kind']=='page.create' and any(x['kind'] in ('page.attachment','meetstand.archive') and x['payload']['page_action']==a['id'] for x in plan['actions']):
+                    from .report_history import content_hash
                     import re
                     key=str(result.get('id',''))
                     if not re.fullmatch(r'\d+',key):raise Refused('Nieuwe pagina-id ontbreekt; eerst reconciliëren')
                     page=backend.get('page',key)
                     before=a['payload']['body']['storage']['value'];after=page['body']['storage']['value']
-                    if page['space']['key']!=a['scope'] or page['title']!=a['payload']['title'] or content_hash(before)!=content_hash(after) or extract(before)!=extract(after):
+                    if page['space']['key']!=a['scope'] or page['title']!=a['payload']['title'] or content_hash(before)!=content_hash(after):
                         raise Refused('Nieuwe pagina wijkt af van het goedgekeurde rapport')
                     new_pages[a['id']]={'key':key,'revision':revision(page)}
         except Exception as error:

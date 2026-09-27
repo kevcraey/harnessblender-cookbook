@@ -49,6 +49,17 @@ def series(state, history):
     expected={r['period']:r['scope_md'] for r in future if r['scope_md'] is not None}
     if expected:expected[state['period']]=state['metrics']['estimated_md']
     data['expected_scope']=[pct(expected.get(m),scope) for m in periods]
+    # A month without planned effort is zero effort: from the report month on, the projection runs flat to the end of the axis.
+    def fill(values, anchor):
+        if anchor is None or state['period'] not in periods:return values
+        i = periods.index(state['period']); out = list(values)
+        if out[i] is None:out[i] = anchor
+        for k in range(i+1, len(out)):
+            if out[k] is None:out[k] = out[k-1]
+        return out
+    if state.get('planning') is not None:
+        data['forward'] = fill(data['forward'], pct(state['metrics']['actual_md'], budget))
+        data['expected_scope'] = fill(data['expected_scope'], pct(state['metrics']['estimated_md'], scope))
     # Show the plan-based lines only when they deviate from the original plan somewhere.
     def deviates(values, reference):
         return any(v is not None and (r is None or abs(v-r) >= 0.05) for v, r in zip(values, reference))
@@ -188,9 +199,9 @@ def png(data, kind, width=1000):
             steps += [(x(i), y(limit[i-1])), (x(i), y(limit[i]))]
         if len(steps) > 1:
             line(steps, TEAL, 2, True)
+        plot(data.get('expected_scope', [None]*count), ORANGE, True, True)
         plot(data['estimated'], BLUE, True, True)
         plot(data['assumed'], GRAY, True, True)
-        plot(data.get('expected_scope', [None]*count), ORANGE, True, True)
     # The planning starts at the current Actual: draw it first so the measured point stays visible on top.
     if not scope:plot(data.get('forward',[None]*count), ORANGE, True, True)
     plot(data['delivered' if scope else 'actual'], BLUE)
@@ -248,7 +259,7 @@ def fragments(state, data, assets):
 
 
 def appendix(state, data):
-    """Meetbasis, scope decisions and fixed monthly positions as a collapsed appendix, in Confluence and in the preview."""
+    """Confluence gets only the progress history; the preview also shows the meetbasis and scope decisions for the approver."""
     headers = ['Maand', 'Plan scope', 'Opgeleverd', 'Incl. lopend', 'Goedgekeurd', 'Aanname', 'Plan inzet', 'Besteed']
     rows = []
     for i, period in enumerate(data['periods']):
@@ -258,14 +269,13 @@ def appendix(state, data):
     base = state['baseline']
     basis = ('<p>Oorspronkelijk budget: '+escape(base['budget_md'])+' md. Bron: '+escape(base['source'])+'</p><table><thead><tr><th>Nr</th><th>Oorspronkelijke milestone</th><th>Baseline (md)</th></tr></thead><tbody>'+
              ''.join('<tr><td>'+str(r['nr'])+'</td><td>'+escape(r['milestone'])+'</td><td>'+escape(r['planned_md'])+'</td></tr>' for r in base['milestones'])+'</tbody></table>')
-    md = ['## Bijlage: meetbasis en scopebesluiten', '', 'Oorspronkelijk budget: '+base['budget_md']+' md. Bron: '+base['source'], '']
+    md = ['## Meetbasis en scopebesluiten (enkel ter goedkeuring)', '', 'Oorspronkelijk budget: '+base['budget_md']+' md. Bron: '+base['source'], '']
     for change in state['scope_changes']:
         description = 'Scopebesluit '+change['id']+' · '+change['month']+' · '+change['decision']['by']+' · '+change['decision']['source']+'. Toegevoegd: '+', '.join(str(r['nr'])+' '+r['milestone']+' ('+r['weight_md']+' md vast gewicht)' for r in change['milestones'])+'.'
         basis += '<p>'+escape(description)+'</p>'; md += [description, '']
-    md += ['## Bijlage: vaste maandstanden', '', '| '+' | '.join(headers)+' |', '| '+' | '.join('---' for _ in headers)+' |']+['| '+' | '.join(row)+' |' for row in rows]+['']
-    storage = preview = ''
-    for title, content in (('Bijlage: meetbasis en scopebesluiten', basis), ('Bijlage: vaste maandstanden', table)):
-        storage += ('<ac:structured-macro ac:name="expand"><ac:parameter ac:name="title">'+title+'</ac:parameter>'
-                    '<ac:rich-text-body>'+content+'</ac:rich-text-body></ac:structured-macro>')
-        preview += '<details class="appendix"><summary>'+title+'</summary>'+content+'</details>'
+    md += ['## Vooruitgangshistoriek', '', '| '+' | '.join(headers)+' |', '| '+' | '.join('---' for _ in headers)+' |']+['| '+' | '.join(row)+' |' for row in rows]+['']
+    storage = ('<ac:structured-macro ac:name="expand"><ac:parameter ac:name="title">Vooruitgangshistoriek</ac:parameter>'
+               '<ac:rich-text-body>'+table+'</ac:rich-text-body></ac:structured-macro>')
+    preview = ''.join('<details class="appendix"><summary>'+title+'</summary>'+content+'</details>'
+                      for title, content in (('Vooruitgangshistoriek', table), ('Meetbasis en scopebesluiten (enkel ter goedkeuring, niet in Confluence)', basis)))
     return md, storage, preview

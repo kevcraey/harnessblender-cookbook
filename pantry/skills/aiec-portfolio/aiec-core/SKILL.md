@@ -78,15 +78,20 @@ verzoek. De rapportdefinitie bepaalt via `tracking.fields` welke tabelkolommen d
   (`nr`, `milestone`, positief `weight_md`). Het gewicht is vast vanaf de goedkeuringsmaand; het
   oorspronkelijke plan van de toevoeging is nul. Zie `vooruitgang-scopebesluit.json` voor de vorm.
   Geen terugwerkende wijziging over vastgelegde maanden, hergebruik van nummers of scopeverwijdering.
-- Een vroeg expliciet `assume_on_plan: true` mag alleen vóór de eerste oplevering, zonder beschikbare
-  Actual/Remaining-inschatting. De grijze aanname wordt uitsluitend op die rapportmaand getekend. Nieuwe
-  scope vraagt ook dan haar eigen Remaining. Zodra een inschatting bestaat, vervang die niet door een aanname.
+- De vroege aanname volgens plan is automatisch: zolang niets is opgeleverd en er geen volledige
+  Actual/Remaining-inschatting is, toont de grafiek de grijze aanname voor die rapportmaand. Nieuwe scope vraagt
+  ook dan haar eigen Remaining. Een oud `assume_on_plan` in bestanden wordt genegeerd.
 - Oude rapporten zonder meetstand: vraag `legacy_ack: {"pages":["pagina-id"],"reason":"afspraak nieuwe meetstart"}`.
   Dit reconstrueert geen verleden. Een dalende Actual vraagt `corrections: [{"nr":1,"reason":"toelichting"}]`;
   oude waarden blijven staan. Heropening van opgeleverde milestones en gewijzigde historische inhoud vragen review.
 
-Elke nieuwe gepubliceerde rapportpagina bevat een gehashte technische meetstand, gekoppeld aan de vorige.
-Die is een integriteitscontrole, geen persoonsauthenticatie. Een oud of gewijzigd rapport wordt niet herschreven.
+Elke gepubliceerde rapportpagina krijgt een gehashte technische meetstand, gekoppeld aan de vorige. Die staat
+niet op de pagina maar in de git-repo `[meetstanden].path` (standaard
+`2-Work/26-ai-expertisecentrum/aiec-meetstanden`, GitHub `kevcraey/aiec-meetstanden`): één bestand
+`<rapport>/<project>/<maand>.json` met `page_id` en `record`. Publiceren voegt na pagina en bijlagen een
+gejournaliseerde stap `meetstand.archive` toe (schrijven, commit, push; nooit overschrijven). `collect` leest
+het archief in als `meetstanden`; de controlehash vergelijkt het record met de actuele paginatekst. De pagina
+toont enkel de ingeklapte **Vooruitgangshistoriek**. Dit is een integriteitscontrole, geen persoonsauthenticatie. Een oud of gewijzigd rapport wordt niet herschreven.
 Gebruik een verse `collect`: oude snapshots zonder rapporthistoriek zijn niet geschikt. Een lokaal concept
 voegt geen maand toe aan de historiek. Maanden worden chronologisch toegevoegd; een oudere maand achteraf
 invoegen of een vastgelegde maand corrigeren vraagt afzonderlijke review, niet een gewone maandupdate.
@@ -169,7 +174,8 @@ evenredig naar het openstaande werk van alle milestones gaat, dus estimated + (a
 min(1, gepland/Remaining). Die lijn staat oranje gestippeld in de scopegrafiek: meer inzet haalt de
 goedgekeurde scope eerder, te weinig inzet blijft eronder. Zonder volledige Remaining of inschatting geen lijn.
 Beide oranje lijnen (inzet en verwachte scope) worden alleen getoond als ze minstens 0,05 procentpunt van de
-zwarte planlijn afwijken of voorbij het oorspronkelijke plan lopen. De x-as stopt bij de rapportmaand als alles
+zwarte planlijn afwijken of voorbij het oorspronkelijke plan lopen. Een maand zonder planning telt als 0 md:
+vanaf de rapportmaand loopt de projectie vlak door tot het einde van de as, ook bij een lege planning. De x-as stopt bij de rapportmaand als alles
 opgeleverd is, anders bij de eerste planmaand waarin de verwachte scope de goedgekeurde scope haalt; wordt die
 niet gehaald, dan blijven oorspronkelijk plan en alle planmaanden zichtbaar.
 

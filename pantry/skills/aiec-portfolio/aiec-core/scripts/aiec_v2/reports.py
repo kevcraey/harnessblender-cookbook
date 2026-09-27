@@ -157,7 +157,7 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
     parent_title=spec['parent_title'].format_map({'initiative':initiative}) if 'parent_title' in spec else None
     storage=''.join(body)
     if prepared and prepared['state'] and not questions:
-        storage,measurement=report_history.embed(storage,prepared['state'])
+        measurement=report_history.seal(storage,prepared['state'])
     warnings=''.join('<li>'+escape(q['question'])+'</li>' for q in questions)
     warning_html='<aside><strong>Nog te beantwoorden</strong><ul>'+warnings+'</ul></aside>' if warnings else ''
     fonts=font_faces(cat.root/'form') if prepared else ''
