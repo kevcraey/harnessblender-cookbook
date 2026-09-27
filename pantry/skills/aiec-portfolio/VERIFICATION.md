@@ -94,7 +94,7 @@ Logs en screenshots staan daar onder `verification/`. Het nieuwe invulsjabloon s
 - Uitgebreide v2-regressie: **107 tests geslaagd** (1,40 s). Onder meer verlopen voorstellen,
   gewijzigde code/config/omgeving, bronwijzigingen, onbekende kenmerken, XML-escaping en reviewperiodes.
 - Cataloguscontrole: 11 rapporten, 11 declaratieve regels, 5 capabilities.
-- Offline demo: review → voorstel → fixture-akkoord → uitvoering met back-up/log → complete retrospectieve.
+- Offline demo: review → voorstel → fixture-akkoord → uitvoering met back-up/log → retrospectieve die eerst het eindrapport vraagt → volledig maandrapport met twee grafieken.
 - Gegenereerde documentatie: geen verschillen met actuele definities.
 - Claude Code-pluginvalidatie: geslaagd. Enige waarschuwing: auteurmetadata ontbreekt in de door
   harnessblender gegenereerde manifestfile.

@@ -94,13 +94,16 @@ def documents(cat):
             lines += choice_legend(r, enum) + ['']
         for section in r['sections']:
             if section['kind'] in INPUT_KINDS:
-                lines += [f"- **{section['title']}:** {section['prompt']}"]
+                name = section['group']+' · '+section['title'] if section.get('group') else section['title']
+                lines += [f"- **{name}:** {section['prompt']}"]
                 if section['kind'] == 'input_table':
                     lines += ['', '| ' + ' | '.join(c['title'] for c in section['columns']) + ' |',
                               '| ' + ' | '.join('---' for c in section['columns']) + ' |', '']
                 if section.get('help'): lines += [section['help'], '']
             else:lines += [f"- **{section['title']}:** {section['kind']} uit `{section['source']}`; door code samengesteld."]
         if r.get('tracking'): lines += ['', 'Met vaste meetbasis, Remaining, onveranderlijke maandstanden en scope-/inzetgrafieken. Publicatie maakt een nieuwe pagina met twee PNG-bijlagen; eerst de HTML-preview goedkeuren.']
+        if r.get('tracking_source'): lines += ['', f"Kopcijfers, grafieken zonder projectie, milestones tegenover Baseline, scopebesluiten en Vooruitgangshistoriek komen uit de laatste meetstand van `{r['tracking_source']['report']}`, vóór de sectie {r['tracking_source']['section']}. Er komt geen nieuwe meetstand bij."]
+        if r.get('link_report'): lines += ['', f"Verwijst naar het gepubliceerde `{r['link_report']}` van hetzelfde project; zonder die pagina eerst dat rapport."]
         if r['id'] == 'vooruitgang': lines += ['', 'Los invulsjabloon: [[aiec-maandrapport]].']
         lines+=['']
     out['aiec-sjablonen.md']='\n'.join(lines)+'\n'

@@ -181,8 +181,8 @@ def test_reports_questions_and_no_jira_copy(env):
 
 def test_retrospective_extension_works(env):
     cat,cfg,b,_=env;s=b.collect();r=render(cat,s,'retrospectieve','POR-1','2026-09',{},cfg)
-    assert r['title'].endswith(' - retrospectieve - POR-1 - proef-por-1') and r['initiative']=='AI-38' and len(r['questions'])==5
-    assert 'Proef POR-1' in r['markdown'] and 'Proef POR-1' not in r['storage']
+    assert r['title'].endswith(' - retrospectieve - POR-1 - proef-por-1') and r['initiative']=='AI-38' and len(r['questions'])==3
+    assert any('nog geen eindrapport' in q['question'] for q in r['questions'])
 
 
 def test_monthly_and_quarterly_are_distinct(env):
@@ -220,6 +220,7 @@ def test_no_empty_report_published(env):
 
 def test_create_report_with_label(env):
     cat,cfg,b,tmp=env;inputs={s['id']:'Afgesproken inhoud' for s in cat.reports['retrospectieve']['sections'] if s['kind']=='input'}
+    _gate_env(b,[('90','opleveringsverslag')]);b.data['objects']['page']['201']['title']='2026-09-01 - eindrapport - POR-1 - proef-por-1'
     p,r=approved(env,{'kind':'report','report':'retrospectieve','target':'POR-1','period':'2026-09','inputs':inputs})
     execute(p,r,cat,cfg,b,tmp/'state');created=list(b.data['objects']['page'].values())[-1]
     # Project reports hang under the project page, not directly under the initiative.
@@ -558,9 +559,9 @@ def test_project_page_request_creates_folder_once(env):
 
 
 def test_project_report_needs_project_page(env):
+    from test_monthly import answers, measurement_input
     cat,cfg,b,_=env;del b.data['objects']['page']['90']
-    inputs={s['id']:'Inhoud' for s in cat.reports['eindrapport']['sections'] if s['kind']=='input'}
-    with pytest.raises(ValueError,match='Projectpagina'):make_plan(cat,b,cfg,{'kind':'report','report':'eindrapport','target':'POR-1','period':'2026-09','inputs':inputs})
+    with pytest.raises(ValueError,match='Projectpagina'):make_plan(cat,b,cfg,{'kind':'report','report':'vooruitgang','target':'POR-1','period':'2026-09','inputs':answers(),'tracking':measurement_input()})
 
 
 def test_gate_single_project_eindrapport_counts_for_initiative(env):

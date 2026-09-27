@@ -1,6 +1,7 @@
 """Generic report definitions: code provides facts, people provide judgments."""
 from __future__ import annotations
 import calendar
+from copy import deepcopy
 from datetime import date
 from html import escape
 import re
@@ -78,6 +79,7 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
             parts['slug']=slug or ''
         if all(parts.values()):title=spec['page_title'].format_map(parts)
     prepared=None; assets=[]; chart_data=None; measurement=None
+    final=None; final_questions=[]; final_notes=[]; guard=None
     working=inputs
     if spec.get('tracking'):
         from .tracking import prepare
@@ -91,9 +93,29 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
             prepared['state']['title']=title
             chart_data,assets=report_charts.build(prepared['state'],prepared['history']['records'])
     elif tracking is not None:raise ValueError('Dit rapport ondersteunt geen meetinvoer')
+    elif spec.get('tracking_source'):
+        # The final report reads the last published measurement; it adds none of its own.
+        from . import report_charts, report_history
+        source=cat.reports[spec['tracking_source']['report']];sid=spec['tracking_source']['section']
+        if 'report_pages' not in snapshot or 'meetstanden' not in snapshot:
+            final_questions.append({'section':sid,'question':'Deze bronmomentopname mist rapporthistoriek of meetstanden; verzamel opnieuw met de huidige collector.'})
+        else:
+            history=report_history.load(source,snapshot,target,initiative)
+            guard=report_history.guard(source,snapshot,target,initiative)
+            if not history['records']:
+                final_questions.append({'section':sid,'question':f'Nog geen {source["title"].lower()}srapport met meetstand voor {target}; publiceer eerst het laatste {source["title"].lower()}srapport.'})
+            else:
+                last=history['records'][-1]
+                if period<last['period']:raise ValueError('Periode ligt vóór het laatste '+source['title'].lower()+'srapport ('+last['period']+')')
+                # No projection: the planning of the last month is not part of the closed project.
+                state=deepcopy(last);state['planning']=None;state['report']=report_id;state['closed']=True
+                if last.get('legacy_ack'):final_notes.append('Oude rapporten zijn niet omgerekend: '+', '.join(last['legacy_ack']['pages'])+'. Afspraak meetstart: '+last['legacy_ack']['reason'])
+                chart_data,assets=report_charts.build(state,history['records'][:-1])
+                final={'state':state,'records':history['records']}
     md=[f'# {title}','','Concept ter goedkeuring. Bronmoment: '+snapshot.get('collected_at','onbekend')+'.','']
     body=[];preview_body=[];questions=list(title_questions)
     if prepared:questions+=prepared['questions']
+    questions+=final_questions
     # A decision is self-contained; it needs no live ticket view.
     if initiative and spec.get('jira',True):
         if cfg:
@@ -102,8 +124,22 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
             body.append(macro)
         else:body.append('<p>Live Jira-verwijzing wordt bij publicatie toegevoegd.</p>')
     # A report with its own decision date needs no separate period line.
-    if 'datum' not in {s['id'] for s in spec['sections']}:body.append(f'<p>Periode: {escape(period)}</p>')
+    if 'datum' not in {s['id'] for s in spec['sections']} and not spec.get('tracking_source'):body.append(f'<p>Periode: {escape(period)}</p>')
+    if spec.get('link_report'):
+        # A reference to the linked report's page, by its title pattern; no link without the page.
+        linked=cat.reports[spec['link_report']]
+        parts=re.split(r'\{(\w+)\}',linked['page_title'])
+        forms={'datum':r'\d{4}-\d{2}-\d{2}','project':re.escape(target),'slug':r'[a-z0-9]+(?:-[a-z0-9]+)*'}
+        pattern=''.join(forms[p] if i%2 else re.escape(p) for i,p in enumerate(parts))
+        hits=sorted(a['title'] for a in data['artifacts'] if a.get('initiative')==initiative and linked.get('label') in a.get('labels',[]) and re.fullmatch(pattern,a.get('title','')))
+        if hits:
+            lead='Doel, resultaat, waarde en vervolgafspraken staan in het '+linked['title'].lower()+': '
+            body.append('<p>'+escape(lead)+'<ac:link><ri:page ri:content-title="'+escape(hits[-1],quote=True)+'"/></ac:link></p>')
+            preview_body.append('<p>'+escape(lead)+'<strong>'+escape(hits[-1])+'</strong></p>');md+=[lead+hits[-1],'']
+        else:
+            questions.append({'section':spec['link_report'],'question':f"Er is nog geen {linked['title'].lower()} voor {target}; publiceer dat eerst, dit rapport verwijst ernaar."})
     in_properties=set((spec.get('properties') or {}).get('sections',[]))
+    measured_state=(prepared or {}).get('state') or (final or {}).get('state')
     headline_md=[]
     if spec.get('properties'):
         # Page Properties block: machine-readable for review and the Beslissingen overview.
@@ -112,15 +148,29 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
             value=working.get(sid) or ''
             text=choice_text(spec,sections[sid],value) if sections[sid]['kind']=='choice' and value else str(value).strip()
             rows+=f"<tr><th>{escape(sections[sid]['title'])}</th><td>{escape(text).replace(chr(10),'<br/>')}</td></tr>"
-        if prepared and prepared['state']:
-            for name,value in report_charts.headline(prepared['state']):
+        if measured_state:
+            extra=report_charts.looptijd(measured_state) if final else []
+            for name,value in report_charts.headline(measured_state)+extra:
                 rows+=f"<tr><th>{escape(name)}</th><td>{escape(value)}</td></tr>";headline_md+=[f'**{name}:** {value}','']
         body.append(details_macro(cat.schema,rows,details_id=spec['properties']['id']))
         preview_body.append('<table class="properties"><tbody>'+rows+'</tbody></table>')
+    current_group=None
     for section in spec['sections']:
-        md += [f"## {section['title']}",'']
+        group=section.get('group')
+        if group and group!=current_group:
+            md+=[f'## {group}',''];body.append('<h2>'+escape(group)+'</h2>');preview_body.append('<h2>'+escape(group)+'</h2>')
+        current_group=group
+        md += [f"{'###' if group else '##'} {section['title']}",'']
+        if spec.get('tracking_source') and section['id']==spec['tracking_source']['section']:
+            if final:
+                final_md,final_storage,final_html=report_charts.final_fragments(final['state'],chart_data,assets)
+                md[-2:-2]=final_md;body.append(final_storage);preview_body.append(final_html)
+            else:
+                message='Grafieken en milestones wachten op het laatste vooruitgangsrapport met meetstand.'
+                md[-2:-2]=[message,''];preview_body.append('<p>'+message+'</p>')
         if section['kind'] in INPUT_KINDS:
             section_md,section_body,section_questions=render_input(spec,section,working.get(section['id']))
+            if group and section_body.startswith('<h2>'):section_body='<h3>'+section_body[4:].replace('</h2>','</h3>',1)
             if prepared and section['id']==spec['tracking']['section']:
                 if prepared['state']:
                     chart_md,chart_storage,chart_html=report_charts.fragments(prepared['state'],chart_data,assets)
@@ -129,6 +179,14 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
                     message='Grafieken wachten op een volledige, bevestigde meetbasis en milestonestand.'
                     md[-2:-2]=[message,''];preview_body.append('<p>'+message+'</p>')
             md += section_md
+            if final and section['id']==spec['tracking_source']['section']:
+                # Source material for the agent's proposal; the local concept only, never the page.
+                md+=['> Bronmateriaal uit de maandrapporten (niet gepubliceerd):']
+                for record in final['records']:
+                    for key,name in (('wijzigingen','Wijzigingen'),('beslissing','Beslissingen')):
+                        value=str(record.get('inputs',{}).get(key) or '').strip()
+                        if value:md+=[f"> - {record['period']} · {name}: "+value.replace('\n',' / ')]
+                md+=['']
             if section['id']==(spec.get('properties') or {}).get('sections',[None])[-1]:md+=headline_md
             # Values shown in the properties block are not repeated as a section.
             if section_body and section['id'] not in in_properties:
@@ -150,8 +208,8 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
                 if not rows:md+=['Geen gegevens in de gelezen bronnen.']
                 md+=['']
             # No snapshot of Jira-owned data in Confluence. The live macro above provides it.
-    if prepared and prepared['state']:
-        appendix_md,appendix_storage,appendix_html=report_charts.appendix(prepared['state'],chart_data)
+    if measured_state:
+        appendix_md,appendix_storage,appendix_html=report_charts.appendix(measured_state,chart_data,[r['title'] for r in final['records']] if final else ())
         md+=appendix_md;body.append(appendix_storage);preview_body.append(appendix_html)
     for gap in snapshot.get('gaps',[]):md+=['Bronbeperking: '+gap]
     parent_title=spec['parent_title'].format_map({'initiative':initiative}) if 'parent_title' in spec else None
@@ -160,10 +218,11 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
         measurement=report_history.seal(storage,prepared['state'])
     warnings=''.join('<li>'+escape(q['question'])+'</li>' for q in questions)
     warning_html='<aside><strong>Nog te beantwoorden</strong><ul>'+warnings+'</ul></aside>' if warnings else ''
-    fonts=font_faces(cat.root/'form') if prepared else ''
-    html=preview_html(title,period,warning_html+''.join(preview_body),snapshot.get('source',{}).get('mode')=='fixture',fonts) if prepared else None
+    rich=bool(prepared or spec.get('tracking_source'))
+    fonts=font_faces(cat.root/'form') if rich else ''
+    html=preview_html(title,period,warning_html+''.join(preview_body),snapshot.get('source',{}).get('mode')=='fixture',fonts) if rich else None
     return {'report':report_id,'scope':scope,'target':target,'initiative':initiative,'title':title,'label':spec.get('label'),'parent_title':parent_title,
             'period':period,'questions':questions,'complete':not questions,'markdown':'\n'.join(md)+'\n','storage':storage,
             'inputs':inputs,'resolved_inputs':working,'source_time':snapshot.get('collected_at'),
             'html':html,'assets':assets,'chart_data':chart_data,'measurement':measurement,
-            'history_guard':prepared['guard'] if prepared else None,'notes':prepared['notes'] if prepared else []}
+            'history_guard':prepared['guard'] if prepared else guard,'notes':prepared['notes'] if prepared else final_notes}

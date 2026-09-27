@@ -1,24 +1,117 @@
-{
-  "id": "eindrapport",
-  "title": "Eindrapport",
-  "page_title": "{datum} - eindrapport - {project} - {slug}",
-  "scope": "project",
-  "label": "opleveringsverslag",
-  "sections": [
-    {
-      "id": "inhoud",
-      "title": "Inhoud",
-      "kind": "input",
-      "prompt": "Lever het inhoudelijk overeengekomen verslag of plan aan.",
-      "required": true
-    },
-    {
-      "id": "afspraken",
-      "title": "Afspraken en verantwoordelijken",
-      "kind": "input",
-      "prompt": "Wie doet wat en welke besluiten liggen hieraan ten grondslag?",
-      "required": true
-    }
-  ],
-  "trigger": "Bij afsluiten van een project. Bij één project geldt het ook als opleveringsverslag van het initiatief."
-}
+id: eindrapport
+title: Eindrapport
+page_title: "{datum} - eindrapport - {project} - {slug}"
+scope: project
+label: opleveringsverslag
+trigger: Bij afsluiten van een project, na het laatste vooruitgangsrapport. Bij één project geldt het ook als opleveringsverslag van het initiatief.
+properties:
+  id: aiec-eindrapport
+  sections: [vlag]
+# Cijfers, grafieken en milestones komen uit de laatste meetstand van dit rapport; er komt geen nieuwe meetstand bij.
+tracking_source:
+  report: vooruitgang
+  section: wendingen
+
+enums:
+  projectgezondheid:
+    - value: op-schema
+      symbol: 🟢
+      label: Alles op schema
+      description: Afgesproken resultaat binnen planning en budget
+    - value: kleine-afwijking
+      symbol: 🟡
+      label: Kleine afwijking
+      description: Lichte vertraging of milde scopewijziging
+    - value: aandacht
+      symbol: 🟠
+      label: Aandacht vereist
+      description: Duidelijke afwijking in resultaat, planning of budget
+    - value: escalatie
+      symbol: 🔴
+      label: Escalatie / risico
+      description: Afgesproken resultaat niet gehaald of zware overschrijding
+
+sections:
+  - id: vlag
+    title: Eindoordeel
+    kind: choice
+    enum: projectgezondheid
+    prompt: Welke eindvlag kent de projectleider aan het project toe?
+    required: true
+    help: Een beoordeling van het hele project door de projectleider, met dezelfde vlaggen als het vooruitgangsrapport. De code leidt ze niet af uit de cijfers.
+
+  - id: context
+    group: Samenvatting
+    title: Context
+    kind: input
+    prompt: Waarom bestond dit project? Geef aanleiding, doel en opdrachtgever, leesbaar voor wie het project niet kent.
+    required: true
+    help: De agent stelt een tekst voor uit het captatie- en analyserapport en de Jira-omschrijving; de projectleider bevestigt.
+
+  - id: resultaat
+    group: Samenvatting
+    title: Resultaat
+    kind: input
+    prompt: Wat was afgesproken, wat is opgeleverd en wat niet? Geef bij wat niet is opgeleverd ook waarom.
+    required: true
+
+  - id: waarde
+    group: Samenvatting
+    title: Waarde
+    kind: input
+    prompt: Wat is gemeten en wat blijft een aanname? Citeer alleen een bevestigde batenclaim, met de aanname.
+    required: true
+    help: Geen tarief of betrouwbare kostenbron betekent geen eurobedrag. Nog niets gemeten? Zeg dat en wanneer het gemeten wordt.
+
+  - id: wendingen
+    group: Verloop
+    title: Belangrijkste wendingen
+    kind: input
+    prompt: Welke 3–5 momenten bepaalden het verloop? Geef per regel wat er gebeurde en wat het gevolg was.
+    required: true
+    min_lines: 1
+    max_lines: 5
+    help: De agent stelt een lijst voor uit de wijzigingen en beslissingen van de maandrapporten; de projectleider schrapt en vult aan.
+
+  - id: productverantwoordelijke
+    group: Vervolg
+    title: Productverantwoordelijke
+    kind: input
+    prompt: Wie is inhoudelijk verantwoordelijk voor het opgeleverde product, en namens welke afdeling?
+    required: true
+
+  - id: beheer
+    group: Vervolg
+    title: Technisch beheer
+    kind: input
+    prompt: Wie doet het technisch beheer, en welke afspraak ligt daaronder?
+    required: true
+
+  - id: beslissingen
+    group: Vervolg
+    title: Openstaande beslissingen
+    kind: input
+    prompt: Welke beslissingen staan nog open, en van wie? Zijn er geen, schrijf dan nee.
+    required: true
+
+  - id: vervolgstappen
+    group: Vervolg
+    title: Vervolgstappen
+    kind: input_table
+    prompt: Welke vervolgstappen zijn afgesproken, met verantwoordelijke en datum?
+    required: true
+    min_rows: 1
+    columns:
+      - id: stap
+        title: Stap
+        type: text
+        required: true
+      - id: verantwoordelijke
+        title: Verantwoordelijke
+        type: text
+        required: true
+      - id: datum
+        title: Tegen
+        type: text
+        required: true
+        help: JJJJ-MM-DD of een maand.

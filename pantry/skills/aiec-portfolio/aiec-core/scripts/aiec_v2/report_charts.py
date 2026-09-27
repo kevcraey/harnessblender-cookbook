@@ -6,7 +6,7 @@ from hashlib import sha256
 from html import escape
 from io import BytesIO
 import math
-from .tracking import months
+from .tracking import months, text as text_number
 from . import monthly_planning
 
 # Flux-tokens (release 2.19.0), gelijk aan de grafiekreeksen in form/style.css en form/app.js.
@@ -28,7 +28,8 @@ def series(state, history):
     future=monthly_planning.cumulative(forward_rows,state)
     approved_md=float(state['metrics']['approved_md'])
     reached=next((r['period'] for r in future if r['scope_md'] is not None and r['scope_md']>=approved_md-1e-9),None)
-    if state['metrics']['done']:end=state['period']
+    # A closed project (final report) has no future months either.
+    if state['metrics']['done'] or state.get('closed'):end=state['period']
     elif reached:end=max(state['period'],reached)
     else:end=max([max(plan), state['period']]+[r['period'] for r in forward_rows])
     periods = months(min(plan), end)
@@ -246,8 +247,14 @@ def fragments(state, data, assets):
     scaled = [] if state.get('planning') is None or factor == 1 else ['Backlog is in de projectie geschaald met factor '+f'{factor:.2f}'.replace('.', ',')+'.']
     md = ['## Scope en inzet', '', detail, done, *scaled, '', 'Elke grafiek: zwart Plan; blauw vol Opgeleverd / Werkelijk besteed; blauw gestippeld Opgeleverd incl. lopend. Oranje gestippeld: actuele inzetplanning en de scope die daarmee verwacht wordt. Groen: ±10 procentpunt.', '']
     text = '<p>'+escape(detail)+' '+done+'</p>'+''.join('<p>'+escape(line)+'</p>' for line in scaled)
-    storage = '<h2>Scope en inzet</h2>'+text
-    preview = storage+'<div class="report-charts">'
+    storage, preview = figures(data, assets, summary, '<h2>Scope en inzet</h2>'+text)
+    return md, storage, preview
+
+
+def figures(data, assets, summary, lead):
+    """The two charts: attachments in Confluence, inline images with a mobile variant in the preview."""
+    storage = lead
+    preview = lead+'<div class="report-charts">'
     for asset in assets:
         title = 'Scope' if asset['kind'] == 'scope' else 'Inzet'
         alt = title+' — '+summary+' Legende: zwart Plan; blauw vol Opgeleverd of Werkelijk besteed; blauw gestippeld Opgeleverd incl. lopend.'
@@ -255,11 +262,73 @@ def fragments(state, data, assets):
         mobile = base64.b64encode(png(data, asset['kind'], width=600)).decode()
         preview += '<figure><picture><source media="(max-width:600px)" srcset="data:image/png;base64,'+mobile+'"/><img alt="'+escape(alt, quote=True)+'" src="data:image/png;base64,'+asset['content_base64']+'"/></picture></figure>'
     preview += '</div>'
-    return md, storage, preview
+    return storage, preview
 
 
-def appendix(state, data):
-    """Confluence gets only the progress history; the preview also shows the meetbasis and scope decisions for the approver."""
+def md_number(value):
+    return 'onbekend' if value is None else str(value).replace('.', ',')
+
+
+def signed(diff):
+    return 'onbekend' if diff is None else '0' if not diff else f'{diff:+}'.replace('.', ',')
+
+
+def looptijd(state):
+    """Planned against actual duration, for the final report: the plan's months against the last measurement."""
+    plan = state['baseline']['plan']
+    return [('Looptijd', plan[0]['period']+' tot '+state['period']+' (gepland tot '+plan[-1]['period']+')'),
+            ('Cijfers per', state['period']+', laatste vooruitgangsrapport')]
+
+
+def final_fragments(state, data, assets):
+    """Verloop for the final report: charts without projection, milestones against Baseline, and scope decisions.
+
+    Unlike the monthly report, the scope decisions go into Confluence: the reader has no preview."""
+    metrics = state['metrics']
+    approved = 'Goedgekeurde scope: '+pct(metrics['approved_md'], metrics['scope_denominator_md'])+' van de oorspronkelijke scope.'
+    done = 'Alle goedgekeurde milestones zijn opgeleverd.' if metrics['done'] else 'Niet alle goedgekeurde milestones zijn opgeleverd.'
+    summary = 'Opgeleverd: '+pct(metrics['delivered_md'], metrics['scope_denominator_md'])+'; werkelijk besteed: '+pct(metrics['actual_md'], metrics['budget_md'])+'.'
+    lead = '<p>'+escape(approved)+' '+done+'</p>'
+    storage, preview = figures(data, assets, summary, lead)
+    md = [approved+' '+done, '']
+    headers = ['Nr', 'Milestone', 'Eindstatus', 'Baseline (md)', 'Actual (md)', 'Verschil (md)']
+    rows = []
+    for r in state['milestones']:
+        # Actual against Baseline only means something for delivered work; an undelivered row is not a saving.
+        diff = None if r['actual_md'] is None or not r['delivered'] else Decimal(r['actual_md'])-Decimal(r['baseline_md'])
+        share = '' if not diff or not Decimal(r['baseline_md']) else f' ({diff*100/Decimal(r["baseline_md"]):+.0f}%)'
+        rows.append([str(r['nr']), r['milestone'] or '', r['status'], md_number(r['baseline_md']), md_number(r['actual_md']),
+                     ('—' if not r['delivered'] else signed(diff)+share)])
+    total_base = sum((Decimal(r['baseline_md']) for r in state['milestones']), Decimal(0))
+    total_actual = metrics['actual_md']
+    delivered = [r for r in state['milestones'] if r['delivered']]
+    total_diff = None if any(r['actual_md'] is None for r in delivered) else sum((Decimal(r['actual_md'])-Decimal(r['baseline_md']) for r in delivered), Decimal(0))
+    rows.append(['', 'Totaal' if metrics['done'] else 'Totaal (verschil: opgeleverde milestones)', '', md_number(text_number(total_base)), md_number(total_actual),
+                 signed(total_diff) if delivered else '—'])
+    caption = 'md = mandagen. Baseline: oorspronkelijke inschatting of vast gewicht van goedgekeurde scope. Actual: werkelijk besteed. Verschil alleen voor opgeleverde milestones.'
+    table = ('<h3>Milestones</h3><table><thead><tr>'+''.join('<th>'+h+'</th>' for h in headers)+'</tr></thead><tbody>'+
+             ''.join('<tr>'+''.join('<td>'+escape(v)+'</td>' for v in row)+'</tr>' for row in rows)+'</tbody></table><p><em>'+caption+'</em></p>')
+    md += ['### Milestones', '', '| '+' | '.join(headers)+' |', '| '+' | '.join('---' for _ in headers)+' |']
+    md += ['| '+' | '.join(v.replace('|', '\\|') for v in row)+' |' for row in rows]+['', caption, '']
+    changes = state['scope_changes']
+    if changes:
+        heads = ['Maand', 'Toegevoegd', 'Vast gewicht (md)', 'Besloten door', 'Bron']
+        lines = [[c['month'], str(r['nr'])+' '+r['milestone'], md_number(r['weight_md']), c['decision']['by']+', '+c['decision']['date'], c['decision']['source']]
+                 for c in changes for r in c['milestones']]
+        decisions = ('<h3>Scopebesluiten</h3><table><thead><tr>'+''.join('<th>'+h+'</th>' for h in heads)+'</tr></thead><tbody>'+
+                     ''.join('<tr>'+''.join('<td>'+escape(v)+'</td>' for v in line)+'</tr>' for line in lines)+'</tbody></table>')
+        md += ['### Scopebesluiten', '', '| '+' | '.join(heads)+' |', '| '+' | '.join('---' for _ in heads)+' |']
+        md += ['| '+' | '.join(v.replace('|', '\\|') for v in line)+' |' for line in lines]+['']
+    else:
+        decisions = '<h3>Scopebesluiten</h3><p>Geen scope toegevoegd na de oorspronkelijke planning.</p>'
+        md += ['### Scopebesluiten', '', 'Geen scope toegevoegd na de oorspronkelijke planning.', '']
+    return md, storage+table+decisions, preview+table+decisions
+
+
+def appendix(state, data, reports=()):
+    """Confluence gets only the progress history; the preview also shows the meetbasis and scope decisions for the approver.
+
+    reports: titles of the progress reports behind the history, linked from the final report."""
     headers = ['Maand', 'Plan scope', 'Opgeleverd', 'Incl. lopend', 'Goedgekeurd', 'Aanname', 'Plan inzet', 'Besteed']
     rows = []
     for i, period in enumerate(data['periods']):
@@ -273,9 +342,12 @@ def appendix(state, data):
     for change in state['scope_changes']:
         description = 'Scopebesluit '+change['id']+' · '+change['month']+' · '+change['decision']['by']+' · '+change['decision']['source']+'. Toegevoegd: '+', '.join(str(r['nr'])+' '+r['milestone']+' ('+r['weight_md']+' md vast gewicht)' for r in change['milestones'])+'.'
         basis += '<p>'+escape(description)+'</p>'; md += [description, '']
-    md += ['## Vooruitgangshistoriek', '', '| '+' | '.join(headers)+' |', '| '+' | '.join('---' for _ in headers)+' |']+['| '+' | '.join(row)+' |' for row in rows]+['']
+    links = ''.join(('' if i == 0 else ', ')+'<ac:link><ri:page ri:content-title="'+escape(t, quote=True)+'"/></ac:link>' for i, t in enumerate(reports))
+    listing = '<p>Maandrapporten: '+links+'</p>' if reports else ''
+    shown = '<p>Maandrapporten: '+escape(', '.join(reports))+'</p>' if reports else ''
+    md += ['## Vooruitgangshistoriek', '']+(['Maandrapporten: '+', '.join(reports), ''] if reports else [])+['| '+' | '.join(headers)+' |', '| '+' | '.join('---' for _ in headers)+' |']+['| '+' | '.join(row)+' |' for row in rows]+['']
     storage = ('<ac:structured-macro ac:name="expand"><ac:parameter ac:name="title">Vooruitgangshistoriek</ac:parameter>'
-               '<ac:rich-text-body>'+table+'</ac:rich-text-body></ac:structured-macro>')
+               '<ac:rich-text-body>'+listing+table+'</ac:rich-text-body></ac:structured-macro>')
     preview = ''.join('<details class="appendix"><summary>'+title+'</summary>'+content+'</details>'
-                      for title, content in (('Vooruitgangshistoriek', table), ('Meetbasis en scopebesluiten (enkel ter goedkeuring, niet in Confluence)', basis)))
+                      for title, content in (('Vooruitgangshistoriek', shown+table), ('Meetbasis en scopebesluiten (enkel ter goedkeuring, niet in Confluence)', basis)))
     return md, storage, preview

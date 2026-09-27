@@ -34,7 +34,8 @@ A collect --out snapshot.json
 A collect --hours --since 2026-07-01 --until 2026-09-30 --out snapshot-met-uren.json
 A review --snapshot snapshot.json --out review.json
 A report captatie --snapshot snapshot.json --target AI-38 --period 2026-09 --out captatie.json
-A report retrospectieve --snapshot snapshot.json --target POR-123 --period 2026-09 --inputs antwoorden.json --out retro.json
+A report eindrapport --snapshot snapshot.json --target POR-123 --period 2026-11 --inputs eindantwoorden.json --out eindrapport.json
+A report retrospectieve --snapshot snapshot.json --target POR-123 --period 2026-11 --inputs antwoorden.json --out retro.json
 A report vooruitgang --snapshot snapshot.json --target POR-123 --period 2026-09 --inputs maandantwoorden.json --tracking meetgegevens.json --out maandrapport.json
 A propose --request verzoek.json --out voorstel.json
 A show --plan voorstel.json
@@ -227,7 +228,10 @@ gebruikers worden geweigerd.
 {"kind":"label","page_id":"12345","label":"captatierapport"}
 ```
 ```json
-{"kind":"report","report":"retrospectieve","target":"POR-123","period":"2026-09","inputs":{"doel":"…","goed":"…","anders":"…","waarde":"…","acties":"…"}}
+{"kind":"report","report":"eindrapport","target":"POR-123","period":"2026-11","inputs":{"vlag":"kleine-afwijking","context":"…","resultaat":"…","waarde":"…","wendingen":"…","productverantwoordelijke":"…","beheer":"…","beslissingen":"nee","vervolgstappen":[{"stap":"…","verantwoordelijke":"…","datum":"2027-01-31"}]}}
+```
+```json
+{"kind":"report","report":"retrospectieve","target":"POR-123","period":"2026-11","inputs":{"goed":"…","anders":"…"}}
 ```
 ```json
 {"kind":"report","report":"beslissing","target":"AI-38","period":"2026-09","slug":"ingebruikname","inputs":{"overgang":"Uitvoering","besluit":"…","bevoegde":"…","datum":"2026-09-25","bron":"…","gevolg":"…"}}
@@ -246,6 +250,17 @@ Ontbreekt die, dan stopt het voorstel; maak ze eerst:
 Het eindrapport draagt het label `opleveringsverslag`. De gate naar Uitvoering vraagt een eindrapport per gelinkt
 project. Bij precies één project geldt dat eindrapport ook als opleveringsverslag van het initiatief; bij meer
 projecten is daarnaast een eigen opleveringsverslag onder de initiatiefpagina nodig.
+
+Het eindrapport moet op zich te lezen zijn, ook door wie het project niet kent. Het komt na het laatste
+vooruitgangsrapport en krijgt geen `--tracking`: kopcijfers, grafieken, milestonetabel (Baseline tegenover Actual),
+scopebesluiten en Vooruitgangshistoriek komen uit de laatste meetstand; er komt geen nieuwe meetstand bij. Zonder
+meetstand vraagt het rapport eerst dat vooruitgangsrapport. De grafieken tonen geen projectie. Stel **Context** voor
+uit het captatie- en analyserapport en de Jira-omschrijving, en **Belangrijkste wendingen** uit het bronmateriaal dat
+het lokale concept onder die sectie toont (wijzigingen en beslissingen per maandrapport); de projectleider bevestigt.
+Waarde volgt de batenregel: alleen een bevestigde claim, geen verzonnen eurobedrag.
+
+De retrospectieve verwijst naar het eindrapport van hetzelfde project en vraagt alleen lessons learned (wat werkte,
+wat moet anders). Zonder gepubliceerd eindrapport vraagt ze dat eerst.
 
 Elke faseovergang heeft een beslissing; `process.yaml` legt per gate vast waar (`decision_in`):
 

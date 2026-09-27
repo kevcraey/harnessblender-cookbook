@@ -1,58 +1,23 @@
-{
-  "id": "retrospectieve",
-  "title": "Retrospectieve",
-  "page_title": "{datum} - retrospectieve - {project} - {slug}",
-  "scope": "project",
-  "label": "retrospectieve",
-  "sections": [
-    {
-      "id": "bronnen",
-      "title": "Project en brongegevens",
-      "kind": "table",
-      "source": "projects",
-      "columns": [
-        "key",
-        "summary",
-        "status",
-        "assignee",
-        "url"
-      ]
-    },
-    {
-      "id": "doel",
-      "title": "Doel en resultaat",
-      "kind": "input",
-      "prompt": "Wat was afgesproken en wat is er daadwerkelijk opgeleverd?",
-      "required": true
-    },
-    {
-      "id": "goed",
-      "title": "Wat werkte",
-      "kind": "input",
-      "prompt": "Welke aanpak willen we herhalen?",
-      "required": true
-    },
-    {
-      "id": "anders",
-      "title": "Wat moet anders",
-      "kind": "input",
-      "prompt": "Wat liep anders, waarom en wat leren we daaruit?",
-      "required": true
-    },
-    {
-      "id": "waarde",
-      "title": "Meerwaarde",
-      "kind": "input",
-      "prompt": "Wat is gemeten, wat blijft een aanname?",
-      "required": true
-    },
-    {
-      "id": "acties",
-      "title": "Vervolgafspraken",
-      "kind": "input",
-      "prompt": "Actie, verantwoordelijke en gewenste datum. Vraag ontbrekende afspraken uit.",
-      "required": true
-    }
-  ],
-  "trigger": "Op verzoek na projectafsluiting; niet verplicht."
-}
+id: retrospectieve
+title: Retrospectieve
+page_title: "{datum} - retrospectieve - {project} - {slug}"
+scope: project
+label: retrospectieve
+trigger: Op verzoek na projectafsluiting; niet verplicht.
+# Doel, resultaat, waarde en vervolgafspraken staan in het eindrapport; de retrospectieve verwijst ernaar.
+link_report: eindrapport
+
+sections:
+  - id: goed
+    group: Lessons learned
+    title: Wat werkte
+    kind: input
+    prompt: Welke aanpak willen we herhalen, en waarom werkte die?
+    required: true
+
+  - id: anders
+    group: Lessons learned
+    title: Wat moet anders
+    kind: input
+    prompt: Wat liep anders dan gehoopt, waarom, en wat doen we volgende keer anders?
+    required: true

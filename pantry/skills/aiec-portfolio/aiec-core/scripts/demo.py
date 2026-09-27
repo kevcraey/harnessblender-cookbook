@@ -28,7 +28,8 @@ def main():
     inputs=json.loads((examples/'retrospectieve-antwoorden.json').read_text())
     report=render(cat,backend.collect(),'retrospectieve','POR-1','2026-09',inputs,cfg)
     (root/'retrospectieve.md').write_text(report['markdown'])
-    assert report['complete']
+    # The sandbox has no final report yet; the retrospective must ask for it rather than publish without the link.
+    assert [q['section'] for q in report['questions']]==['eindrapport']
     monthly=render(cat,backend.collect(),'vooruitgang','POR-1','2026-09',
                    json.loads((examples/'vooruitgang-antwoorden.json').read_text()),cfg,
                    tracking=json.loads((examples/'vooruitgang-meetgegevens.json').read_text()))
@@ -37,6 +38,6 @@ def main():
     (root/'vooruitgang.md').write_text(monthly['markdown'])
     write_json(root/'vooruitgang.json',monthly)
     assert any('Bevestigde testafdeling' in p.get('storage','') for p in backend.collect()['pages'])
-    print(json.dumps({'demo':'passed','network':'not used','directory':str(root),'review_findings':len(findings),'approved_change':result['status'],'retrospective_complete':report['complete'],'monthly_complete':monthly['complete'],'monthly_charts':len(monthly['assets'])},indent=2))
+    print(json.dumps({'demo':'passed','network':'not used','directory':str(root),'review_findings':len(findings),'approved_change':result['status'],'retrospective_waits_for_eindrapport':not report['complete'],'monthly_complete':monthly['complete'],'monthly_charts':len(monthly['assets'])},indent=2))
 
 if __name__=='__main__':main()

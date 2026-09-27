@@ -171,6 +171,20 @@ class Catalog:
             validate_definitions(report)
             from .tracking import validate_spec
             validate_spec(report)
+            # A group is one heading over consecutive sections; it may not come back later in the report.
+            groups = [s.get('group') for s in report['sections']]
+            if any(g is not None and (not isinstance(g, str) or not g.strip()) for g in groups): raise ValueError('Groep moet tekst zijn')
+            runs = [g for i, g in enumerate(groups) if g and (i == 0 or groups[i-1] != g)]
+            if len(runs) != len(set(runs)): raise ValueError('Secties van één groep moeten aansluiten')
+            source = report.get('tracking_source')
+            if source is not None:
+                if report.get('tracking') or report.get('scope') != 'project' or not isinstance(source, dict) or set(source) != {'report', 'section'}:
+                    raise ValueError('tracking_source vraagt een projectrapport zonder eigen meting, met report en section')
+                if not (self.reports.get(source['report']) or {}).get('tracking') or source['section'] not in seen:
+                    raise ValueError('tracking_source verwijst naar een rapport zonder meting of een onbekende sectie')
+            link = report.get('link_report')
+            if link is not None and (report.get('scope') != 'project' or (self.reports.get(link) or {}).get('scope') != 'project'):
+                raise ValueError('link_report verwijst naar een projectrapport, vanuit een projectrapport')
         for cap in self.capabilities.values():
             if cap.get('handler') not in ('review','report','change','extend'): raise ValueError('Onbekende capability-handler')
 
