@@ -1,0 +1,21 @@
+{
+  "id": "maandrapport",
+  "scope": "projects",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "status",
+        "op": "eq",
+        "value": "InUitvoering"
+      },
+      {
+        "field": "previous_report",
+        "op": "eq",
+        "value": false
+      }
+    ]
+  },
+  "message": "Vooruitgangsrapport over de vorige maand niet gevonden.",
+  "action": "Stel voor de projectleider te mailen. Niet zelf verzenden. Geen afgesproken deadline: dit is een ontbrekend rapport, geen oordeel over te laat indienen."
+}

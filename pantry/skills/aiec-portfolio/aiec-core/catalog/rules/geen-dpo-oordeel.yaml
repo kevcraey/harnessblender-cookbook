@@ -1,0 +1,30 @@
+{
+  "id": "geen-dpo-oordeel",
+  "scope": "initiatives",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "persoonsgegevens",
+        "op": "eq",
+        "value": "ja"
+      },
+      {
+        "field": "phase",
+        "op": "in",
+        "value": [
+          "Planning",
+          "Implementatie",
+          "Uitvoering",
+          "Afbouw"
+        ]
+      },
+      {
+        "field": "dpo_oordeel",
+        "op": "empty"
+      }
+    ]
+  },
+  "message": "Persoonsgegevens, maar geen DPO-oordeel in het analyserapport.",
+  "action": "Leg in het analyserapport vast of de DPO gecontacteerd is of waarom dat niet van toepassing is."
+}

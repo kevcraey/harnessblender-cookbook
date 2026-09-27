@@ -1,0 +1,33 @@
+{
+  "id": "geen-analyse",
+  "scope": "initiatives",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "soort",
+        "op": "eq",
+        "value": "afgebakend"
+      },
+      {
+        "field": "phase",
+        "op": "in",
+        "value": [
+          "Planning",
+          "Implementatie",
+          "Uitvoering",
+          "Afbouw"
+        ]
+      },
+      {
+        "not": {
+          "field": "artifact_labels",
+          "op": "contains",
+          "value": "analyserapport"
+        }
+      }
+    ]
+  },
+  "message": "Analyserapport ontbreekt.",
+  "action": "Vraag de maker het analyserapport aan te leveren."
+}

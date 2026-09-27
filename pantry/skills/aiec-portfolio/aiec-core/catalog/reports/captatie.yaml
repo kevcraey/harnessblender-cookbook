@@ -1,0 +1,72 @@
+{
+  "id": "captatie",
+  "title": "Captatierapport",
+  "page_title": "{datum} - captatie - {slug}",
+  "scope": "initiative",
+  "label": "captatierapport",
+  "sections": [
+    {
+      "id": "ai-indruk",
+      "title": "Eerste AI-indruk",
+      "kind": "input",
+      "prompt": "Wat zou AI hier doen? Wie stuurt en beslist?",
+      "required": true
+    },
+    {
+      "id": "meerwaarde",
+      "title": "Beoogde meerwaarde",
+      "kind": "input",
+      "prompt": "Volume, frequentie, huidige tijd en geschatte winst in manuren; vermeld onzekerheid.",
+      "required": true
+    },
+    {
+      "id": "overlap",
+      "title": "Overlap en raakvlakken",
+      "kind": "input",
+      "prompt": "Wat bestaat al? Wat kan worden hergebruikt?",
+      "required": true
+    },
+    {
+      "id": "ai-act",
+      "title": "AI Act-gevoeligheid",
+      "kind": "input",
+      "prompt": "Ondersteunt of beslist het systeem? Welke gevolgen?",
+      "required": true
+    },
+    {
+      "id": "privacy",
+      "title": "Persoonsgegevens",
+      "kind": "input",
+      "prompt": "Zitten er persoonsgegevens in input of dossier? Is DPO betrokken?",
+      "required": true
+    },
+    {
+      "id": "data",
+      "title": "Databeschikbaarheid",
+      "kind": "input",
+      "prompt": "Bestaat de data, is ze toegankelijk en is er een referentie?",
+      "required": true
+    },
+    {
+      "id": "haalbaarheid",
+      "title": "Technische haalbaarheid",
+      "kind": "input",
+      "prompt": "Wat is haalbaar, wat is onzeker?",
+      "required": true
+    },
+    {
+      "id": "timing",
+      "title": "Timing",
+      "kind": "input",
+      "prompt": "Welke termijnen en beschikbaarheid zijn relevant?",
+      "required": true
+    },
+    {
+      "id": "advies",
+      "title": "Aanbeveling",
+      "kind": "input",
+      "prompt": "Is verkenning zinvol, waarom, en welke aanpak en inspanning stel je voor?",
+      "required": true
+    }
+  ]
+}

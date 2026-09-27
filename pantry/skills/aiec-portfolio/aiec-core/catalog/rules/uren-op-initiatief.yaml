@@ -1,0 +1,20 @@
+{
+  "id": "uren-op-initiatief",
+  "scope": "initiatives",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "project_keys",
+        "op": "filled"
+      },
+      {
+        "field": "direct_hours_share",
+        "op": "gt",
+        "value": 0.8
+      }
+    ]
+  },
+  "message": "Meer dan 80% van de gevonden uren staat op het initiatief terwijl projecten bestaan.",
+  "action": "Review de boekingen. De 80%-grens is een instelbare signaleringsheuristiek, geen nieuwe beleidsregel."
+}

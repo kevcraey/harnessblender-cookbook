@@ -1,0 +1,5 @@
+{
+  "id": "rapport",
+  "handler": "report",
+  "description": "Rapport voorbereiden, inhoud uitvragen en publicatie voorstellen."
+}

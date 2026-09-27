@@ -1,0 +1,38 @@
+{
+  "id": "gebruik",
+  "title": "Gebruik en opbrengst",
+  "page_title": "{datum} - gebruik - {slug}",
+  "scope": "initiative",
+  "label": "vooruitgangsrapport",
+  "sections": [
+    {
+      "id": "gebruik",
+      "title": "Gebruik",
+      "kind": "input",
+      "prompt": "Wie gebruikt het en hoe vaak? Bron en meetperiode.",
+      "required": true
+    },
+    {
+      "id": "opbrengst",
+      "title": "Opbrengst",
+      "kind": "input",
+      "prompt": "Welke aantoonbare meerwaarde levert het?",
+      "required": true
+    },
+    {
+      "id": "beheer",
+      "title": "Beheer en risico",
+      "kind": "input",
+      "prompt": "Onderhoud, incidenten, wijzigingen en risico’s.",
+      "required": true
+    },
+    {
+      "id": "volgende",
+      "title": "Volgende periode",
+      "kind": "input",
+      "prompt": "Benodigde acties en beslissingen.",
+      "required": true
+    }
+  ],
+  "cadence": "quarterly"
+}

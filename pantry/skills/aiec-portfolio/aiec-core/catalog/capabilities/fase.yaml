@@ -1,0 +1,5 @@
+{
+  "id": "fase",
+  "handler": "change",
+  "description": "Fase wijzigen na controle en formele beslissing."
+}

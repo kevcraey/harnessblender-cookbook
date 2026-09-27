@@ -1,0 +1,16 @@
+{
+  "scope_changes": [
+    {
+      "id": "extra-validatie",
+      "month": "2026-10",
+      "decision": {
+        "by": "Fictieve projectleider",
+        "date": "2026-10-01",
+        "source": "Fictief goedkeuringsbesluit; geen echt projectbesluit."
+      },
+      "milestones": [
+        {"nr": 3, "milestone": "Extra validatie", "weight_md": 2}
+      ]
+    }
+  ]
+}

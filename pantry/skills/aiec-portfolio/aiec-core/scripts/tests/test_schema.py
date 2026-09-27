@@ -22,11 +22,15 @@ def test_status_mapping():
 
 
 def test_pijler_round_trip():
-    assert sch.parse_pijler(S, "P2 — Mens & Adoptie") == "P2"
+    # namen niet hardcoden: ze mogen geherformuleerd worden, de code is de waarheid
+    p2 = next(p for p in S["pijlers"] if p["code"] == "P2")
+    assert sch.parse_pijler(S, f"P2 — {p2['naam']}") == "P2"
     assert sch.parse_pijler(S, "p2") == "P2"
     assert sch.parse_pijler(S, "Omkadering") == "OMK"
     assert sch.parse_pijler(S, "P9") is None
-    assert sch.pijler_text(S, "P3") == "P3 — Interne Operaties & Productiviteit"
+    p3 = next(p for p in S["pijlers"] if p["code"] == "P3")
+    assert sch.pijler_text(S, "P3") == f"P3 — {p3['naam']}"
+    assert sch.parse_pijler(S, sch.pijler_text(S, "P3")) == "P3"
 
 
 def test_normalize_values():
@@ -52,7 +56,8 @@ def test_required_when():
     assert sch.required_now(S, f(S, "ai_key"), base)
     assert sch.required_now(S, f(S, "eag_key"), base)
     assert not sch.required_now(S, f(S, "eag_key"), {**base, "soort": "doorlopend", "values": {"soort": "doorlopend"}})
-    assert sch.required_now(S, f(S, "toepassingstype"), base)            # fase_min Analyse
+    assert not sch.required_now(S, f(S, "toepassingstype"), base)        # melding vanaf Analyse
+    assert sch.required_now(S, f(S, "toepassingstype"), {**base, "fase": 2})  # verplicht vanaf Planning
     assert not sch.required_now(S, f(S, "delivery_mode"), base)          # fase_min Planning
     assert sch.required_now(S, f(S, "delivery_mode"), {**base, "fase": 2})
     assert not sch.required_now(S, f(S, "aanname"), base)

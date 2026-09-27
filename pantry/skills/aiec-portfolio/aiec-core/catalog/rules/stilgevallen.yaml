@@ -1,0 +1,26 @@
+{
+  "id": "stilgevallen",
+  "scope": "initiatives",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "phase",
+        "op": "in",
+        "value": [
+          "Captatie",
+          "Analyse",
+          "Planning",
+          "Wacht op analyse"
+        ]
+      },
+      {
+        "field": "inactive_days",
+        "op": "gte",
+        "value": 90
+      }
+    ]
+  },
+  "message": "Al minstens 90 dagen geen geregistreerde activiteit.",
+  "action": "Leg het dossier voor: verder onderzoeken, parkeren met herbekijkdatum of afsluiten. De 90 dagen zijn een reviewfilter, geen automatische deadline."
+}

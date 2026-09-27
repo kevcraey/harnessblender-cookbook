@@ -1,7 +1,7 @@
 # schema.yaml — het ene model van het AIEC-portfolio.
 # Hieruit volgen het details-blok, de sjabloon- en overzichtspagina, de validatieregels en de
 # groepering in rapporten. Wijzig hier; nergens anders staan enums of pijlers.
-version: 1
+version: 2
 
 details_id: aiec-initiatief          # ac:parameter "id" van het details-blok (Page Properties)
 label: ai-initiatief                 # label op elke initiatiefpagina; cql van de overzichten
@@ -12,27 +12,39 @@ template_title: "Sjabloon AI-initiatief"
 # Artefacten zijn subpagina's met precies één van deze labels. Geen subpagina zonder artefact.
 artefact_labels:
   captatierapport: AI-captatierapport (fase Captatie → Analyse)
-  verkenningsrapport: AI-verkenningsrapport (fase Analyse → Planning)
-  decisions: beslissingsverslag, ook bij parkeren of stopzetting (bestaand label van de ≥25 Beslissingen-pagina's)
+  analyserapport: AI-analyserapport (fase Analyse → Planning)
+  decisions: beslissingsverslag; mechanisme bestaat, toepassing ontbreekt soms
   verslag: overleg- of stuurgroepverslag
   opleveringsverslag: opleveringsverslag (Implementatie → Uitvoering)
+  onderhoudsplan: beheer van een operationeel product of dienst
+  afbouwplan: gecontroleerd uitfaseren
+  dpia: gegevensbeschermingseffectbeoordeling
+  advies: advies van DPO, CISO, juridische dienst of architectuur
+  vooruitgangsrapport: maandrapport project of kwartaalrapport operationeel initiatief
+  meting: meetrapport; labelkeuze nog te bevestigen
+  retrospectieve: terugblik na afsluiten van een project; op verzoek, geen verplichte gate
+  initiatierapport: EAG-beoordeling Initiatie (Captatie → Analyse), met de beslissing over verkenning
+  verkenningsrapport: EAG-beoordeling Verkenning (Analyse → Planning), met de beslissing over het vervolg
 
 # Vier strategische pijlers plus één cross-cutting. Code is de waarheid in het details-blok; de
-# naam mag herformuleerd worden. Set en omschrijvingen door Kenzo vastgelegd op 2026-09-16,
-# bij het lezen van de presentatie — herziening van de set uit de grilling-sessie.
+# naam mag herformuleerd worden. Set door Kenzo vastgelegd op 2026-09-16; namen en toelichtingen
+# bijgewerkt 2026-09-25, gelijk met de vault-note aiec-portfolio-naslag.
+# 'grens' staat op de twee pijlers waartussen de keuze fout kan gaan.
 pijlers:
   - code: P1
     naam: Fundament & Dataveiligheid
-    toelichting: de technische en juridische basis — veilige infrastructuur, eigen getunede modellen, privacy, cost management, governance; de harde voorwaarde waarbinnen teams veilig experimenteren en bouwen
+    toelichting: "de technische, beleidsmatige en juridische basis: veilige infrastructuur, eigen getunede modellen, soevereiniteit, privacy, cost management, governance. De voorwaarde waarbinnen teams veilig kunnen bouwen"
   - code: P2
     naam: Mens & Adoptie
-    toelichting: de menselijke kant — cultuur, opleiding, vaardigheden, change management, netwerken zoals de AI-guild; wie de cultuur omarmt en vaardig is, gebruikt de tooling vanzelf
+    toelichting: cultuur, opleiding, vaardigheden, change management, netwerken zoals de AI Guild. Wie vaardig is en de cultuur omarmt, gebruikt de tooling vanzelf
   - code: P3
-    naam: Interne Operaties & Productiviteit
-    toelichting: hoe de interne organisatie slimmer, sneller en efficiënter werkt — interne toepassingen, de staart van de backlog, geautomatiseerde administratieve stromen
+    naam: Processen & Productiviteit
+    toelichting: "hoe de interne organisatie slimmer en sneller werkt: interne toepassingen, de staart van de backlog, geautomatiseerde administratieve stromen"
+    grens: blijft er een mens aan het stuur die elke run start, dan is het productiviteitswinst en dus P3
   - code: P4
-    naam: Externe Dienstverlening & Beleid
-    toelichting: wat de organisatie naar buiten brengt — slimme systemen voor burgers en ketenpartners, natuurlijke taal op openbare data, AI als vast onderdeel van de publieke dienstverlening
+    naam: Producten & Dienstverlening
+    toelichting: slimme systemen voor medewerkers, burgers, lokale overheden en organisaties. AI als vast onderdeel van de publieke dienstverlening
+    grens: worden stappen in het proces zonder menselijke tussenkomst opgestart en uitgevoerd door een AI-systeem, dan is het een slimme oplossing en dus P4
   - code: OMK
     naam: Omkadering
     toelichting: cross-cutting; doorlopende eigen werking van het expertisecentrum
@@ -87,6 +99,7 @@ fields:
     type: text
     pattern: "^AI-\\d+$"
     required: true
+    verborgen: true
     hint: join-sleutel naar Jira; status, uren en kost komen daar live vandaan
   - key: eag_key
     label: EAG-key
@@ -95,12 +108,16 @@ fields:
     pattern: "^EAG-\\d+$"
     required_when:
       - soort: afgebakend
+    verborgen: true
     hint: counterpart in het centrale demandregister; doorlopende werking heeft er geen
   - key: soort
     label: Soort
     groep: Identiteit & plaats
     type: enum
     values: [afgebakend, doorlopend]
+    value_hints:
+      afgebakend: een project of opdracht met een einde. Heeft altijd een EAG-counterpart, en dat is de koppeling met het centrale demandproces
+      doorlopend: een staande functie zoals ondersteuning, kennisdeling of beheer. Heeft geen EAG-ticket, staat wel in het AIEC-portfolio, en valt buiten de funnel
     required: true
     hint: doorlopend = staande functie (omkadering, kennisdeling, governance); valt buiten de funnel
   - key: pijler
@@ -142,9 +159,22 @@ fields:
       - Beslissingsondersteuning
       - Procesautomatisering
       - Other
+    value_hints:
+      "Conversationele interface": chatbot of assistent waarmee gebruikers in dialoog gaan
+      "Documentverwerking": extractie, samenvatting, classificatie of generatie van documenten en teksten
+      "Kennisontsluiting & zoeken": kennisbronnen doorzoekbaar maken, semantisch zoeken, RAG
+      "Beeld- & sensoranalyse": "beelden, video of sensordata interpreteren: monitoring, herkenning, telling"
+      "Voorspellen & detecteren": forecasting, planning, anomalie- en inbreukdetectie, controle
+      "Beslissingsondersteuning": advies, prioritering of triage ter ondersteuning van een menselijke beslissing
+      "Procesautomatisering": workflow-stappen automatiseren, inclusief developer tooling
+      "Other": toepassing die hier niet in past, te specificeren
     required_when:
       - soort: afgebakend
-      - fase_min: Analyse
+      - fase_min: Planning
+    notice_when_v2:
+      all:
+        - {field: soort, op: eq, value: afgebakend}
+        - {field: phase, op: eq, value: Analyse}
   - key: ai_techniek
     label: AI-techniek
     groep: Classificatie
@@ -162,9 +192,26 @@ fields:
       - Recommender system
       - Reinforcement learning
       - Other
+    value_hints:
+      "Generative AI": genereert nieuwe content (tekst, beeld, code) op basis van grote voorgetrainde modellen
+      "Agentic AI": plant en voert zelfstandig meerstapstaken uit, met tools en externe systemen
+      "NLP": "verwerken en begrijpen van natuurlijke taal: extractie, vertaling, sentiment, entiteitsherkenning"
+      "Computer Vision": "interpreteren van beelden of video: objectdetectie, beeldclassificatie, OCR"
+      "Classification": items toewijzen aan vooraf gedefinieerde categorieën, zoals dossier wel of niet ontvankelijk
+      "Regression": een numerieke waarde voorspellen op basis van historische data, zoals een kostenraming
+      "Clustering": gelijkaardige items groeperen zonder vooraf gedefinieerde categorieën, zoals argumenten in bezwaarschriften
+      "Anomaly detection": afwijkingen van een normaalpatroon detecteren, zoals meetfouten of fraude-indicaties
+      "Time series forecasting": toekomstige waarden voorspellen uit tijdreeksen, zoals waterstanden of verkeersvolumes
+      "Recommender system": relevante items suggereren op basis van gedrag of kenmerken
+      "Reinforcement learning": het model leert optimaal gedrag door beloning of straf in een omgeving, zoals bij optimalisatievraagstukken
+      "Other": techniek die hier niet in past, te specificeren
     required_when:
       - soort: afgebakend
-      - fase_min: Analyse
+      - fase_min: Planning
+    notice_when_v2:
+      all:
+        - {field: soort, op: eq, value: afgebakend}
+        - {field: phase, op: eq, value: Analyse}
   - key: delivery_mode
     label: Delivery-mode
     groep: Classificatie
@@ -234,20 +281,27 @@ fields:
     required_when:
       - status: Afgesloten
       - resolution_not: uitgevoerd
-    hint: categorie voor de funnel-analyse; de beslissing zelf is een artefact met label beslissing
+    verborgen: true           # staat in het verborgen kenmerkenblok (hidden=true, zelfde id)
+    hint: categorie voor de funnel-analyse; de beslissing zelf is een artefact met label decisions
 
-# Vaste kopjes van een initiatiefpagina, onder het details-blok. type bepaalt de macro.
+# Vaste onderdelen van een initiatiefpagina, in paginavolgorde. type bepaalt de macro;
+# type details is het kenmerkenblok: een zichtbaar blok plus een verborgen blok (hidden=true,
+# zelfde id) voor velden met verborgen: true.
 page_sections:
+  - kop: Stand van zaken
+    type: jira-issue          # jira-macro op de AI-key en de gekoppelde tickets (EAG, POR, PROD, …)
+  - kop: Eigenschappen
+    type: details
   - kop: Waarover gaat het
     type: tekst
     placeholder: probleem en beoogde oplossing in twee of drie zinnen
-  - kop: Stand van zaken
-    type: jira-issue          # jira-macro op de AI-key (status, assignee, updated)
   - kop: Artefacten
-    type: children            # children-macro: subpagina's met artefactlabel
+    type: artefacten          # content-by-label: gekende artefactlabels onder deze pagina, ook onder projectpagina's
+    exclude: [decisions]      # beslissingen hebben een eigen overzicht
   - kop: Beslissingen
     type: detailssummary      # cql: label = "decisions" and ancestor = currentContent()
     label: decisions
+    headings: [Overgang naar, Datum, Beslist door]   # = rijlabels van het eigenschappenblok op een beslissing
 
 # Overzichtspagina: per pijler een detailssummary met deze kolommen, plus één Jira-macro.
 # Page Properties Report filtert op pagina's (cql), niet op celwaarden: dus één rapport met Pijler

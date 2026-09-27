@@ -1,0 +1,24 @@
+{
+  "id": "eindrapport",
+  "title": "Eindrapport",
+  "page_title": "{datum} - eindrapport - {project} - {slug}",
+  "scope": "project",
+  "label": "opleveringsverslag",
+  "sections": [
+    {
+      "id": "inhoud",
+      "title": "Inhoud",
+      "kind": "input",
+      "prompt": "Lever het inhoudelijk overeengekomen verslag of plan aan.",
+      "required": true
+    },
+    {
+      "id": "afspraken",
+      "title": "Afspraken en verantwoordelijken",
+      "kind": "input",
+      "prompt": "Wie doet wat en welke besluiten liggen hieraan ten grondslag?",
+      "required": true
+    }
+  ],
+  "trigger": "Bij afsluiten van een project. Bij één project geldt het ook als opleveringsverslag van het initiatief."
+}

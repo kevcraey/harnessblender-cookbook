@@ -1,0 +1,10 @@
+id: geen-project
+scope: initiatives
+severity: warning
+when:
+  all:
+    - {field: soort, op: eq, value: afgebakend}
+    - {field: phase, op: in, value: [Planning, Implementatie, Uitvoering, Afbouw]}
+    - {field: project_keys, op: empty}
+message: Afgebakend initiatief vanaf Planning zonder gekoppelde POR-taak.
+action: Koppel de POR-taak in Jira aan het initiatief, of maak ze aan. De plugin volgt enkel Jira-links, niet de naam.

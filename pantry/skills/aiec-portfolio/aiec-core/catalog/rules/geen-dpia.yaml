@@ -1,0 +1,40 @@
+{
+  "id": "geen-dpia",
+  "scope": "initiatives",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "persoonsgegevens",
+        "op": "eq",
+        "value": "ja"
+      },
+      {
+        "field": "phase",
+        "op": "in",
+        "value": [
+          "Planning",
+          "Implementatie",
+          "Uitvoering",
+          "Afbouw"
+        ]
+      },
+      {
+        "not": {
+          "field": "artifact_labels",
+          "op": "contains",
+          "value": "dpia"
+        }
+      },
+      {
+        "not": {
+          "field": "dpia_oordeel",
+          "op": "eq",
+          "value": "Niet van toepassing"
+        }
+      }
+    ]
+  },
+  "message": "Persoonsgegevens, maar geen DPIA gevonden.",
+  "action": "Laat het analyserapport de DPIA beoordelen (eigenschap DPIA). De melding is geen juridische conclusie."
+}

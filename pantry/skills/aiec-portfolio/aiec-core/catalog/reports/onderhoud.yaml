@@ -1,0 +1,24 @@
+{
+  "id": "onderhoud",
+  "title": "Onderhoudsplan",
+  "page_title": "{datum} - onderhoud - {slug}",
+  "scope": "initiative",
+  "label": "onderhoudsplan",
+  "sections": [
+    {
+      "id": "inhoud",
+      "title": "Inhoud",
+      "kind": "input",
+      "prompt": "Lever het inhoudelijk overeengekomen verslag of plan aan.",
+      "required": true
+    },
+    {
+      "id": "afspraken",
+      "title": "Afspraken en verantwoordelijken",
+      "kind": "input",
+      "prompt": "Wie doet wat en welke besluiten liggen hieraan ten grondslag?",
+      "required": true
+    }
+  ],
+  "trigger": "Voorlopig basissjabloon; inhoudelijke criteria verder vast te leggen."
+}

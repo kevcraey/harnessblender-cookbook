@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "aiec-portfolio",
-      "description": "AI Expertisecentrum portfolio",
+      "description": "Praktisch AIEC-portfoliobeheer \u2014 code-first, review en expliciete goedkeuring",
       "source": "./recipes/aiec-portfolio/blend"
     },
     {

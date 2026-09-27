@@ -1,0 +1,26 @@
+{
+  "id": "geen-onderhoudsplan",
+  "scope": "initiatives",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "phase",
+        "op": "in",
+        "value": [
+          "Uitvoering",
+          "Afbouw"
+        ]
+      },
+      {
+        "not": {
+          "field": "artifact_labels",
+          "op": "contains",
+          "value": "onderhoudsplan"
+        }
+      }
+    ]
+  },
+  "message": "Operationeel initiatief zonder onderhoudsplan.",
+  "action": "Bespreek wie het onderhoudsplan aanlevert."
+}

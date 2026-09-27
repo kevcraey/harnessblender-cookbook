@@ -78,18 +78,33 @@ def _macro_head(block: str) -> str:
     return block.split("<ac:rich-text-body", 1)[0]
 
 
-def find_details_block(schema: dict, storage_xml: str) -> tuple[int, int] | None:
-    """Positie van het details-blok met id schema['details_id'], of None."""
-    want = schema["details_id"]
+def find_details_blocks(schema: dict, storage_xml: str, details_id: str | None = None) -> list[tuple[int, int]]:
+    """Posities van alle details-blokken met id details_id (standaard schema['details_id']), zichtbaar en verborgen."""
+    want = details_id or schema["details_id"]
     param = re.compile(r'<ac:parameter ac:name="id"\s*>\s*' + re.escape(want) + r'\s*</ac:parameter>')
+    out = []
     for m in OPEN_MACRO_RE.finditer(storage_xml):
         name = NAME_RE.search(m.group(0))
         if not name or name.group(1) != "details":
             continue
         s, e = _macro_span(storage_xml, m.start())
         if param.search(_macro_head(storage_xml[s:e])):
-            return s, e
-    return None
+            out.append((s, e))
+    return out
+
+
+def find_details_block(schema: dict, storage_xml: str) -> tuple[int, int] | None:
+    """Positie van het eerste details-blok met id schema['details_id'], of None."""
+    blocks = find_details_blocks(schema, storage_xml)
+    return blocks[0] if blocks else None
+
+
+HIDDEN_RE = re.compile(r'<ac:parameter ac:name="hidden"\s*>\s*true\s*</ac:parameter>')
+
+
+def details_hidden(block: str) -> bool:
+    """Is dit details-blok verborgen (parameter hidden=true)?"""
+    return bool(HIDDEN_RE.search(_macro_head(block)))
 
 
 def insert_position(storage_xml: str) -> int:
@@ -125,15 +140,23 @@ def _rows(block: str) -> list[tuple[str, str]]:
 
 # --- parser en renderer -------------------------------------------------------------------------
 
+def parse_properties(schema: dict, storage_xml: str, details_id: str) -> dict:
+    """{rijlabel: celtekst} uit alle details-blokken met dit id; leeg als er geen is."""
+    return {label: _cell_text(cell) for s, e in find_details_blocks(schema, storage_xml or "", details_id)
+            for label, cell in _rows(storage_xml[s:e])}
+
+
 def parse_details(schema: dict, storage_xml: str) -> tuple[dict | None, dict, list[str]]:
     """(values genormaliseerd | None als er geen blok is, raw {label: celtekst}, problems)."""
-    span = find_details_block(schema, storage_xml or "")
-    if span is None:
+    spans = find_details_blocks(schema, storage_xml or "")
+    if not spans:
         return None, {}, []
-    block = storage_xml[span[0]:span[1]]
+    rows = [row for s, e in spans for row in _rows(storage_xml[s:e])]
     raw, values, problems = {}, {}, []
-    for label, cell in _rows(block):
+    for label, cell in rows:
         text = _cell_text(cell)
+        if label in raw:
+            problems.append(f"label '{label}' staat meer dan eens in de kenmerkenblokken")
         raw[label] = text
         f = sch.field_by_label(schema, label)
         if f is None:
@@ -144,16 +167,30 @@ def parse_details(schema: dict, storage_xml: str) -> tuple[dict | None, dict, li
     return vals, raw, problems + probs
 
 
-def render_details(schema: dict, values: dict, macro_id: str | None = None) -> str:
-    """Details-blok: één rij per veld in schema-volgorde. Round-trip met parse_details is identiek."""
-    rows = "".join(
-        f"<tr><th>{esc(f['label'])}</th><td>{esc(sch.display_value(schema, f, values.get(f['key'], '')))}</td></tr>"
-        for f in sch.fields(schema))
+def details_macro(schema: dict, rows: str, macro_id: str | None = None, hidden: bool = False,
+                  details_id: str | None = None) -> str:
+    """Eén details-macro met id details_id (standaard schema['details_id']) rond de gegeven tabelrijen."""
     mid = f' ac:macro-id="{html.escape(macro_id, quote=True)}"' if macro_id else ""
-    return (f'<ac:structured-macro ac:name="details" ac:schema-version="1"{mid}>'
-            f'<ac:parameter ac:name="id">{esc(schema["details_id"])}</ac:parameter>'
+    verborgen = '<ac:parameter ac:name="hidden">true</ac:parameter>' if hidden else ""
+    return (f'<ac:structured-macro ac:name="details" ac:schema-version="1"{mid}>{verborgen}'
+            f'<ac:parameter ac:name="id">{esc(details_id or schema["details_id"])}</ac:parameter>'
             f"<ac:rich-text-body><table><tbody>{rows}</tbody></table>"
             f"</ac:rich-text-body></ac:structured-macro>")
+
+
+def _split_details(schema: dict, row, macro_id: str | None = None) -> str:
+    """Zichtbaar blok met de gewone velden, daarna een verborgen blok voor velden met verborgen: true."""
+    zichtbaar = "".join(row(f) for f in sch.fields(schema) if not f.get("verborgen"))
+    verborgen = "".join(row(f) for f in sch.fields(schema) if f.get("verborgen"))
+    return details_macro(schema, zichtbaar, macro_id) + (details_macro(schema, verborgen, hidden=True) if verborgen else "")
+
+
+def render_details(schema: dict, values: dict, macro_id: str | None = None) -> str:
+    """Kenmerkenblok(ken): één rij per veld in schema-volgorde. Round-trip met parse_details is identiek.
+    macro_id geldt voor het zichtbare blok."""
+    def row(f):
+        return f"<tr><th>{esc(f['label'])}</th><td>{esc(sch.display_value(schema, f, values.get(f['key'], '')))}</td></tr>"
+    return _split_details(schema, row, macro_id)
 
 
 def _jira_macro(atlassian: dict, jql: str, kolommen: list[str] | None = None, maximum: int = 20) -> str:
@@ -190,6 +227,17 @@ def _detailssummary_macro(cql: str, firstcolumn: str, headings: list[str], detai
             + "".join(parts) + "</ac:structured-macro>")
 
 
+def _artefacts_macro(schema: dict, exclude: list[str]) -> str:
+    """Content by label: alleen pagina's met een gekend artefactlabel onder deze pagina, nieuwste titel eerst."""
+    labels = ", ".join(f'"{l}"' for l in schema["artefact_labels"] if l not in exclude)
+    cql = f"label in ({labels}) and space = currentSpace() and ancestor = currentContent()"
+    params = {"cql": cql, "max": "100", "sort": "title", "reverse": "true", "showLabels": "true",
+              "showSpace": "false", "excerptType": "none"}
+    return ('<ac:structured-macro ac:name="contentbylabel" ac:schema-version="3">'
+            + "".join(f'<ac:parameter ac:name="{k}">{html.escape(v, quote=True)}</ac:parameter>' for k, v in params.items())
+            + "</ac:structured-macro>")
+
+
 CHILDREN_MACRO = '<ac:structured-macro ac:name="children" ac:schema-version="2" />'
 
 
@@ -199,14 +247,16 @@ def _section_body(schema: dict, section: dict, values: dict, atlassian: dict, sa
         return f"<p>{esc(samenvatting) if samenvatting else esc(section.get('placeholder', ''))}</p>"
     if t == "jira-issue":
         key = values.get("ai_key") or ""
-        macro = _jira_macro(atlassian, f"key = {key}") if key else ""
+        macro = _jira_macro(atlassian, f"key = {key} OR issue in linkedIssues({key})") if key else ""
         return f"<p>{macro}</p>" if macro else "<p>(Jira-macro ontbreekt: geen AI-key of geen serverId)</p>"
     if t == "children":
         return f"<p>{CHILDREN_MACRO}</p>"
+    if t == "artefacten":
+        return f"<p>{_artefacts_macro(schema, section.get('exclude', []))}</p>"
     if t == "detailssummary":
         label = section.get("label", "decisions")
         cql = f'label = "{label}" and space = currentSpace() and ancestor = currentContent()'
-        return f'<p>{_detailssummary_macro(cql, "Beslissing", ["Outcome", "Status"])}</p>'
+        return f'<p>{_detailssummary_macro(cql, "Beslissing", section.get("headings", ["Outcome", "Status"]))}</p>'
     raise ValueError(f"page_sections-type '{t}' onbekend")
 
 
@@ -214,8 +264,13 @@ def render_page(schema: dict, values: dict, samenvatting: str = "", cfg: dict | 
     """Volledige initiatiefpagina: details-blok + de vaste kopjes uit het schema. cfg levert de
     applink van de Jira-macro; zonder cfg gelden de defaults uit config."""
     atlassian = (cfg or config.DEFAULTS)["atlassian"]
-    out = [render_details(schema, values)]
+    out = []
     for s in schema["page_sections"]:
+        if s["type"] == "details":
+            if s.get("kop"):
+                out.append(f"<h2>{esc(s['kop'])}</h2>")
+            out.append(render_details(schema, values))
+            continue
         out.append(f"<h2>{esc(s['kop'])}</h2>")
         out.append(_section_body(schema, s, values, atlassian, samenvatting))
     return "".join(out)
@@ -232,22 +287,22 @@ def _template_hint(schema: dict, f: dict) -> str:
 
 def render_template(schema: dict, cfg: dict | None = None) -> str:
     """Sjabloonpagina: instructie-macro, leeg details-blok met de keuzes per veld, de vaste kopjes."""
-    rows = "".join(f"<tr><th>{esc(f['label'])}</th><td>{esc(_template_hint(schema, f))}</td></tr>"
-                   for f in sch.fields(schema))
     # info-macro: zelfde vorm als de warning-macro op pagina 470876655 (enkel een rich-text-body)
     info = ('<ac:structured-macro ac:name="info" ac:schema-version="1"><ac:rich-text-body>'
             "<p>Kopieer deze pagina voor een nieuw AI-initiatief. Titel: "
             f"<code>{esc(schema['page_title'])}</code>. Vervang de tekst tussen haakjes door de "
-            f"waarde, voeg het label <code>{esc(schema['label'])}</code> toe en laat het "
-            "eigenschappenblok bovenaan staan. Status staat nooit in het blok: die komt live uit "
-            "Jira.</p></ac:rich-text-body></ac:structured-macro>")
-    block = (f'<ac:structured-macro ac:name="details" ac:schema-version="1">'
-             f'<ac:parameter ac:name="id">{esc(schema["details_id"])}</ac:parameter>'
-             f"<ac:rich-text-body><table><tbody>{rows}</tbody></table>"
-             f"</ac:rich-text-body></ac:structured-macro>")
-    out = [info, block]
+            f"waarde, voeg het label <code>{esc(schema['label'])}</code> toe en laat de kopjes en het "
+            "eigenschappenblok in deze volgorde staan. Status staat nooit in het blok: die komt live "
+            "uit Jira.</p></ac:rich-text-body></ac:structured-macro>")
+    block = _split_details(schema, lambda f: f"<tr><th>{esc(f['label'])}</th><td>{esc(_template_hint(schema, f))}</td></tr>")
+    out = [info]
     atlassian = (cfg or config.DEFAULTS)["atlassian"]
     for s in schema["page_sections"]:
+        if s["type"] == "details":
+            if s.get("kop"):
+                out.append(f"<h2>{esc(s['kop'])}</h2>")
+            out.append(block)
+            continue
         out.append(f"<h2>{esc(s['kop'])}</h2>")
         if s["type"] == "jira-issue":
             # sjabloon: nog geen key, dus een leesbare plaatshouder in plaats van de macro
@@ -457,7 +512,11 @@ def upsert_details(cfg: dict, client, schema: dict, page_id: str, values: dict, 
     storage = (((content.get("body") or {}).get("storage")) or {}).get("value") or ""
     space = ((content.get("space") or {}).get("key")) or cfg["atlassian"]["space"]
     version = (content.get("version") or {}).get("number") or 0
-    span = find_details_block(schema, storage)
+    spans = find_details_blocks(schema, storage)
+    # Zichtbaar + verborgen blok staan naast elkaar: samen vervangen. Verspreide blokken: weigeren.
+    if any(storage[a[1]:b[0]].strip() for a, b in zip(spans, spans[1:])):
+        raise ValueError("Kenmerkenblokken staan niet naast elkaar; eerst de structuur reviewen")
+    span = (spans[0][0], spans[-1][1]) if spans else None
     if span:
         old_block = storage[span[0]:span[1]]
         mid = MACRO_ID_RE.search(_macro_head(old_block))

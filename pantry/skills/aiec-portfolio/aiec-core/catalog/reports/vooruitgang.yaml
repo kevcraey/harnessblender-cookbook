@@ -1,0 +1,128 @@
+id: vooruitgang
+title: Vooruitgang
+page_title: "{datum} - vooruitgang - {project} - {slug}"
+scope: project
+label: vooruitgangsrapport
+cadence: monthly
+properties:
+  id: aiec-vooruitgang
+  sections: [vlag]
+tracking:
+  kind: milestone_effort
+  section: milestones
+  fields: {id: nr, name: milestone, status: status, baseline: baseline_md, actual: actual_md, remaining: remaining_md}
+  delivered: [opgeleverd, afgerond, klaar]
+  backlog: [backlog, niet gestart, te starten]
+
+enums:
+  projectgezondheid:
+    - value: geen-status
+      symbol: ⚪
+      label: Geen status
+      description: Nog niet gestart
+    - value: op-schema
+      symbol: 🟢
+      label: Alles op schema
+      description: Voortgang goed, geen grote risico’s
+    - value: kleine-afwijking
+      symbol: 🟡
+      label: Kleine afwijking
+      description: Lichte vertraging of milde scopewijziging
+    - value: aandacht
+      symbol: 🟠
+      label: Aandacht vereist
+      description: Duidelijke risico’s, maar nog beheersbaar
+    - value: escalatie
+      symbol: 🔴
+      label: Escalatie / risico
+      description: Blockers, scopeproblemen, vertraging > 20%
+
+sections:
+  - id: vlag
+    title: Projectgezondheid
+    kind: choice
+    enum: projectgezondheid
+    prompt: Welke gezondheidsvlag kent de projectleider aan het project toe?
+    required: true
+    help: De vlag is een beoordeling van de projectleider, geen Jira-workflowstatus. ⚪ betekent nog niet gestart, niet onbekend. Licht afwijkingen toe bij de wijzigingen. Vertraging > 20% wordt beoordeeld tegenover de afgesproken planning, niet berekend uit Baseline en Actual.
+
+  - id: wijzigingen
+    title: Belangrijkste wijzigingen sinds het vorige rapport
+    kind: input
+    prompt: Geef in 2–5 korte regels de belangrijkste wijzigingen. Vermeld gewijzigde risico’s, compliance of batenaannames als die aan de orde zijn. Geen wijzigingen? Zeg dat en geef kort de stand aan.
+    required: true
+    min_lines: 2
+    max_lines: 5
+
+  - id: beslissing
+    title: Beslissingen nodig?
+    kind: input
+    prompt: Welke beslissing is nodig, en van wie? Vermeld zo nodig wanneer. Zijn er geen beslissingen nodig, schrijf dan nee.
+    required: true
+
+  - id: milestones
+    title: Milestones
+    kind: input_table
+    prompt: Lever de milestones aan met nummer, voortgang en gezondheidsvlag. Onbekende inspanning blijft leeg; vul niet automatisch nul in.
+    required: true
+    min_rows: 1
+    caption: "md = mandagen. Baseline: oorspronkelijke inschatting, wijzigt niet. Actual: werkelijk besteed tot dit rapport. Remaining: resterend werk. Onbekend is niet nul; de gezondheidsvlag wordt niet berekend."
+    help: >-
+      Voortgang beschrijft de milestone, Gezondheid is de beoordeling volgens dezelfde vlaggen als het project.
+      Actual (md) komt van de projectleider; Remaining (md) is diens actuele inschatting van resterend werk.
+      Baseline is de oorspronkelijke inschatting (baseline- of goedgekeurd scopegewicht) en wijzigt nooit; een afwijkende ingevulde Baseline wordt genegeerd met een melding. Actual + Remaining is het verwachte totaal.
+      Bij opgeleverd is Remaining nul. Bij backlog is de oorspronkelijke planning het voorstel voor Remaining;
+      bij toegevoegde scope met oorspronkelijk plan nul is een expliciete positieve schatting nodig.
+      Remaining nul zonder opleverstatus vraagt verduidelijking. Onbekende Actual blijft onbekend.
+      Neem geen Jira-worklogs over: als een waarde daar wordt beheerd, blijft Jira de bron.
+      Leg de bron of een noodzakelijke uitzondering vast in de notities.
+    columns:
+      - id: nr
+        title: Nr
+        type: integer
+        minimum: 1
+        required: true
+        unique: true
+      - id: milestone
+        title: Milestone
+        type: text
+        required: true
+      - id: status
+        title: Voortgang
+        type: text
+        required: true
+        help: Bijvoorbeeld niet gestart, bezig of afgerond; dit is geen tweede gezondheidsvlag.
+      - id: baseline_md
+        title: Baseline (md)
+        type: decimal
+        minimum: 0
+        required: false
+        empty: onbekend
+      - id: actual_md
+        title: Actual (md)
+        type: decimal
+        minimum: 0
+        required: false
+        empty: onbekend
+      - id: remaining_md
+        title: Remaining (md)
+        type: decimal
+        minimum: 0
+        required: false
+        empty: onbekend
+      - id: gezondheid
+        title: Gezondheid
+        type: choice
+        enum: projectgezondheid
+        required: true
+      - id: notities
+        title: Notities
+        type: text
+        required: false
+        empty: —
+
+  - id: volgende
+    title: Volgende periode
+    kind: input
+    prompt: Wat staat er gepland voor de volgende periode?
+    required: true

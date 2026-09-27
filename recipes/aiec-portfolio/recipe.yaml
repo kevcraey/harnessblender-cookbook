@@ -1,23 +1,18 @@
-description: AI Expertisecentrum portfolio
-version: 0.1.0
+description: "Praktisch AIEC-portfoliobeheer \u2014 code-first, review en expliciete\
+  \ goedkeuring"
+version: 2.4.18
 selections:
   skills:
+  - source: pantry/skills/aiec-portfolio/portfolio
+    as: portfolio
   - source: pantry/skills/aiec-portfolio/aiec-core
     as: aiec-core
-  - source: pantry/skills/aiec-portfolio/aiec-initiatief
-    as: aiec-initiatief
-  - source: pantry/skills/aiec-portfolio/aiec-groom
-    as: aiec-groom
-  - source: pantry/skills/aiec-portfolio/aiec-rapport
-    as: aiec-rapport
-  - source: pantry/skills/writing/create-briefing
-    as: create-briefing
+  - source: pantry/skills/aiec-portfolio/aiec-maintainer
+    as: aiec-maintainer
   agents:
-  - source: pantry/skills/aiec-portfolio/agents/ai-track-intake-analyzer.md
-    as: ai-track-intake-analyzer.md
+  - source: pantry/skills/aiec-portfolio/agents/aiec-dossier.md
+    as: aiec-dossier.md
   guidelines: []
   mcps: []
   plugins: []
-drinkers:
-- path: /Users/kenzo/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain/
-  scope: local
+content_hash: e061443bf83acf86

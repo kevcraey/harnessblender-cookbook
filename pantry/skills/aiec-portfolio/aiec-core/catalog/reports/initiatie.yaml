@@ -1,0 +1,85 @@
+{
+  "id": "initiatie",
+  "title": "Initiatierapport",
+  "page_title": "{datum} - initiatie - {slug}",
+  "scope": "initiative",
+  "label": "initiatierapport",
+  "sections": [
+    {
+      "id": "opvolging",
+      "title": "Opvolging",
+      "kind": "input",
+      "prompt": "Wordt het initiatief opgevolgd door het AI EC, een ander team of een externe partij?",
+      "required": true
+    },
+    {
+      "id": "beschrijving",
+      "title": "Beschrijving",
+      "kind": "input",
+      "prompt": "Beschrijving van het initiatief of de vereiste, met eventuele link naar meer informatie.",
+      "required": true
+    },
+    {
+      "id": "relevantie",
+      "title": "Relevantie",
+      "kind": "input",
+      "prompt": "Is het initiatief relevant voor de organisatie (taak van het departement, meer dan één medewerker, …)?",
+      "required": true
+    },
+    {
+      "id": "gekend",
+      "title": "Al gekend",
+      "kind": "input",
+      "prompt": "Is het initiatief al gekend, bijvoorbeeld als onderdeel van een ander initiatief?",
+      "required": true
+    },
+    {
+      "id": "vraagzijde",
+      "title": "Vraagzijde",
+      "kind": "input",
+      "prompt": "Wie vertegenwoordigt de vraagzijde en kan betrokken worden bij de verdere uitwerking?",
+      "required": true
+    },
+    {
+      "id": "datum",
+      "title": "Datum beslissing",
+      "kind": "input",
+      "prompt": "Datum van de beslissing (JJJJ-MM-DD).",
+      "required": true
+    },
+    {
+      "id": "verkenning",
+      "title": "In aanmerking voor verkenning",
+      "kind": "input",
+      "prompt": "Komt het initiatief in aanmerking voor verkenning? Beslissing en motivering.",
+      "required": true
+    },
+    {
+      "id": "digi",
+      "title": "Inzet DIGI",
+      "kind": "input",
+      "prompt": "Wie wordt hier aan kant DIGI op ingezet?",
+      "required": true
+    },
+    {
+      "id": "bevoegde",
+      "title": "Beslist door",
+      "kind": "input",
+      "prompt": "Wie nam de beslissing?",
+      "required": true
+    }
+  ],
+  "properties": {
+    "id": "aiec-beslissing",
+    "sections": [
+      "datum",
+      "bevoegde"
+    ]
+  },
+  "sjabloon": {
+    "page_id": "336528064",
+    "deel": "Initiatie",
+    "vingerafdruk": "b8705954d1f08cc0",
+    "omschrijving": "EAG-sjabloon Beoordeling Initiatie & Verkenning (DigiAg), deel Initiatie"
+  }
+}

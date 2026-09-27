@@ -1,0 +1,5 @@
+{
+  "id": "uitbreiden",
+  "handler": "extend",
+  "description": "Regel, rapport of capability toevoegen; valideren, testen, laten goedkeuren."
+}

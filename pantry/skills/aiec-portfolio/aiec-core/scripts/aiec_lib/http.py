@@ -64,15 +64,19 @@ class Client:
         self._hdr = {"Authorization": "Bearer " + tok, "Accept": "application/json",
                      "Content-Type": "application/json", "X-Atlassian-Token": "no-check"}
 
-    def request(self, method: str, path: str, params: dict | None = None, body=None):
+    def request(self, method: str, path: str, params: dict | None = None, body=None, *, raw=None, content_type=None):
         if method != "GET" and not self.writable:
             raise config.GuardRefused(f"{method} {path}: client is alleen-lezen; schrijven kan enkel via "
                                       "http.writer(cfg, target, scope, apply=True)")
         url = self.base + path
         if params:
             url += ("&" if "?" in url else "?") + urllib.parse.urlencode(params, doseq=True)
-        data = json.dumps(body).encode() if body is not None else None
-        req = urllib.request.Request(url, method=method, headers=self._hdr, data=data)
+        if raw is not None and (body is not None or not isinstance(raw, bytes)):
+            raise ValueError('Gebruik JSON of bytes, niet beide')
+        data = raw if raw is not None else (json.dumps(body).encode() if body is not None else None)
+        headers = dict(self._hdr)
+        if content_type: headers['Content-Type'] = content_type
+        req = urllib.request.Request(url, method=method, headers=headers, data=data)
         time.sleep(PAUSE)   # de WAF knijpt bursts af (connection reset); een korte pauze per call voorkomt dat
         try:
             with _OPENER.open(req, timeout=90) as r:
@@ -85,6 +89,19 @@ class Client:
             raise HttpError(e.code, url, detail) from None
         except urllib.error.URLError as e:
             raise HttpError(0, url, f"geen verbinding: {e.reason}") from None
+
+    def upload_attachment(self, page_id, filename, content):
+        import re
+        from uuid import uuid4
+        if not re.fullmatch(r'\d+', str(page_id)) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,175}\.png', filename) or '..' in filename:
+            raise ValueError('Onveilige bijlagebestemming')
+        if not isinstance(content, bytes) or not content.startswith(b'\x89PNG\r\n\x1a\n'):
+            raise ValueError('Alleen gegenereerde PNG-rapportbijlagen')
+        boundary = 'aiec-'+uuid4().hex
+        header = ('--'+boundary+'\r\nContent-Disposition: form-data; name="file"; filename="'+filename+'"\r\nContent-Type: image/png\r\n\r\n').encode('ascii')
+        payload = header+content+('\r\n--'+boundary+'--\r\n').encode('ascii')
+        return self.request('POST', f'/rest/api/content/{page_id}/child/attachment', raw=payload,
+                            content_type='multipart/form-data; boundary='+boundary)
 
     def get(self, path, params=None):
         return self.request("GET", path, params)

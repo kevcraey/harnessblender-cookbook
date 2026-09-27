@@ -1,0 +1,22 @@
+{
+  "id": "geen-eigenaar",
+  "scope": "initiatives",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "phase",
+        "op": "not_in",
+        "value": [
+          "Afgesloten"
+        ]
+      },
+      {
+        "field": "assignee",
+        "op": "empty"
+      }
+    ]
+  },
+  "message": "Geen toegewezen persoon gevonden.",
+  "action": "Vraag wie het dossier opvolgt."
+}

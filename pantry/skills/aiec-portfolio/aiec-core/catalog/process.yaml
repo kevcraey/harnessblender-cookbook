@@ -1,0 +1,139 @@
+{
+  "version": 2,
+  "states": {
+    "Captatie": {
+      "aliases": [
+        "Captatie"
+      ],
+      "rank": 0
+    },
+    "Wacht op analyse": {
+      "aliases": [
+        "Wacht op analyse"
+      ],
+      "rank": 1
+    },
+    "Analyse": {
+      "aliases": [
+        "In Analyse",
+        "Analyse"
+      ],
+      "rank": 1
+    },
+    "Planning": {
+      "aliases": [
+        "Prioritering en planning",
+        "Planning",
+        "Wacht op implementatie"
+      ],
+      "rank": 2
+    },
+    "Implementatie": {
+      "aliases": [
+        "Implementatie"
+      ],
+      "rank": 3
+    },
+    "Uitvoering": {
+      "aliases": [
+        "Run",
+        "Uitvoering"
+      ],
+      "rank": 4
+    },
+    "Afbouw": {
+      "aliases": [
+        "Afbouw"
+      ],
+      "rank": 5
+    },
+    "Afgesloten": {
+      "aliases": [
+        "Closed",
+        "Afgesloten"
+      ],
+      "rank": 6
+    }
+  },
+  "gates": {
+    "Analyse": {
+      "artifacts": [
+        "captatierapport",
+        "initiatierapport"
+      ],
+      "defined": true,
+      "decision_in": "initiatierapport"
+    },
+    "Planning": {
+      "artifacts": [
+        "analyserapport",
+        "verkenningsrapport"
+      ],
+      "defined": true,
+      "decision_in": "verkenningsrapport"
+    },
+    "Uitvoering": {
+      "artifacts": [
+        "opleveringsverslag",
+        "onderhoudsplan"
+      ],
+      "project_artifacts": [
+        "opleveringsverslag"
+      ],
+      "defined": true,
+      "decision_in": "decisions"
+    },
+    "Afbouw": {
+      "artifacts": [
+        "afbouwplan"
+      ],
+      "defined": true,
+      "decision_in": "decisions"
+    },
+    "Afgesloten": {
+      "artifacts": [],
+      "defined": true,
+      "decision_in": "decisions"
+    },
+    "Wacht op analyse": {
+      "defined": false,
+      "question": "Bevestig de workflow en afleiding uit POR vóór deze transitie."
+    },
+    "Implementatie": {
+      "defined": false,
+      "question": "De gate naar Implementatie is nog niet volledig vastgelegd; bevestig voorwaarden en gekoppelde POR/PROD-acties.",
+      "decision_in": "decisions"
+    }
+  },
+  "open_decisions": [
+    {
+      "id": "instroom",
+      "question": "Altijd een initiatief bij rechtstreekse instroom, of pas boven een halve dag? Naslag en oudere procesbeschrijving verschillen."
+    },
+    {
+      "id": "parkeren",
+      "question": "Parkeren in dezelfde fase of afsluiten als niet nu? Beide komen voor in oude teksten."
+    },
+    {
+      "id": "statusafleiding",
+      "question": "Bevestig acht statussen en de afleiding uit EAG/POR/PROD; de instance-mapping is nog niet volledig bevestigd."
+    },
+    {
+      "id": "resoluties",
+      "question": "Bevestig Jira-resoluties per afsluitcategorie; geen automatische classificatie op oude gokmapping."
+    },
+    {
+      "id": "deadlines",
+      "question": "Bevestig captatietermijn, verlenging, wachtklok en prioriteitsbump; nog geen automatische termijnen of bumps."
+    },
+    {
+      "id": "rapportdeadline",
+      "question": "Bepaal de inleverdeadline voor maand- en kwartaalrapporten. Tot dan signaleren, niet als te laat kwalificeren."
+    },
+    {
+      "id": "meting-nota",
+      "question": "Bevestig meting als label en de behandeling van initiatiefgebonden governancenota’s."
+    }
+  ],
+  "rules_note": "Regels signaleren. Een ontbrekende gatevoorwaarde vraagt een expliciete, gelogde uitzondering; nooit een stilzwijgende keuze."
+}

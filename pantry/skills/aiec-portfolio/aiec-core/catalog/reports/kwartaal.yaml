@@ -1,0 +1,63 @@
+{
+  "id": "kwartaal",
+  "title": "Kwartaaltoelichting",
+  "scope": "portfolio",
+  "label": null,
+  "sections": [
+    {
+      "id": "initiatieven",
+      "title": "Initiatieven",
+      "kind": "table",
+      "source": "initiatives",
+      "columns": [
+        "key",
+        "summary",
+        "phase",
+        "pijler",
+        "opgeleverd",
+        "batenclaim",
+        "aanname",
+        "url"
+      ]
+    },
+    {
+      "id": "projecten",
+      "title": "Projecten",
+      "kind": "table",
+      "source": "projects",
+      "columns": [
+        "key",
+        "summary",
+        "status",
+        "assignee",
+        "url"
+      ]
+    },
+    {
+      "id": "review",
+      "title": "Open aandachtspunten",
+      "kind": "table",
+      "source": "findings",
+      "columns": [
+        "key",
+        "severity",
+        "message",
+        "action"
+      ]
+    },
+    {
+      "id": "duiding",
+      "title": "Duiding",
+      "kind": "input",
+      "prompt": "Vat beweging en resultaten samen met bronverwijzingen; ontbrekende feiten blijven onbekend.",
+      "required": true
+    },
+    {
+      "id": "vooruitblik",
+      "title": "Vooruitblik",
+      "kind": "input",
+      "prompt": "Welke beslissingen, risico’s en plannen verdienen aandacht?",
+      "required": true
+    }
+  ]
+}

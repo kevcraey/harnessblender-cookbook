@@ -1,0 +1,162 @@
+{
+  "id": "verkenning",
+  "title": "Verkenningsrapport",
+  "page_title": "{datum} - verkenning - {slug}",
+  "scope": "initiative",
+  "label": "verkenningsrapport",
+  "sections": [
+    {
+      "id": "doelstelling",
+      "title": "Doelstelling",
+      "kind": "input",
+      "prompt": "Is de doelstelling, behoefte of kans helder? Omschrijf beknopt.",
+      "required": true
+    },
+    {
+      "id": "relevantie",
+      "title": "Relevantie",
+      "kind": "input",
+      "prompt": "Is de relevantie helder (link met het departementaal portfolio, risico, …)?",
+      "required": true
+    },
+    {
+      "id": "scope",
+      "title": "Scope",
+      "kind": "input",
+      "prompt": "Is er in grote lijnen zicht op de scope?",
+      "required": true
+    },
+    {
+      "id": "doelgroep",
+      "title": "Doelgroep",
+      "kind": "input",
+      "prompt": "Hoe ziet de doelgroep eruit?",
+      "required": true
+    },
+    {
+      "id": "synergie",
+      "title": "Synergieën",
+      "kind": "input",
+      "prompt": "Zien we synergieën met andere initiatieven of noden (bv. een generieke oplossing)?",
+      "required": true
+    },
+    {
+      "id": "urgentie",
+      "title": "Urgentie",
+      "kind": "input",
+      "prompt": "Is er zicht op de urgentie (wettelijke deadlines, afhankelijkheden, …)?",
+      "required": true
+    },
+    {
+      "id": "profielen",
+      "title": "Profielen",
+      "kind": "input",
+      "prompt": "Is er zicht op de nodige profielen voor de verdere uitwerking?",
+      "required": true
+    },
+    {
+      "id": "omvang",
+      "title": "Aard en omvang",
+      "kind": "input",
+      "prompt": "Is er zicht op de aard en omvang van het werk (dagen, kostprijs)?",
+      "required": true
+    },
+    {
+      "id": "risicos",
+      "title": "Risico’s",
+      "kind": "input",
+      "prompt": "Welke risico’s zien we om de doelstelling te realiseren?",
+      "required": true
+    },
+    {
+      "id": "draagvlak",
+      "title": "Draagvlak",
+      "kind": "input",
+      "prompt": "Is er draagvlak bij de stakeholders en steun van een hiërarchisch verantwoordelijke?",
+      "required": true
+    },
+    {
+      "id": "projectdefinitie",
+      "title": "Formele projectdefinitie",
+      "kind": "input",
+      "prompt": "Is een formele projectdefinitie de moeite waard, of kan dit binnen de reguliere werking?",
+      "required": true
+    },
+    {
+      "id": "andere",
+      "title": "Andere overwegingen",
+      "kind": "input",
+      "prompt": "Andere overwegingen.",
+      "required": false
+    },
+    {
+      "id": "datum",
+      "title": "Datum beslissing",
+      "kind": "input",
+      "prompt": "Datum van de beslissing (JJJJ-MM-DD).",
+      "required": true
+    },
+    {
+      "id": "vervolg",
+      "title": "Vervolg",
+      "kind": "input",
+      "prompt": "Komt het initiatief in aanmerking voor projectdefinitie, een architectuur- of BA-opdracht, of opname in de reguliere werking?",
+      "required": true
+    },
+    {
+      "id": "prioriteit",
+      "title": "Prioriteit",
+      "kind": "input",
+      "prompt": "Wat is de prioriteit?",
+      "required": true
+    },
+    {
+      "id": "uitvoerder",
+      "title": "Uitvoerder",
+      "kind": "input",
+      "prompt": "Wie zal de opdracht (moeten) opnemen?",
+      "required": true
+    },
+    {
+      "id": "inspanning",
+      "title": "Vervolginspanning",
+      "kind": "input",
+      "prompt": "Hoe groot mag de vervolginspanning zijn: tijd voor analyse of projectdefinitie, en kost van de eindoplossing (orde van grootte)?",
+      "required": true
+    },
+    {
+      "id": "conflicten",
+      "title": "Planningsconflicten",
+      "kind": "input",
+      "prompt": "Zijn er conflicten qua inplanning te verwachten?",
+      "required": true
+    },
+    {
+      "id": "stuurorgaan",
+      "title": "Stuurorgaan",
+      "kind": "input",
+      "prompt": "Wordt het initiatief neergelegd bij een domeingebonden stuurorgaan?",
+      "required": true
+    },
+    {
+      "id": "bevoegde",
+      "title": "Beslist door",
+      "kind": "input",
+      "prompt": "Wie nam de beslissing?",
+      "required": true
+    }
+  ],
+  "properties": {
+    "id": "aiec-beslissing",
+    "sections": [
+      "datum",
+      "bevoegde"
+    ]
+  },
+  "sjabloon": {
+    "page_id": "336528064",
+    "deel": "Verkenning",
+    "vingerafdruk": "439f683934dfd743",
+    "omschrijving": "EAG-sjabloon Beoordeling Initiatie & Verkenning (DigiAg), deel Verkenning"
+  }
+}

@@ -1,0 +1,223 @@
+{
+  "objects": {
+    "issue": {
+      "AI-38": {
+        "key": "AI-38",
+        "fields": {
+          "project": {
+            "key": "AI"
+          },
+          "issuetype": {
+            "name": "Initiative"
+          },
+          "summary": "Proef AI-38",
+          "description": "Testdata",
+          "status": {
+            "name": "Captatie"
+          },
+          "updated": "2026-09-01T10:00:00",
+          "created": "2026-08-01T10:00:00",
+          "assignee": {
+            "name": "testleider"
+          },
+          "issuelinks": [
+            {
+              "type": {
+                "name": "Gerelateerd"
+              },
+              "outwardIssue": {
+                "key": "EAG-1"
+              }
+            },
+            {
+              "type": {
+                "name": "Gerelateerd"
+              },
+              "outwardIssue": {
+                "key": "POR-1"
+              }
+            }
+          ]
+        }
+      },
+      "EAG-1": {
+        "key": "EAG-1",
+        "fields": {
+          "project": {
+            "key": "EAG"
+          },
+          "issuetype": {
+            "name": "Enterprise Requirement"
+          },
+          "summary": "Proef EAG-1",
+          "description": "Testdata",
+          "status": {
+            "name": "Klaar voor verkenning"
+          },
+          "updated": "2026-09-01T10:00:00",
+          "created": "2026-08-01T10:00:00",
+          "assignee": {
+            "name": "testleider"
+          },
+          "issuelinks": []
+        }
+      },
+      "POR-1": {
+        "key": "POR-1",
+        "fields": {
+          "project": {
+            "key": "POR"
+          },
+          "issuetype": {
+            "name": "Portfoliotaak"
+          },
+          "summary": "Proef POR-1",
+          "description": "Testdata",
+          "status": {
+            "name": "InUitvoering"
+          },
+          "updated": "2026-09-01T10:00:00",
+          "created": "2026-08-01T10:00:00",
+          "assignee": {
+            "name": "testleider"
+          },
+          "issuelinks": [
+            {
+              "type": {
+                "name": "Gerelateerd"
+              },
+              "outwardIssue": {
+                "key": "PROD-1"
+              }
+            }
+          ]
+        }
+      },
+      "PROD-1": {
+        "key": "PROD-1",
+        "fields": {
+          "project": {
+            "key": "PROD"
+          },
+          "issuetype": {
+            "name": "Product"
+          },
+          "summary": "Proef PROD-1",
+          "description": "Testdata",
+          "status": {
+            "name": "build"
+          },
+          "updated": "2026-09-01T10:00:00",
+          "created": "2026-08-01T10:00:00",
+          "assignee": {
+            "name": "testleider"
+          },
+          "issuelinks": []
+        }
+      }
+    },
+    "page": {
+      "99": {
+        "id": "99",
+        "type": "page",
+        "title": "Initiatieven",
+        "version": {
+          "number": 1
+        },
+        "space": {
+          "key": "AI"
+        },
+        "ancestors": [],
+        "metadata": {
+          "labels": {
+            "results": []
+          }
+        },
+        "body": {
+          "storage": {
+            "value": "<p>Index</p>",
+            "representation": "storage"
+          }
+        }
+      },
+      "100": {
+        "id": "100",
+        "type": "page",
+        "title": "[AI-38] Proef AI-38",
+        "version": {
+          "number": 1,
+          "when": "2026-09-01T10:00:00"
+        },
+        "space": {
+          "key": "AI"
+        },
+        "metadata": {
+          "labels": {
+            "results": [
+              {
+                "name": "ai-initiatief"
+              }
+            ]
+          }
+        },
+        "ancestors": [
+          {
+            "id": "99",
+            "title": "Initiatieven"
+          }
+        ],
+        "body": {
+          "storage": {
+            "value": "<p>Menselijke notitie.</p><ac:structured-macro ac:name=\"details\" ac:schema-version=\"1\"><ac:parameter ac:name=\"id\">aiec-initiatief</ac:parameter><ac:rich-text-body><table><tbody><tr><th>AI-key</th><td>AI-38</td></tr><tr><th>EAG-key</th><td>EAG-1</td></tr><tr><th>Soort</th><td>afgebakend</td></tr><tr><th>Pijler</th><td>P3 — Processen &amp; Productiviteit</td></tr><tr><th>Vrager</th><td>Testvrager</td></tr><tr><th>Afdeling</th><td>Testafdeling</td></tr><tr><th>Herkomst</th><td>bottom-up</td></tr><tr><th>Toepassingstype</th><td></td></tr><tr><th>AI-techniek</th><td></td></tr><tr><th>Delivery-mode</th><td></td></tr><tr><th>AI Act-klasse</th><td>te bepalen</td></tr><tr><th>Persoonsgegevens</th><td>onbekend</td></tr><tr><th>Batenclaim</th><td></td></tr><tr><th>Aanname</th><td></td></tr><tr><th>Opgeleverd</th><td></td></tr><tr><th>Gebruikers</th><td></td></tr><tr><th>Stopreden</th><td></td></tr></tbody></table></ac:rich-text-body></ac:structured-macro><p>Niet overschrijven.</p>",
+            "representation": "storage"
+          }
+        }
+      },
+      "101": {
+        "id": "101",
+        "type": "page",
+        "title": "[AI-38] Captatierapport — 2026-09",
+        "version": {
+          "number": 1,
+          "when": "2026-09-01T10:00:00"
+        },
+        "space": {
+          "key": "AI"
+        },
+        "metadata": {
+          "labels": {
+            "results": [
+              {
+                "name": "captatierapport"
+              }
+            ]
+          }
+        },
+        "ancestors": [
+          {
+            "id": "100",
+            "title": "[AI-38] Proef AI-38"
+          }
+        ],
+        "body": {
+          "storage": {
+            "value": "<p>Inhoudelijk goedgekeurd testverslag.</p>",
+            "representation": "storage"
+          }
+        }
+      }
+    }
+  },
+  "transitions": {
+    "AI-38": [
+      {
+        "id": "21",
+        "name": "In Analyse",
+        "to": {
+          "name": "In Analyse"
+        },
+        "fields": {}
+      }
+    ]
+  }
+}

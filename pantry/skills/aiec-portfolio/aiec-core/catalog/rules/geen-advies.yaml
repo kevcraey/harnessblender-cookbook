@@ -1,0 +1,23 @@
+{
+  "id": "geen-advies",
+  "scope": "initiatives",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "ai_act_klasse",
+        "op": "eq",
+        "value": "hoog"
+      },
+      {
+        "not": {
+          "field": "artifact_labels",
+          "op": "contains",
+          "value": "advies"
+        }
+      }
+    ]
+  },
+  "message": "Hoog AI Act-risico zonder advies.",
+  "action": "Vraag de maker van het analyserapport om het toepasselijke advies; beoordeel de inhoud niet zelf."
+}

@@ -1,0 +1,15 @@
+{
+  "baseline": {
+    "budget_md": 8.5,
+    "source": "Fictieve oorspronkelijke planning; uitsluitend voor de offline sandbox.",
+    "milestones": [
+      {"nr": 1, "milestone": "Functionele analyse", "planned_md": 3.5},
+      {"nr": 2, "milestone": "Datalevering", "planned_md": 5}
+    ],
+    "plan": [
+      {"period": "2026-08", "scope_md": 0, "effort_md": 0},
+      {"period": "2026-09", "scope_md": 5, "effort_md": 5},
+      {"period": "2026-10", "scope_md": 8.5, "effort_md": 8.5}
+    ]
+  }
+}

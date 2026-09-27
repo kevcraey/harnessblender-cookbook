@@ -1,0 +1,89 @@
+{
+  "id": "beslissing",
+  "title": "Beslissing",
+  "scope": "initiative",
+  "label": "decisions",
+  "sections": [
+    {
+      "id": "overgang",
+      "title": "Overgang naar",
+      "kind": "choice",
+      "enum": "overgang",
+      "required": true,
+      "prompt": "Voor welke faseovergang is dit de beslissing? Analyse en Planning beslis je in het initiatie- en verkenningsrapport."
+    },
+    {
+      "id": "besluit",
+      "title": "Besluit",
+      "kind": "input",
+      "prompt": "Wat is besloten?",
+      "required": true
+    },
+    {
+      "id": "bevoegde",
+      "title": "Beslist door",
+      "kind": "input",
+      "prompt": "Wie nam de beslissing?",
+      "required": true
+    },
+    {
+      "id": "datum",
+      "title": "Datum",
+      "kind": "input",
+      "prompt": "Wanneer is beslist?",
+      "required": true
+    },
+    {
+      "id": "bron",
+      "title": "Bron",
+      "kind": "input",
+      "prompt": "Link naar de formele beslissing.",
+      "required": true
+    },
+    {
+      "id": "gevolg",
+      "title": "Gevolg",
+      "kind": "input",
+      "prompt": "Welke acties volgen, met betrokken tickets?",
+      "required": true
+    }
+  ],
+  "page_title": "{datum} - beslissing - {slug}",
+  "parent_title": "[{initiative}] Beslissingen",
+  "enums": {
+    "overgang": [
+      {
+        "value": "Implementatie",
+        "label": "Implementatie",
+        "description": "Overgang naar Implementatie"
+      },
+      {
+        "value": "Uitvoering",
+        "label": "Uitvoering",
+        "description": "Overgang naar Uitvoering"
+      },
+      {
+        "value": "Afbouw",
+        "label": "Afbouw",
+        "description": "Overgang naar Afbouw"
+      },
+      {
+        "value": "Afgesloten",
+        "label": "Afgesloten",
+        "description": "Overgang naar Afgesloten"
+      }
+    ]
+  },
+  "properties": {
+    "id": "aiec-beslissing",
+    "sections": [
+      "overgang",
+      "besluit",
+      "bevoegde",
+      "datum",
+      "bron",
+      "gevolg"
+    ]
+  },
+  "jira": false
+}

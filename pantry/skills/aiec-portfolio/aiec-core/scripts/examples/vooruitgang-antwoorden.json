@@ -1,0 +1,28 @@
+{
+  "vlag": "kleine-afwijking",
+  "wijzigingen": "De functionele analyse is afgerond en besproken.\nDe datalevering schuift een week op; scope, risico-inschatting en batenaanname blijven gelijk.",
+  "milestones": [
+    {
+      "nr": 1,
+      "milestone": "Functionele analyse",
+      "status": "Afgerond",
+      "baseline_md": 3.5,
+      "actual_md": 3.5,
+      "remaining_md": 0,
+      "gezondheid": "op-schema",
+      "notities": "Synthetisch voorbeeld; geen echte projectgegevens."
+    },
+    {
+      "nr": 2,
+      "milestone": "Datalevering",
+      "status": "Bezig",
+      "baseline_md": null,
+      "actual_md": 0,
+      "remaining_md": 5,
+      "gezondheid": "kleine-afwijking",
+      "notities": "Nieuwe leverdatum bevestigen. Baseline wordt berekend uit Actual en Remaining."
+    }
+  ],
+  "beslissing": "De data-eigenaar bevestigt de nieuwe leverdatum vóór 30 september.",
+  "volgende": "Datalevering afronden en de eerste validatie voorbereiden."
+}

@@ -1,0 +1,11 @@
+{
+  "kind": "transition",
+  "key": "AI-38",
+  "to": "Analyse",
+  "decision": {
+    "by": "Testbeslisser",
+    "date": "2026-09-25",
+    "source": "https://example.invalid/fixture-besluit",
+    "outcome": "Verkennen"
+  }
+}

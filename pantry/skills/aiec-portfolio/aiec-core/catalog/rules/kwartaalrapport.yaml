@@ -1,0 +1,26 @@
+{
+  "id": "kwartaalrapport",
+  "scope": "initiatives",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "phase",
+        "op": "eq",
+        "value": "Uitvoering"
+      },
+      {
+        "field": "soort",
+        "op": "ne",
+        "value": "doorlopend"
+      },
+      {
+        "field": "previous_report",
+        "op": "eq",
+        "value": false
+      }
+    ]
+  },
+  "message": "Rapport over gebruik en opbrengst van het vorige kwartaal niet gevonden.",
+  "action": "Vraag de verantwoordelijke om de kwartaalrapportering aan te vullen."
+}

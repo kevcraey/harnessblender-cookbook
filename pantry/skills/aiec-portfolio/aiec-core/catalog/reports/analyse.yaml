@@ -1,0 +1,121 @@
+{
+  "id": "analyse",
+  "title": "Analyserapport",
+  "page_title": "{datum} - analyse - {slug}",
+  "scope": "initiative",
+  "label": "analyserapport",
+  "sections": [
+    {
+      "id": "onderzoek",
+      "title": "Onderliggend onderzoek",
+      "kind": "input",
+      "prompt": "Welke bronnen en onderzoeken onderbouwen dit rapport?",
+      "required": true
+    },
+    {
+      "id": "scope",
+      "title": "Omvang",
+      "kind": "input",
+      "prompt": "Wat valt binnen en buiten de opdracht?",
+      "required": true
+    },
+    {
+      "id": "classificatie",
+      "title": "AI-classificatie",
+      "kind": "input",
+      "prompt": "Toepassingstype, AI-techniek en delivery-mode met onderbouwing.",
+      "required": true
+    },
+    {
+      "id": "oplossing",
+      "title": "Oplossingsrichting",
+      "kind": "input",
+      "prompt": "Welke oplossing stel je voor?",
+      "required": true
+    },
+    {
+      "id": "data",
+      "title": "Data",
+      "kind": "input",
+      "prompt": "Bestaan, toegang, rechten, kwaliteit en volume.",
+      "required": true
+    },
+    {
+      "id": "risico",
+      "title": "Risico en compliance",
+      "kind": "input",
+      "prompt": "AI Act-klasse, persoonsgegevens, DPIA-oordeel, DPO/CISO-advies met datum; menselijke validatie bij rechtsgevolgen.",
+      "required": true
+    },
+    {
+      "id": "dpia",
+      "title": "DPIA",
+      "kind": "choice",
+      "enum": "dpia",
+      "required": true,
+      "prompt": "Is een DPIA vereist? Beoordeel dit bij elke verwerking van persoonsgegevens."
+    },
+    {
+      "id": "dpo",
+      "title": "DPO",
+      "kind": "choice",
+      "enum": "dpo",
+      "required": true,
+      "prompt": "Is de DPO gecontacteerd, of is dat niet van toepassing?"
+    },
+    {
+      "id": "baten",
+      "title": "Baten en aanname",
+      "kind": "input",
+      "prompt": "Door Kenzo bevestigde claim in manuren, met aanname. Niet zelf berekenen of verzinnen.",
+      "required": true
+    },
+    {
+      "id": "stappen",
+      "title": "Volgende stappen",
+      "kind": "input",
+      "prompt": "Volgende stappen met geschatte inspanning.",
+      "required": true
+    },
+    {
+      "id": "advies",
+      "title": "Advies",
+      "kind": "input",
+      "prompt": "Onderbouwd AI-oordeel; geen beslissing namens het bevoegde orgaan.",
+      "required": true
+    }
+  ],
+  "enums": {
+    "dpia": [
+      {
+        "value": "vereist",
+        "label": "Vereist",
+        "description": "Er is een DPIA nodig"
+      },
+      {
+        "value": "niet-van-toepassing",
+        "label": "Niet van toepassing",
+        "description": "Geen DPIA nodig, met motivering onder Risico en compliance"
+      }
+    ],
+    "dpo": [
+      {
+        "value": "gecontacteerd",
+        "label": "Gecontacteerd",
+        "description": "De DPO is betrokken; advies en datum onder Risico en compliance"
+      },
+      {
+        "value": "niet-van-toepassing",
+        "label": "Niet van toepassing",
+        "description": "Geen DPO-contact nodig, met motivering onder Risico en compliance"
+      }
+    ]
+  },
+  "properties": {
+    "id": "aiec-analyse",
+    "sections": [
+      "dpia",
+      "dpo"
+    ]
+  }
+}

@@ -177,12 +177,19 @@ def test_macro_span_telt_nesting():
 
 def test_render_page_volgt_page_sections():
     xml = conf.render_page(S, VALUES, samenvatting="Twee zinnen uitleg.", cfg=cfg())
-    for s in S["page_sections"]:
-        assert f"<h2>{s['kop']}</h2>" in xml
-    assert xml.startswith('<ac:structured-macro ac:name="details"')
-    assert '<ac:parameter ac:name="jqlQuery">key = AI-25</ac:parameter>' in xml
+    koppen = [s["kop"] for s in S["page_sections"] if s["type"] != "details"]
+    for kop in koppen:
+        assert f"<h2>{kop}</h2>" in xml
+    # paginavolgorde = volgorde van page_sections, met het details-blok op zijn plaats
+    posities = [xml.index('ac:name="details"') if s["type"] == "details" else xml.index(f"<h2>{s['kop']}</h2>")
+                for s in S["page_sections"]]
+    assert posities == sorted(posities)
+    assert xml.startswith('<h2>Stand van zaken</h2>')
+    assert '<ac:parameter ac:name="jqlQuery">key = AI-25 OR issue in linkedIssues(AI-25)</ac:parameter>' in xml
     assert '<ac:parameter ac:name="serverId">56e4142a-0105-3cf7-b7a8-b308d7369863</ac:parameter>' in xml
-    assert conf.CHILDREN_MACRO in xml
+    assert 'ac:name="contentbylabel"' in xml and conf.CHILDREN_MACRO not in xml
+    assert '&quot;captatierapport&quot;' in xml and '&quot;decisions&quot;, ' not in xml   # beslissingen apart
+    assert 'ancestor = currentContent()' in xml
     assert "label = &quot;decisions&quot; and space = currentSpace() and ancestor = currentContent()" in xml
     assert '<ac:parameter ac:name="maximumIssues">20</ac:parameter>' in xml
     assert "Twee zinnen uitleg." in xml
@@ -194,6 +201,7 @@ def test_render_template_en_overview():
     assert '<ac:structured-macro ac:name="info"' in tpl
     assert "afgebakend | doorlopend" in tpl
     assert f'<ac:parameter ac:name="id">{S["details_id"]}</ac:parameter>' in tpl
+    assert tpl.index('ac:name="info"') < tpl.index('<h2>Stand van zaken</h2>') < tpl.index('ac:name="details"')
     ov = conf.render_overview(S, cfg())
     assert '<ac:structured-macro ac:name="detailssummary" ac:schema-version="2">' in ov
     assert f'<ac:parameter ac:name="id">{S["details_id"]}</ac:parameter>' in ov
@@ -253,7 +261,7 @@ def test_upsert_in_layout_pagina_laat_de_andere_blokken_staan():
     blok = conf.render_details(S, VALUES)
     assert blok in nieuw
     assert nieuw.replace(blok, "", 1) == body                # enkel het blok is erbij gekomen
-    assert nieuw.count('<ac:structured-macro ac:name="details"') == 7
+    assert nieuw.count('<ac:structured-macro ac:name="details"') == 6 + blok.count('<ac:structured-macro ac:name="details"')
     assert nieuw.startswith("<ac:layout><ac:layout-section")  # blok komt in de eerste layout-cell
 
     # tweede keer upserten vervangt het eigen blok en laat de rest opnieuw byte-gelijk
@@ -261,7 +269,7 @@ def test_upsert_in_layout_pagina_laat_de_andere_blokken_staan():
     anders = dict(VALUES, persoonsgegevens="nee")
     nieuw2 = conf.upsert_details(cfg(), client2, S, "470876655", anders)["payload"]["body"]["storage"]["value"]
     assert nieuw2 == nieuw.replace(blok, conf.render_details(S, anders), 1)
-    assert nieuw2.count('<ac:structured-macro ac:name="details"') == 7
+    assert nieuw2.count('<ac:structured-macro ac:name="details"') == nieuw.count('<ac:structured-macro ac:name="details"')
 
 
 def test_upsert_zonder_wijziging_is_zichtbaar():
@@ -287,7 +295,7 @@ def test_create_initiative_payload(monkeypatch):
     assert res["title"] == "[AI-25] AI-ondersteuning MIA"
     assert res["payload"]["space"] == {"key": "AI"}
     assert res["payload"]["ancestors"] == [{"id": "411075022"}]
-    assert res["payload"]["body"]["storage"]["value"].startswith('<ac:structured-macro ac:name="details"')
+    assert '<ac:structured-macro ac:name="details"' in res["payload"]["body"]["storage"]["value"]
     assert res["labels_toegevoegd"] == [S["label"]]
 
 

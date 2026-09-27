@@ -245,6 +245,9 @@ def check(schema: dict) -> list[str]:
                 problems.append(f"{f['key']}: dubbele enum-waarden")
             if not vals:
                 problems.append(f"{f['key']}: geen values")
+        for v in (f.get("value_hints") or {}):
+            if _fold(v) not in [_fold(x) for x in f.get("values", [])]:
+                problems.append(f"{f['key']}: value_hints verwijst naar onbekende waarde {v}")
         for c in f.get("required_when") or []:
             if len(c) != 1:
                 problems.append(f"{f['key']}: voorwaarde met meer dan één sleutel")
@@ -279,23 +282,84 @@ def check(schema: dict) -> list[str]:
     return problems
 
 
+_REQ_TEKST = {
+    "soort": lambda v: f"enkel bij soort {v}",
+    "fase_min": lambda v: f"vanaf fase {v}",
+    "status": lambda v: f"bij status {v}",
+    "resolution_not": lambda v: f"als de resolutie niet {v} is",
+    "filled": lambda v: f"zodra {v} gevuld is",
+}
+
+
+def _verplicht_tekst(f: dict) -> str:
+    if f.get("required"):
+        return "altijd"
+    conds = f.get("required_when") or []
+    if not conds:
+        return "nee"
+    delen = []
+    for c in conds:
+        (k, v), = c.items()
+        delen.append(_REQ_TEKST[k](v) if k in _REQ_TEKST else f"{k}={v}")
+    return ", ".join(delen)
+
+
 def to_markdown(schema: dict) -> str:
-    out = [f"# AIEC-schema v{schema['version']}", "",
-           f"details-id `{schema['details_id']}` · label `{schema['label']}` · titel `{schema['page_title']}`", "",
-           "## Pijlers", ""]
+    out = [
+        "---",
+        "tags:",
+        "  - type/note",
+        "  - expertisecentrum-ai",
+        "generated: true",
+        "source: aiec-core/schema.yaml",
+        "---",
+        f"# AIEC-schema v{schema['version']}",
+        "",
+        "> [!danger] Gegenereerd document, niet met de hand bewerken",
+        "> Dit bestand komt uit `aiec-core/schema.yaml` in de AIEC-portfolio-plugin. Elke wijziging die je",
+        "> hier typt is weg bij de volgende generatie. Wijzig `schema.yaml` en genereer opnieuw, vanuit",
+        "> `aiec-core/scripts` in de plugin:",
+        ">",
+        "> ```",
+        "> python3.13 aiec.py schema --out \"$VAULT/02 - Areas/aiec-schema.md\"",
+        "> ```",
+        "",
+        f"details-id `{schema['details_id']}` · label `{schema['label']}` · titel `{schema['page_title']}`",
+        "",
+        "## Pijlers",
+        "",
+    ]
     for p in schema["pijlers"]:
-        out.append(f"- **{p['code']}** {p['naam']} — {p.get('toelichting', '')}")
-    out += ["", "## Statussen (Jira → naam, fase)", ""]
-    for i, s in enumerate(schema["statussen"]):
-        out.append(f"- {i} `{s['jira']}` → {s['naam']}")
-    out += ["", "## Velden", "", "| key | label | type | waarden | verplicht | hint |", "|---|---|---|---|---|---|"]
+        out.append(f"- **{p['code']} {p['naam']}** — {p.get('toelichting', '')}")
+        if p.get("grens"):
+            out.append(f"  - grens: {p['grens']}")
+    out += ["", "## Statussen", "", "| fase | in Jira | naam |", "|---|---|---|"]
+    for i, st in enumerate(schema["statussen"]):
+        out.append(f"| {i} | `{st['jira']}` | {st['naam']}{' (eind)' if st.get('eind') else ''} |")
+    out += ["", "## Velden", "", "| veld | groep | type | waarden | verplicht | toelichting |",
+            "|---|---|---|---|---|---|"]
     for f in schema["fields"]:
         vals = ", ".join(f.get("values", [])) if f["type"] in ("enum", "multi") else \
-            ("pijlercode" if f["type"] == "pijler" else f.get("pattern", "tekst"))
-        req = "altijd" if f.get("required") else (
-            " én ".join(f"{k}={v}" for c in f["required_when"] for k, v in c.items()) if f.get("required_when") else "nee")
+            ("pijlercode" if f["type"] == "pijler" else f.get("pattern", "vrije tekst"))
         extra = " · **niet afleidbaar (KENZO)**" if f.get("not_inferable") else ""
-        out.append(f"| `{f['key']}` | {f['label']} | {f['type']} | {vals} | {req} | {f.get('hint', '')}{extra} |")
+        extra += " · verborgen blok" if f.get("verborgen") else ""
+        out.append(f"| {f['label']} (`{f['key']}`) | {f.get('groep', '')} | {f['type']} | {vals} | "
+                   f"{_verplicht_tekst(f)} | {f.get('hint', '')}{extra} |")
+    met_hints = [f for f in schema["fields"] if f.get("value_hints")]
+    if met_hints:
+        out += ["", "## Wat de waarden betekenen", ""]
+        for f in met_hints:
+            out += [f"### {f['label']}", "", "| waarde | betekenis |", "|---|---|"]
+            for v in f["values"]:
+                h = f["value_hints"].get(v, "")
+                out.append(f"| {v} | {h} |")
+            out.append("")
+        out = out[:-1]
+    if schema.get("resoluties"):
+        out += ["", "## Resolutie bij afsluiten", "", "| categorie | betekenis | namen op de instance |",
+                "|---|---|---|"]
+        for cat, spec in schema["resoluties"].items():
+            out.append(f"| {cat} | {spec.get('tekst', '')} | {', '.join(spec.get('jira', []))} |")
     out += ["", "## Artefactlabels", ""]
     for k, v in schema["artefact_labels"].items():
         out.append(f"- `{k}` — {v}")

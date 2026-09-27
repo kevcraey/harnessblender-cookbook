@@ -1,0 +1,26 @@
+{
+  "id": "klasse-onbepaald",
+  "scope": "initiatives",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "phase",
+        "op": "in",
+        "value": [
+          "Planning",
+          "Implementatie",
+          "Uitvoering",
+          "Afbouw"
+        ]
+      },
+      {
+        "field": "ai_act_klasse",
+        "op": "eq",
+        "value": "te bepalen"
+      }
+    ]
+  },
+  "message": "AI Act-klasse is nog te bepalen.",
+  "action": "Vraag de maker van het analyserapport om classificatie."
+}

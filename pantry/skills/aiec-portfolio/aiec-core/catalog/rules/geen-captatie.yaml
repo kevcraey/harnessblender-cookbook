@@ -1,0 +1,34 @@
+{
+  "id": "geen-captatie",
+  "scope": "initiatives",
+  "severity": "warning",
+  "when": {
+    "all": [
+      {
+        "field": "soort",
+        "op": "eq",
+        "value": "afgebakend"
+      },
+      {
+        "field": "phase",
+        "op": "in",
+        "value": [
+          "Analyse",
+          "Planning",
+          "Implementatie",
+          "Uitvoering",
+          "Afbouw"
+        ]
+      },
+      {
+        "not": {
+          "field": "artifact_labels",
+          "op": "contains",
+          "value": "captatierapport"
+        }
+      }
+    ]
+  },
+  "message": "Captatierapport ontbreekt.",
+  "action": "Vraag het rapport op en bespreek de afwijking in de review."
+}
