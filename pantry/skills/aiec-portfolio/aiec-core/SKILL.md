@@ -34,6 +34,7 @@ A collect --out snapshot.json
 A collect --hours --since 2026-07-01 --until 2026-09-30 --out snapshot-met-uren.json
 A review --snapshot snapshot.json --out review.json
 A report captatie --snapshot snapshot.json --target AI-38 --period 2026-09 --out captatie.json
+A report onderhoud --snapshot snapshot.json --target POR-123 --period 2026-11 --inputs onderhoudsantwoorden.json --out onderhoud.json
 A report eindrapport --snapshot snapshot.json --target POR-123 --period 2026-11 --inputs eindantwoorden.json --out eindrapport.json
 A report retrospectieve --snapshot snapshot.json --target POR-123 --period 2026-11 --inputs antwoorden.json --out retro.json
 A report vooruitgang --snapshot snapshot.json --target POR-123 --period 2026-09 --inputs maandantwoorden.json --tracking meetgegevens.json --out maandrapport.json
@@ -228,7 +229,10 @@ gebruikers worden geweigerd.
 {"kind":"label","page_id":"12345","label":"captatierapport"}
 ```
 ```json
-{"kind":"report","report":"eindrapport","target":"POR-123","period":"2026-11","inputs":{"vlag":"kleine-afwijking","context":"…","resultaat":"…","waarde":"…","wendingen":"…","productverantwoordelijke":"…","beheer":"…","beslissingen":"nee","vervolgstappen":[{"stap":"…","verantwoordelijke":"…","datum":"2027-01-31"}]}}
+{"kind":"report","report":"eindrapport","target":"POR-123","period":"2026-11","inputs":{"vlag":"kleine-afwijking","context":"…","resultaat":"…","waarde":"…","wendingen":"…","productverantwoordelijke":"…","beslissingen":"nee","vervolgstappen":[{"stap":"…","verantwoordelijke":"…","datum":"2027-01-31"}]}}
+```
+```json
+{"kind":"report","report":"onderhoud","target":"POR-123","period":"2026-11","inputs":{"uitval":[{"duur":"15m","impact":"1"},{"duur":"30m","impact":"1"},{"duur":"1u","impact":"2"},{"duur":"4u","impact":"3"},{"duur":"1d","impact":"4"},{"duur":"1w","impact":"5"}],"buiten_kantooruren":"nee","terugval":"…","as_is":[{"md":"0","bron":"green field"}],"runkost":[{"post":"inference","omschrijving":"…","bedrag":"1800"}],"modellen":[{"component":"…","model":"…","einde":"2027-11"}],"kwaliteit":"…","afhankelijkheden":[{"afhankelijkheid":"…","einde":""}],"compliance":"…","incidenten":"…","afbouw":"…"}}
 ```
 ```json
 {"kind":"report","report":"retrospectieve","target":"POR-123","period":"2026-11","inputs":{"goed":"…","anders":"…"}}
@@ -239,7 +243,7 @@ gebruikers worden geweigerd.
 Elk artefact krijgt de titel `JJJJ-MM-DD - type - slug`, zonder `[AI-x]`. De datum is een invoer `datum` als
 die bestaat, anders de laatste dag van de periode bij maand- en kwartaalrapporten, en anders de dag van aanmaak;
 pas hem zo nodig achteraf in Confluence aan, behalve bij vooruitgangsrapporten: hun meetstand bewaart de titel.
-Projectrapporten (vooruitgang, eindrapport, retrospectieve) dragen ook de projectkey, in hoofdletters:
+Projectrapporten (vooruitgang, onderhoudsplan, eindrapport, retrospectieve) dragen ook de projectkey, in hoofdletters:
 `JJJJ-MM-DD - type - POR-123 - slug`. De agent stelt de slug voor; de gebruiker keurt hem goed met het voorstel.
 
 Projectrapporten hangen onder een projectpagina `POR-123 - <Jira-summary>`, een map onder de initiatiefpagina.
@@ -258,6 +262,33 @@ meetstand vraagt het rapport eerst dat vooruitgangsrapport. De grafieken tonen g
 uit het captatie- en analyserapport en de Jira-omschrijving, en **Belangrijkste wendingen** uit het bronmateriaal dat
 het lokale concept onder die sectie toont (wijzigingen en beslissingen per maandrapport); de projectleider bevestigt.
 Waarde volgt de batenregel: alleen een bevestigde claim, geen verzonnen eurobedrag.
+
+Een project sluit af in deze volgorde: laatste vooruitgangsrapport, onderhoudsplan, eindrapport, retrospectieve. Elk
+rapport verwijst naar het vorige en vraagt het eerst als het ontbreekt.
+
+Het onderhoudsplan hoort bij het project dat een product (PROD) oplevert of wijzigt; een project zonder product
+heeft er geen nodig. De gate naar Uitvoering vraagt het per project (`project_only`), niet op initiatiefniveau.
+Het product is het PROD dat aan het initiatief gekoppeld is; bij meer dan één geeft de invoer `product` het aan.
+Er is per product één actief plan. Een nieuw plan zoekt het actieve plan van hetzelfde product, over initiatieven
+heen, en zet het bij publicatie op `Vervangen` met een link naar het nieuwe (een `page.update` in hetzelfde voorstel).
+De code rekent, niemand vult het zelf in:
+- **Klasse** uit de uitvalmatrix (impact 1–5 van de VCDV-schaal per duur, niet dalend): P1 bij impact 4 binnen
+  1 uur; P2 bij impact 4 binnen 1 werkdag of 3 binnen 4 uur; anders P3. Ondersteuning buiten de kantooruren bij P3
+  geeft een opmerking.
+- **Investering** = as-is + delta. As-is komt uit het vorige actieve plan (Investering, of As-is als dat plan van
+  hetzelfde project is); zonder vorig plan vraagt het rapport `as_is` (0 bij green field, leeg = onbekend). Delta is
+  de Actual van de laatste meetstand van dit project. Onbekend blijft `onvolledig`, nooit 0.
+- **Onderhoud per jaar** = 10 md + 15% (P1), 10% (P2) of 7,5% (P3) van de investering. Runkost (licenties,
+  inference, hosting, overige) staat apart in euro.
+
+Het eigenschappenblok `aiec-onderhoud` is de interface voor een latere portfoliosom: vaste labels (Product,
+Project, Status, Klasse, Ondersteuning buiten kantooruren, As-is (md), Delta (md), Investering (md), Onderhoud
+(md/jaar), Runkost (€/jaar), Team, Onderhoudstaak, Geldig tot, Vervangt, Vervangen door), Status exact `Actief` of
+`Vervangen`, getallen met decimale komma of `onvolledig`. Tel alleen `Actief`. Onderhoudsplannen zonder dat blok
+(de oude, op initiatiefniveau) vervangt de plugin niet; het rapport noemt ze. Een link op het PROD-issue zet de
+plugin niet.
+
+In het eindrapport is **Technisch beheer** een link naar het onderhoudsplan van hetzelfde project.
 
 De retrospectieve verwijst naar het eindrapport van hetzelfde project en vraagt alleen lessons learned (wat werkte,
 wat moet anders). Zonder gepubliceerd eindrapport vraagt ze dat eerst.

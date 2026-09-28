@@ -4,10 +4,15 @@ page_title: "{datum} - retrospectieve - {project} - {slug}"
 scope: project
 label: retrospectieve
 trigger: Op verzoek na projectafsluiting; niet verplicht.
-# Doel, resultaat, waarde en vervolgafspraken staan in het eindrapport; de retrospectieve verwijst ernaar.
-link_report: eindrapport
 
 sections:
+  # Doel, resultaat, waarde en vervolgafspraken staan in het eindrapport; de retrospectieve verwijst ernaar.
+  - id: eindrapport
+    title: Eindrapport
+    kind: link
+    report: eindrapport
+    lead: "Doel, resultaat, waarde en vervolgafspraken staan in het eindrapport:"
+
   - id: goed
     group: Lessons learned
     title: Wat werkte

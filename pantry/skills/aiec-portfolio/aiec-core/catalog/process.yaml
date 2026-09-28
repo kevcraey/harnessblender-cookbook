@@ -78,7 +78,11 @@
         "onderhoudsplan"
       ],
       "project_artifacts": [
-        "opleveringsverslag"
+        "opleveringsverslag",
+        "onderhoudsplan"
+      ],
+      "project_only": [
+        "onderhoudsplan"
       ],
       "defined": true,
       "decision_in": "decisions"

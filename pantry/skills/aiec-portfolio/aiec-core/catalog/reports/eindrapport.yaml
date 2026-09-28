@@ -3,7 +3,7 @@ title: Eindrapport
 page_title: "{datum} - eindrapport - {project} - {slug}"
 scope: project
 label: opleveringsverslag
-trigger: Bij afsluiten van een project, na het laatste vooruitgangsrapport. Bij één project geldt het ook als opleveringsverslag van het initiatief.
+trigger: Bij afsluiten van een project, na het laatste vooruitgangsrapport en het onderhoudsplan. Bij één project geldt het ook als opleveringsverslag van het initiatief.
 properties:
   id: aiec-eindrapport
   sections: [vlag]
@@ -83,9 +83,9 @@ sections:
   - id: beheer
     group: Vervolg
     title: Technisch beheer
-    kind: input
-    prompt: Wie doet het technisch beheer, en welke afspraak ligt daaronder?
-    required: true
+    kind: link
+    report: onderhoud
+    lead: "Team, kritikaliteit, begroting en afspraken voor het beheer staan in het onderhoudsplan:"
 
   - id: beslissingen
     group: Vervolg

@@ -166,7 +166,7 @@ def make_plan(cat,backend,cfg,request):
             questions += [f'Gate-artefact ontbreekt voor project {pk}: {x}' for pk,labels in sorted(per_project.items()) if x not in labels]
         # With exactly one project, its artefact also counts for the initiative.
         single=next(iter(per_project.values())) if len(per_project)==1 else set()
-        needed=[x for x in gate.get('artifacts',[]) if x not in own and not (x in gate.get('project_artifacts',[]) and x in single)]
+        needed=[x for x in gate.get('artifacts',[]) if x not in own and x not in gate.get('project_only',[]) and not (x in gate.get('project_artifacts',[]) and x in single)]
         questions += ['Gate-artefact ontbreekt: '+x for x in needed]
         future=__import__('copy').deepcopy(snapshot)
         for i in future['issues']:
@@ -205,6 +205,11 @@ def make_plan(cat,backend,cfg,request):
                 payload['page_action']=created
                 action('page.attachment',parent['space']['key'],payload)
             if result.get('measurement'):action('meetstand.archive','meetstanden',{'page_action':created,'record':result['measurement']})
+            if result.get('replaces'):
+                # The previous plan of the same product becomes Vervangen, after the new page exists.
+                from .maintenance import retire
+                old=observe('page',result['replaces']['page_id'])
+                update_page(old,retire(cat.schema,old['body']['storage']['value'],result['title']))
             observe('issue',result['initiative'])
             if result['scope']=='project':observe('issue',result['target'])
         notes.append('Rapport wordt als nieuwe momentopname gemaakt, niet over een bestaand rapport heen geschreven.')

@@ -114,6 +114,9 @@ class Catalog:
                 raise ValueError('Onbekend gate-artefact')
             if set(spec.get('project_artifacts', []))-set(spec.get('artifacts', [])):
                 raise ValueError('Projectartefact van een gate moet ook gate-artefact zijn')
+            # Checked per project only; the initiative needs no copy of its own.
+            if set(spec.get('project_only', []))-set(spec.get('project_artifacts', [])):
+                raise ValueError('project_only moet ook projectartefact zijn')
             # Where the decision for this transition lives: a report with its own decision section, or a separate decision page.
             where = spec.get('decision_in')
             if where and (where not in self.schema['artefact_labels'] or (where != 'decisions' and where not in spec.get('artifacts', []))):
@@ -151,7 +154,13 @@ class Catalog:
             for s in report['sections']:
                 if s.get('id') in seen or not s.get('id'): raise ValueError('Dubbele/ontbrekende sectie-id')
                 seen.add(s['id'])
-                if s.get('kind') not in INPUT_KINDS | {'table','count'}: raise ValueError('Onbekend sectietype')
+                if s.get('kind') not in INPUT_KINDS | {'table','count','link'}: raise ValueError('Onbekend sectietype')
+                if s['kind'] == 'link':
+                    # A reference to another project report's page, from a project report.
+                    target = self.reports.get(s.get('report')) or {}
+                    if report.get('scope') != 'project' or target.get('scope') != 'project' or not target.get('page_title') or not target.get('label') or not isinstance(s.get('lead'), str):
+                        raise ValueError('Linksectie verwijst met een lead naar een projectrapport, vanuit een projectrapport')
+                    continue
                 if s['kind'] not in INPUT_KINDS and s.get('source') not in SOURCES: raise ValueError('Onbekende databron')
                 if s['kind'] == 'table' and not s.get('columns'): raise ValueError('Tabel zonder kolommen')
                 check_expr(s.get('where'))
@@ -182,9 +191,8 @@ class Catalog:
                     raise ValueError('tracking_source vraagt een projectrapport zonder eigen meting, met report en section')
                 if not (self.reports.get(source['report']) or {}).get('tracking') or source['section'] not in seen:
                     raise ValueError('tracking_source verwijst naar een rapport zonder meting of een onbekende sectie')
-            link = report.get('link_report')
-            if link is not None and (report.get('scope') != 'project' or (self.reports.get(link) or {}).get('scope') != 'project'):
-                raise ValueError('link_report verwijst naar een projectrapport, vanuit een projectrapport')
+            from .maintenance import validate as validate_maintenance
+            validate_maintenance(self.reports, report)
         for cap in self.capabilities.values():
             if cap.get('handler') not in ('review','report','change','extend'): raise ValueError('Onbekende capability-handler')
 

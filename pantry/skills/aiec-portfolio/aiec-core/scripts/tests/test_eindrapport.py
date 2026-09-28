@@ -2,6 +2,7 @@
 import pytest
 from test_v2 import env
 from test_tracking import publish, five_answers, five_basis
+from test_onderhoud import publish_plan
 from aiec_v2.reports import render
 from aiec_v2.changes import make_plan
 from aiec_v2.execution import approve, execute
@@ -14,16 +15,17 @@ def closing():
             'waarde': 'Nog niet gemeten; meting in het eerste kwartaal.',
             'wendingen': 'Datalevering een maand later.\nScope gelijk gebleven.',
             'productverantwoordelijke': 'Afdeling X, teamleider Y.',
-            'beheer': 'Team Z volgens de beheerafspraak.',
             'beslissingen': 'nee',
             'vervolgstappen': [{'stap': 'Eerste meting', 'verantwoordelijke': 'Y', 'datum': '2027-03'}]}
 
 
-def closed(env):
-    """Two published months; the second delivers everything."""
+def closed(env, plan=True):
+    """Two published months; the second delivers everything. The maintenance plan comes before the final report."""
     publish(env, '2026-04', five_answers(3), five_basis())
     publish(env, '2026-09', five_answers(8), {})
-    return env[2].data['meetstanden'][-1]['record']
+    last = env[2].data['meetstanden'][-1]['record']
+    if plan: publish_plan(env)
+    return last
 
 
 def test_final_report_reads_last_measurement_without_adding_one(env):
@@ -37,7 +39,8 @@ def test_final_report_reads_last_measurement_without_adding_one(env):
     assert [a['filename'] for a in r['assets']] == ['aiec-eindrapport-por-1-2026-09-scope.png', 'aiec-eindrapport-por-1-2026-09-effort.png']
     s = r['storage']
     assert s.index('<h2>Samenvatting</h2>') < s.index('<h3>Context</h3>') < s.index('<h2>Verloop</h2>') < s.index('<h3>Milestones</h3>')
-    assert s.index('<h3>Scopebesluiten</h3>') < s.index('<h3>Belangrijkste wendingen</h3>') < s.index('<h2>Vervolg</h2>') < s.index('<h3>Vervolgstappen</h3>')
+    assert s.index('<h3>Scopebesluiten</h3>') < s.index('<h3>Belangrijkste wendingen</h3>') < s.index('<h2>Vervolg</h2>') < s.index('<h3>Technisch beheer</h3>') < s.index('<h3>Vervolgstappen</h3>')
+    assert 'ri:content-title="'+next(p['title'] for p in b.data['objects']['page'].values() if ' - onderhoudsplan - ' in p['title'])+'"' in s
     assert 'Looptijd' in s and '2026-01 tot 2026-09 (gepland tot 2026-09)' in s and 'Vooruitgangshistoriek' in s
     assert 'Periode:' not in s and 'Bronmateriaal' not in s and 'Bronmateriaal' in r['markdown']
     assert '<td>20</td><td>20</td><td>0</td>' in s

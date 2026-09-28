@@ -100,10 +100,13 @@ def documents(cat):
                     lines += ['', '| ' + ' | '.join(c['title'] for c in section['columns']) + ' |',
                               '| ' + ' | '.join('---' for c in section['columns']) + ' |', '']
                 if section.get('help'): lines += [section['help'], '']
+            elif section['kind'] == 'link':
+                name = section['group']+' · '+section['title'] if section.get('group') else section['title']
+                lines += [f"- **{name}:** link naar het gepubliceerde `{section['report']}` van hetzelfde project; zonder die pagina eerst dat rapport."]
             else:lines += [f"- **{section['title']}:** {section['kind']} uit `{section['source']}`; door code samengesteld."]
         if r.get('tracking'): lines += ['', 'Met vaste meetbasis, Remaining, onveranderlijke maandstanden en scope-/inzetgrafieken. Publicatie maakt een nieuwe pagina met twee PNG-bijlagen; eerst de HTML-preview goedkeuren.']
         if r.get('tracking_source'): lines += ['', f"Kopcijfers, grafieken zonder projectie, milestones tegenover Baseline, scopebesluiten en Vooruitgangshistoriek komen uit de laatste meetstand van `{r['tracking_source']['report']}`, vóór de sectie {r['tracking_source']['section']}. Er komt geen nieuwe meetstand bij."]
-        if r.get('link_report'): lines += ['', f"Verwijst naar het gepubliceerde `{r['link_report']}` van hetzelfde project; zonder die pagina eerst dat rapport."]
+        if r.get('maintenance'): lines += ['', f"De code leidt de klasse af uit de uitvalmatrix (P1: impact groot binnen 1 uur; P2: groot binnen 1 werkdag of merkbaar binnen 4 uur; anders P3) en begroot onderhoud als 10 md + 15% / 10% / 7,5% van de investering. Investering = as-is uit het vorige actieve plan van het product + Actual van de laatste meetstand van `{r['maintenance']['source']}`. Publicatie zet het vorige plan op Vervangen. Het eigenschappenblok `aiec-onderhoud` is de bron voor een latere portfoliosom."]
         if r['id'] == 'vooruitgang': lines += ['', 'Los invulsjabloon: [[aiec-maandrapport]].']
         lines+=['']
     out['aiec-sjablonen.md']='\n'.join(lines)+'\n'

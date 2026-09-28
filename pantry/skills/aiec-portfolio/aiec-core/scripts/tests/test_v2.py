@@ -574,9 +574,11 @@ def test_gate_every_project_needs_eindrapport_and_initiative_its_own(env):
     cat,cfg,b,_=env
     b.data['objects']['issue']['POR-2']=copy.deepcopy(b.data['objects']['issue']['POR-1']);b.data['objects']['issue']['POR-2']['key']='POR-2'
     b.data['objects']['issue']['AI-38']['fields']['issuelinks'].append({'type':{'name':'Gerelateerd'},'outwardIssue':{'key':'POR-2'}})
-    _gate_env(b,[('90','opleveringsverslag'),('100','onderhoudsplan')])
+    _gate_env(b,[('90','opleveringsverslag'),('90','onderhoudsplan')])
     q=make_plan(cat,b,cfg,{'kind':'transition','key':'AI-38','to':'Uitvoering','decision':{'by':'X','date':'2026-09-25','source':'s','outcome':'o'}})['questions']
     assert 'Gate-artefact ontbreekt voor project POR-2: opleveringsverslag' in q
+    # The maintenance plan belongs to each project; the initiative needs no copy of its own.
+    assert 'Gate-artefact ontbreekt voor project POR-2: onderhoudsplan' in q and 'Gate-artefact ontbreekt: onderhoudsplan' not in q
     assert 'Gate-artefact ontbreekt: opleveringsverslag' in q     # twee projecten: initiatief heeft een eigen verslag nodig
     assert not any('POR-1' in x for x in q)
 

@@ -1,24 +1,141 @@
-{
-  "id": "onderhoud",
-  "title": "Onderhoudsplan",
-  "page_title": "{datum} - onderhoud - {slug}",
-  "scope": "initiative",
-  "label": "onderhoudsplan",
-  "sections": [
-    {
-      "id": "inhoud",
-      "title": "Inhoud",
-      "kind": "input",
-      "prompt": "Lever het inhoudelijk overeengekomen verslag of plan aan.",
-      "required": true
-    },
-    {
-      "id": "afspraken",
-      "title": "Afspraken en verantwoordelijken",
-      "kind": "input",
-      "prompt": "Wie doet wat en welke besluiten liggen hieraan ten grondslag?",
-      "required": true
-    }
-  ],
-  "trigger": "Voorlopig basissjabloon; inhoudelijke criteria verder vast te leggen."
-}
+id: onderhoud
+title: Onderhoudsplan
+page_title: "{datum} - onderhoudsplan - {project} - {slug}"
+scope: project
+label: onderhoudsplan
+trigger: Bij afsluiten van een project dat een product (PROD) oplevert of wijzigt, na het laatste vooruitgangsrapport en vóór het eindrapport. Elke versie vervangt de vorige actieve versie van hetzelfde product.
+# Klasse, investering en begroting rekent de code uit; de eigenschappen (aiec-onderhoud) zijn de bron voor het portfoliorapport.
+maintenance:
+  source: vooruitgang
+
+enums:
+  duur:
+    - {value: 15m, label: 15 minuten}
+    - {value: 30m, label: 30 minuten}
+    - {value: 1u, label: 1 uur}
+    - {value: 4u, label: 4 uur}
+    - {value: 1d, label: 1 werkdag}
+    - {value: 1w, label: 1 week}
+  impact:
+    - {value: '1', label: 1 · Geen of verwaarloosbaar}
+    - {value: '2', label: 2 · Beperkt}
+    - {value: '3', label: 3 · Merkbaar}
+    - {value: '4', label: 4 · Groot}
+    - {value: '5', label: 5 · Bedreigt het voortbestaan}
+  janee:
+    - {value: ja, label: Ja}
+    - {value: nee, label: Nee}
+  kostenpost:
+    - {value: licenties, label: Licenties}
+    - {value: inference, label: Inference}
+    - {value: hosting, label: Hosting}
+    - {value: overige, label: Overige}
+
+sections:
+  - id: product
+    title: Product
+    kind: input
+    prompt: Voor welk product (PROD-key) geldt dit plan? Enkel nodig als het initiatief meer dan één product heeft.
+    required: false
+
+  - id: uitval
+    group: Kritikaliteit
+    title: Impact van uitval
+    kind: input_table
+    prompt: Wat is de impact op de organisatie als de toepassing zo lang uitvalt? Eén rij per duur, alle zes.
+    required: true
+    min_rows: 6
+    columns:
+      - {id: duur, title: Uitval, type: choice, enum: duur, required: true, unique: true}
+      - {id: impact, title: Impact, type: choice, enum: impact, required: true}
+    help: Schaal 1–5 van de VCDV-informatieclassificatie (beschikbaarheid). De impact mag niet dalen naarmate de uitval langer duurt. De code leidt de klasse P1–P3 af; niemand kiest ze zelf.
+
+  - id: buiten_kantooruren
+    group: Kritikaliteit
+    title: Ondersteuning buiten de kantooruren
+    kind: choice
+    enum: janee
+    prompt: Is ondersteuning buiten de kantooruren nodig?
+    required: true
+
+  - id: terugval
+    group: Kritikaliteit
+    title: Terugval bij uitval
+    kind: input
+    prompt: Wat gebeurt er als de AI uitvalt? Kan het proces handmatig verder, en hoe?
+    required: true
+
+  - id: as_is
+    group: Begroting
+    title: Bestaande investering
+    kind: input_table
+    prompt: Enkel zonder vorig onderhoudsplan voor dit product. Hoeveel md zit er al in het product (0 bij green field), en wat is de bron? Onbekend? Laat md leeg.
+    required: false
+    min_rows: 0
+    columns:
+      - {id: md, title: Investering (md), type: decimal, required: false, empty: onbekend}
+      - {id: bron, title: Bron, type: text, required: true}
+
+  - id: runkost
+    group: Begroting
+    title: Runkost
+    kind: input_table
+    prompt: Welke jaarlijkse kosten in euro heeft de toepassing, los van onderhoud in mandagen? Licenties, inference, hosting, overige.
+    required: true
+    min_rows: 1
+    columns:
+      - {id: post, title: Post, type: choice, enum: kostenpost, required: true}
+      - {id: omschrijving, title: Omschrijving, type: text, required: true}
+      - {id: bedrag, title: Bedrag (€/jaar), type: decimal, required: true}
+    help: Geen kost? Eén rij met bedrag 0 en de reden. Runkost is geen omrekening van mandagen naar euro.
+
+  - id: modellen
+    group: AI-specifiek onderhoud
+    title: Modellen en versies
+    kind: input_table
+    prompt: Welke modellen gebruikt de toepassing, in welke versie, en tot wanneer ondersteunt de leverancier die versie?
+    required: true
+    min_rows: 1
+    columns:
+      - {id: component, title: Onderdeel, type: text, required: true}
+      - {id: model, title: Model en versie, type: text, required: true}
+      - {id: einde, title: Einde ondersteuning, type: text, required: false, empty: onbekend}
+
+  - id: kwaliteit
+    group: AI-specifiek onderhoud
+    title: Kwaliteitsbewaking
+    kind: input
+    prompt: Met welke evaluatieset wordt de kwaliteit bewaakt, wie hertest, hoe vaak, en bij welke drempel wordt ingegrepen?
+    required: true
+
+  - id: afhankelijkheden
+    group: AI-specifiek onderhoud
+    title: Afhankelijkheden
+    kind: input_table
+    prompt: Van welke databronnen, API's, diensten, contracten en licenties hangt de toepassing af, en tot wanneer lopen die?
+    required: true
+    min_rows: 1
+    columns:
+      - {id: afhankelijkheid, title: Afhankelijkheid, type: text, required: true}
+      - {id: einde, title: Loopt tot, type: text, required: false, empty: onbepaald}
+
+  - id: compliance
+    group: AI-specifiek onderhoud
+    title: Compliance
+    kind: input
+    prompt: Wanneer worden DPIA en AI Act-classificatie herzien? Bij hoog risico ook monitoring na ingebruikname en logging.
+    required: true
+
+  - id: incidenten
+    group: Incidenten en herziening
+    title: Incidenten
+    kind: input
+    prompt: Waar meldt een gebruiker een incident, en wat is de escalatieketen?
+    required: true
+
+  - id: afbouw
+    group: Incidenten en herziening
+    title: Afbouwcriteria
+    kind: input
+    prompt: Wanneer gaat het product richting Afbouw? Bijvoorbeeld weinig gebruik, een vervallen model, of kosten hoger dan de baten.
+    required: true
