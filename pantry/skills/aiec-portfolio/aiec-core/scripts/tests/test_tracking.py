@@ -140,6 +140,11 @@ def test_added_scope_exceeds_original_reference(env, done, expected):
     assert d['approved'][5] == 100 and d['approved'][6] == 120   # index 0 = aanloopmaand
 
 
+def test_lines_start_from_zero_in_lead_month(env):
+    d = report_charts.series(prepared(env)['state'], [])
+    assert all(d[k][0] == 0.0 for k in ('plan_scope', 'plan_effort', 'delivered', 'estimated', 'actual'))
+
+
 def test_added_backlog_keeps_explicit_remaining(env):
     measure = five_basis(); measure['scope_changes'] = [addition()]
     data = five_answers(); data['milestones'].append({'nr': 6, 'milestone': 'Extra scope', 'status': 'Backlog', 'actual_md': 0, 'remaining_md': 20, 'gezondheid': 'op-schema'})

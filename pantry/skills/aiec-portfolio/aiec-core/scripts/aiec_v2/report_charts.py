@@ -46,7 +46,7 @@ def series(state, history):
         data[name] = [pct(records[m]['metrics'][metric], denominator) if m in records else None for m in periods]
     data['plan_scope'] = [pct(plan[m]['scope_md'], scope) if m in plan else None for m in periods]
     data['plan_effort'] = [pct(plan[m]['effort_md'], budget) if m in plan else None for m in periods]
-    for key in ('plan_scope', 'plan_effort', 'delivered', 'actual'):
+    for key in ('plan_scope', 'plan_effort', 'delivered', 'estimated', 'actual'):
         if data[key][0] is None:data[key][0] = 0.0
     data['approved'] = [float((scope+sum((Decimal(r['weight_md']) for c in state['scope_changes'] if c['month'] <= m for r in c['milestones']), Decimal(0)))*100/scope) for m in periods]
     projected={state['period']:state['metrics']['actual_md']} if forward_rows else {}
