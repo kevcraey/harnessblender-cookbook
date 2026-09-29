@@ -1,6 +1,6 @@
 description: "user-level basisset \u2014 Open Brain MCP (capture/search/update/delete)\
   \ + grill-skills + herdr-skill"
-version: 0.5.2
+version: 0.5.4
 selections:
   skills:
   - source: store/mattpocock/skills/productivity/grilling
@@ -35,6 +35,8 @@ selections:
     as: domain-modeling
   - source: pantry/skills/household/zet-schoolmenu-in-agenda
     as: zet-schoolmenu-in-agenda
+  - source: pantry/skills/governance/is-dpia-nodig
+    as: is-dpia-nodig
   agents: []
   guidelines: []
   mcps:
@@ -47,4 +49,4 @@ selections:
   plugins:
   - source: pantry/plugins/quiet
     as: quiet
-content_hash: 9598de751b164b40
+content_hash: 56739c5ce7cbbe10
