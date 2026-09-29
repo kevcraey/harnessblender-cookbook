@@ -320,9 +320,9 @@ page_sections:
     type: artefacten          # content-by-label: gekende artefactlabels onder deze pagina, ook onder projectpagina's
     exclude: [decisions]      # beslissingen hebben een eigen overzicht
   - kop: Beslissingen
-    type: detailssummary      # cql: label = "decisions" and ancestor = currentContent()
-    label: decisions
-    headings: [Overgang naar, Datum, Beslist door]   # = rijlabels van het eigenschappenblok op een beslissing
+    type: detailssummary      # cql: label in (…) and ancestor = currentContent()
+    labels: [decisions, initiatierapport, verkenningsrapport]   # aparte beslissingen + de rapporten met een blok Beslissing
+    headings: [Datum, Beslist door, Wat beslist]   # = rijlabels van het eigenschappenblok aiec-beslissing, voor elke beslissing gelijk
 
 # Overzichtspagina: per pijler een detailssummary met deze kolommen, plus één Jira-macro.
 # Page Properties Report filtert op pagina's (cql), niet op celwaarden: dus één rapport met Pijler

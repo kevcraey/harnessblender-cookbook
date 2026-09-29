@@ -3,6 +3,7 @@
   "title": "Initiatierapport",
   "page_title": "{datum} - initiatie - {slug}",
   "scope": "initiative",
+  "layout": "table",
   "label": "initiatierapport",
   "sections": [
     {
@@ -10,70 +11,90 @@
       "title": "Opvolging",
       "kind": "input",
       "prompt": "Wordt het initiatief opgevolgd door het AI EC, een ander team of een externe partij?",
-      "required": true
+      "required": true,
+      "group": "Administratieve info",
+      "row": "Wordt het initiatief opgevolgd door het AI EC, een ander team of een externe partij?"
     },
     {
       "id": "beschrijving",
       "title": "Beschrijving",
       "kind": "input",
       "prompt": "Beschrijving van het initiatief of de vereiste, met eventuele link naar meer informatie.",
-      "required": true
+      "required": true,
+      "group": "Administratieve info",
+      "row": "Beschrijving van het initiatief of de vereiste en eventuele link naar meer informatie"
     },
     {
       "id": "relevantie",
       "title": "Relevantie",
       "kind": "input",
       "prompt": "Is het initiatief relevant voor de organisatie (taak van het departement, meer dan één medewerker, …)?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Is het initiatief relevant voor de organisatie? (Bv: is het een taak voor het departement, is het relevant voor meer dan 1 medewerker, ...)"
     },
     {
       "id": "gekend",
       "title": "Al gekend",
       "kind": "input",
       "prompt": "Is het initiatief al gekend, bijvoorbeeld als onderdeel van een ander initiatief?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Is het initiatief al gekend (bv als onderdeel van een ander initiatief)?"
     },
     {
       "id": "vraagzijde",
       "title": "Vraagzijde",
       "kind": "input",
       "prompt": "Wie vertegenwoordigt de vraagzijde en kan betrokken worden bij de verdere uitwerking?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Wie vertegenwoordigt de vraagzijde en kan betrokken worden bij de verdere uitwerking?"
     },
     {
       "id": "datum",
-      "title": "Datum beslissing",
+      "title": "Datum",
       "kind": "input",
       "prompt": "Datum van de beslissing (JJJJ-MM-DD).",
-      "required": true
-    },
-    {
-      "id": "verkenning",
-      "title": "In aanmerking voor verkenning",
-      "kind": "input",
-      "prompt": "Komt het initiatief in aanmerking voor verkenning? Beslissing en motivering.",
-      "required": true
-    },
-    {
-      "id": "digi",
-      "title": "Inzet DIGI",
-      "kind": "input",
-      "prompt": "Wie wordt hier aan kant DIGI op ingezet?",
-      "required": true
+      "required": true,
+      "group": "Beslissing",
+      "row": "Datum"
     },
     {
       "id": "bevoegde",
       "title": "Beslist door",
       "kind": "input",
       "prompt": "Wie nam de beslissing?",
-      "required": true
+      "required": true,
+      "group": "Beslissing",
+      "row": "Beslist door"
+    },
+    {
+      "id": "verkenning",
+      "title": "Wat beslist",
+      "kind": "input",
+      "prompt": "Komt het initiatief in aanmerking voor verkenning? Beslissing en motivering.",
+      "required": true,
+      "group": "Beslissing",
+      "row": "Wat beslist"
+    },
+    {
+      "id": "digi",
+      "title": "Inzet DIGI",
+      "kind": "input",
+      "prompt": "Wie wordt hier aan kant DIGI op ingezet?",
+      "required": true,
+      "group": "Beslissing",
+      "row": "Wie wordt hier aan kant DIGI op ingezet?"
     }
   ],
   "properties": {
     "id": "aiec-beslissing",
     "sections": [
       "datum",
-      "bevoegde"
+      "bevoegde",
+      "verkenning",
+      "digi"
     ]
   },
   "sjabloon": {

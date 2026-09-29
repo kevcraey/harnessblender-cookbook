@@ -1,6 +1,7 @@
 """Offline behavior and safety tests. No live Jira/Confluence writes."""
 import copy
 import json
+import re
 from pathlib import Path
 import sys
 from datetime import date
@@ -177,6 +178,30 @@ def test_reports_questions_and_no_jira_copy(env):
     inputs={x['id']:'Door de maker aangeleverde inhoud.' for x in cat.reports['captatie']['sections']}
     result=render(cat,s,'captatie','AI-38','2026-09',inputs,cfg,'proef')
     assert result['complete'] and 'ac:name="jira"' in result['storage'] and 'Captatie</td>' not in result['storage']
+
+
+def test_initiation_follows_template_tables(env):
+    cat,cfg,b,_=env;s=b.collect()
+    inputs={x['id']:'Antwoord '+x['id'] for x in cat.reports['initiatie']['sections']};inputs['datum']='2026-09-01'
+    st=render(cat,s,'initiatie','AI-38','2026-09',inputs,cfg,'proef')['storage']
+    assert re.findall(r'<h2>(.*?)</h2>',st)==['Administratieve info','Overweging','Beslissing'] and '<h3>' not in st
+    assert st.count('<table class="relative-table wrapped"')==3
+    assert '<tr><th scope="row">Wie wordt hier aan kant DIGI op ingezet?</th><td><p>Antwoord digi</p></td></tr>' in st
+    # Het blok Beslissing is zelf het eigenschappenblok, op zijn plaats en niet bovenaan.
+    assert st.index('<h2>Beslissing</h2>')<st.index('ac:name="details"') and st.count('ac:name="details"')==1
+    props=conf.parse_properties(cat.schema,st,'aiec-beslissing')
+    assert list(props)==['Datum','Beslist door','Wat beslist','Wie wordt hier aan kant DIGI op ingezet?'] and props['Wat beslist']=='Antwoord verkenning'
+
+
+def test_capture_and_analysis_use_tables(env):
+    cat,cfg,b,_=env;s=b.collect()
+    inputs={x['id']:'Antwoord '+x['id'] for x in cat.reports['captatie']['sections']}
+    st=render(cat,s,'captatie','AI-38','2026-09',inputs,cfg,'proef')['storage']
+    assert re.findall(r'<h2>(.*?)</h2>',st)==['Captatie','Aanbeveling'] and '<th scope="row">Timing</th><td><p>Antwoord timing</p></td>' in st
+    inputs={x['id']:'Antwoord '+x['id'] for x in cat.reports['analyse']['sections']};inputs.update(dpia='vereist',dpo='gecontacteerd')
+    st=render(cat,s,'analyse','AI-38','2026-09',inputs,cfg,'proef')['storage']
+    assert re.findall(r'<h2>(.*?)</h2>',st)==['Analyse','Compliance','Vervolg'] and st.count('ac:name="details"')==1
+    assert list(conf.parse_properties(cat.schema,st,'aiec-analyse'))==['DPIA','DPO']
 
 
 def test_retrospective_extension_works(env):
@@ -604,6 +629,17 @@ def test_decision_found_as_grandchild_with_overgang(env):
     assert row['decision_transitions']==['Uitvoering']
 
 
+def test_exploration_report_can_carry_a_later_transition(env):
+    # Opname in de reguliere werking: het verkenningsrapport draagt meteen de beslissing naar Implementatie.
+    cat,cfg,b,_=env;_decision_page(b,'301','100','Implementatie')
+    b.data['objects']['page']['301']['metadata']['labels']['results']=[{'name':'verkenningsrapport'}]
+    _decision_page(b,'302','100')     # rapport zonder overgang telt niet als beslissing
+    b.data['objects']['page']['302']['metadata']['labels']['results']=[{'name':'initiatierapport'}]
+    row=next(i for i in datasets(cat,b.collect())['initiatives'] if i['key']=='AI-38')
+    assert row['decision_transitions']==['Implementatie']
+    assert not [f for f in review(cat,b.collect()) if f['rule']=='beslissing-zonder-overgang']
+
+
 def test_review_flags_every_passed_transition_without_decision(env):
     cat,cfg,b,_=env;_phase(b,'Run')
     missing=[f['message'] for f in review(cat,b.collect()) if f['rule']=='beslissing-ontbreekt']
@@ -632,14 +668,16 @@ def test_decision_report_writes_properties_and_counts(env):
     p,r=approved(env,_decision());execute(p,r,cat,cfg,b,tmp/'state')
     created=list(b.data['objects']['page'].values())[-1]
     props=conf.parse_properties(cat.schema,created['body']['storage']['value'],'aiec-beslissing')
-    assert props=={'Overgang naar':'Uitvoering','Besluit':'Verder met de gebouwde oplossing.','Beslist door':'Testbeslisser','Datum':'2026-01-20','Bron':'Geen formele bron.','Gevolg':'Lage prioriteit.'}
+    assert props=={'Overgang naar':'Uitvoering','Wat beslist':'Verder met de gebouwde oplossing.','Beslist door':'Testbeslisser','Datum':'2026-01-20','Bron':'Geen formele bron.','Gevolg':'Lage prioriteit.'}
     body=created['body']['storage']['value']
     assert '<h2>' not in body and 'Periode:' not in body and body.count('Testbeslisser')==1   # geen dubbele weergave
     assert 'ac:name="jira"' not in body                                                          # geen ticketverwijzing
     row=next(i for i in datasets(cat,b.collect())['initiatives'] if i['key']=='AI-38')
     assert 'Uitvoering' in row['decision_transitions']
     # The Beslissingen overview on the initiative page reads exactly these labels.
-    assert '<ac:parameter ac:name="headings">Overgang naar, Datum, Beslist door</ac:parameter>' in conf.render_page(cat.schema,{'ai_key':'AI-38'},'x',cfg)
+    page=conf.render_page(cat.schema,{'ai_key':'AI-38'},'x',cfg)
+    assert '<ac:parameter ac:name="headings">Datum, Beslist door, Wat beslist</ac:parameter>' in page
+    assert 'label in (&quot;decisions&quot;, &quot;initiatierapport&quot;, &quot;verkenningsrapport&quot;)' in page
 
 
 def test_transition_to_uitvoering_needs_decision_page(env):

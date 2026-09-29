@@ -137,7 +137,7 @@ def test_added_scope_exceeds_original_reference(env, done, expected):
     assert (m['delivered_md'], m['estimated_md'], m['actual_md']) == expected
     assert m['scope_denominator_md'] == '100' and m['approved_md'] == '120' and m['done'] == done
     d = report_charts.series(p['state'], [])
-    assert d['approved'][4] == 100 and d['approved'][5] == 120
+    assert d['approved'][5] == 100 and d['approved'][6] == 120   # index 0 = aanloopmaand
 
 
 def test_added_backlog_keeps_explicit_remaining(env):
@@ -156,8 +156,8 @@ def test_early_assumption_is_automatic_and_only_in_reported_month(env):
     assert not p['questions'] and p['state']['metrics']['assumed_md'] == '20'
     assert p['state']['metrics']['estimated_md'] is None
     d = report_charts.series(p['state'], [])
-    assert d['assumed'] == [None, 20, None, None, None, None, None, None, None]
-    assert d['delivered'][0] is None and d['actual'][2] is None
+    assert d['assumed'] == [None, None, 20, None, None, None, None, None, None, None]
+    assert d['delivered'][:2] == [0.0, None] and d['actual'][3] is None   # aanloopmaand op 0%
     # After the first delivery, or with a complete Actual/Remaining estimate, there is no assumption.
     assert prepared(env, measure=five_basis())['state']['metrics']['assumed_md'] is None
     assert prepared(env, 0, five_answers(0), five_basis())['state']['metrics']['assumed_md'] is None
@@ -200,7 +200,7 @@ def test_second_month_freezes_old_snapshot_and_gaps(env):
     _, out = publish(env, '2026-02', five_answers(1), five_basis())
     b = env[2]; first_id = out['results'][0]['result']['id']; before = copy.deepcopy(b.get('page', first_id))
     result = render(env[0], b.collect(), 'vooruitgang', 'POR-1', '2026-04', five_answers(3), env[1], tracking={})
-    assert result['complete'] and result['chart_data']['delivered'][:4] == [None, 20, None, 60]
+    assert result['complete'] and result['chart_data']['delivered'][:5] == [0.0, None, 20, None, 60]
     assert result['measurement']['previous_hash'] == b.data['meetstanden'][0]['record']['hash']
     publish(env, '2026-04', five_answers(3), {})
     assert b.get('page', first_id) == before

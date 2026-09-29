@@ -188,9 +188,10 @@ def test_render_page_volgt_page_sections():
     assert '<ac:parameter ac:name="jqlQuery">(key = AI-25 OR issue in linkedIssues(AI-25)) AND project in (PROD, POR, EAG, AI)</ac:parameter>' in xml
     assert '<ac:parameter ac:name="serverId">56e4142a-0105-3cf7-b7a8-b308d7369863</ac:parameter>' in xml
     assert 'ac:name="contentbylabel"' in xml and conf.CHILDREN_MACRO not in xml
-    assert '&quot;captatierapport&quot;' in xml and '&quot;decisions&quot;, ' not in xml   # beslissingen apart
+    artefacten = xml.split('ac:name="contentbylabel"', 1)[1].split('</ac:structured-macro>', 1)[0]
+    assert '&quot;captatierapport&quot;' in artefacten and '&quot;decisions&quot;' not in artefacten   # beslissingen apart
     assert 'ancestor = currentContent()' in xml
-    assert "label = &quot;decisions&quot; and space = currentSpace() and ancestor = currentContent()" in xml
+    assert "label in (&quot;decisions&quot;, &quot;initiatierapport&quot;, &quot;verkenningsrapport&quot;) and space = currentSpace() and ancestor = currentContent()" in xml
     assert '<ac:parameter ac:name="maximumIssues">20</ac:parameter>' in xml
     assert "Twee zinnen uitleg." in xml
     assert "<h2>Status</h2>" not in xml                     # status staat nooit op de pagina

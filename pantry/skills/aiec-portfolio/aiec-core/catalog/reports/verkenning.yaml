@@ -3,6 +3,7 @@
   "title": "Verkenningsrapport",
   "page_title": "{datum} - verkenning - {slug}",
   "scope": "initiative",
+  "layout": "table",
   "label": "verkenningsrapport",
   "sections": [
     {
@@ -10,147 +11,224 @@
       "title": "Doelstelling",
       "kind": "input",
       "prompt": "Is de doelstelling, behoefte of kans helder? Omschrijf beknopt.",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Is de doelstelling / behoefte / kans helder? (Omschrijf beknopt)"
     },
     {
       "id": "relevantie",
       "title": "Relevantie",
       "kind": "input",
       "prompt": "Is de relevantie helder (link met het departementaal portfolio, risico, …)?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Is de relevantie helder? (bv link naar objectief departementaal portfolio, risico, ...)"
     },
     {
       "id": "scope",
       "title": "Scope",
       "kind": "input",
       "prompt": "Is er in grote lijnen zicht op de scope?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Is er - in grote lijnen - zicht op de scope?"
     },
     {
       "id": "doelgroep",
       "title": "Doelgroep",
       "kind": "input",
       "prompt": "Hoe ziet de doelgroep eruit?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Hoe ziet de doelgroep er uit?"
     },
     {
       "id": "synergie",
       "title": "Synergieën",
       "kind": "input",
       "prompt": "Zien we synergieën met andere initiatieven of noden (bv. een generieke oplossing)?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Zien we synergieën met andere initiatieven of noden? (Is het bv relevant om in te zetten op een generieke oplossing)"
     },
     {
       "id": "urgentie",
       "title": "Urgentie",
       "kind": "input",
       "prompt": "Is er zicht op de urgentie (wettelijke deadlines, afhankelijkheden, …)?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Is er zicht op de urgentie (bv wettelijke deadlines, afhankelijkheden, ...)"
     },
     {
       "id": "profielen",
       "title": "Profielen",
       "kind": "input",
       "prompt": "Is er zicht op de nodige profielen voor de verdere uitwerking?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Is er zicht op de nodige profielen voor de verdere uitwerking?"
     },
     {
       "id": "omvang",
       "title": "Aard en omvang",
       "kind": "input",
       "prompt": "Is er zicht op de aard en omvang van het werk (dagen, kostprijs)?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Is er zicht op de aard en omvang van het werk (dagen, kostprijs)?"
     },
     {
       "id": "risicos",
       "title": "Risico’s",
       "kind": "input",
       "prompt": "Welke risico’s zien we om de doelstelling te realiseren?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Welke risico's zien we om de doelstelling te realiseren?"
     },
     {
       "id": "draagvlak",
       "title": "Draagvlak",
       "kind": "input",
       "prompt": "Is er draagvlak bij de stakeholders en steun van een hiërarchisch verantwoordelijke?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Is er draagvlak bij de verschillende stakeholders om dit initiatief verder uit te werken en wordt het gesteund door een hiërarchisch verantwoordelijke (Afdelingshoofd of teamverantwoordelijke)?"
     },
     {
       "id": "projectdefinitie",
       "title": "Formele projectdefinitie",
       "kind": "input",
       "prompt": "Is een formele projectdefinitie de moeite waard, of kan dit binnen de reguliere werking?",
-      "required": true
+      "required": true,
+      "group": "Overweging",
+      "row": "Is het door omvang of belang de moeite waard hier een formele projectdefinitie voor uit te voeren of kan dit worden opgenomen binnen de reguliere werking?"
     },
     {
       "id": "andere",
       "title": "Andere overwegingen",
       "kind": "input",
       "prompt": "Andere overwegingen.",
-      "required": false
+      "required": false,
+      "group": "Overweging",
+      "row": "Andere overwegingen"
     },
     {
       "id": "datum",
-      "title": "Datum beslissing",
+      "title": "Datum",
       "kind": "input",
       "prompt": "Datum van de beslissing (JJJJ-MM-DD).",
-      "required": true
-    },
-    {
-      "id": "vervolg",
-      "title": "Vervolg",
-      "kind": "input",
-      "prompt": "Komt het initiatief in aanmerking voor projectdefinitie, een architectuur- of BA-opdracht, of opname in de reguliere werking?",
-      "required": true
-    },
-    {
-      "id": "prioriteit",
-      "title": "Prioriteit",
-      "kind": "input",
-      "prompt": "Wat is de prioriteit?",
-      "required": true
-    },
-    {
-      "id": "uitvoerder",
-      "title": "Uitvoerder",
-      "kind": "input",
-      "prompt": "Wie zal de opdracht (moeten) opnemen?",
-      "required": true
-    },
-    {
-      "id": "inspanning",
-      "title": "Vervolginspanning",
-      "kind": "input",
-      "prompt": "Hoe groot mag de vervolginspanning zijn: tijd voor analyse of projectdefinitie, en kost van de eindoplossing (orde van grootte)?",
-      "required": true
-    },
-    {
-      "id": "conflicten",
-      "title": "Planningsconflicten",
-      "kind": "input",
-      "prompt": "Zijn er conflicten qua inplanning te verwachten?",
-      "required": true
-    },
-    {
-      "id": "stuurorgaan",
-      "title": "Stuurorgaan",
-      "kind": "input",
-      "prompt": "Wordt het initiatief neergelegd bij een domeingebonden stuurorgaan?",
-      "required": true
+      "required": true,
+      "group": "Beslissing",
+      "row": "Datum"
     },
     {
       "id": "bevoegde",
       "title": "Beslist door",
       "kind": "input",
       "prompt": "Wie nam de beslissing?",
-      "required": true
+      "required": true,
+      "group": "Beslissing",
+      "row": "Beslist door"
+    },
+    {
+      "id": "vervolg",
+      "title": "Wat beslist",
+      "kind": "input",
+      "prompt": "Komt het initiatief in aanmerking voor projectdefinitie, een architectuur- of BA-opdracht, of opname in de reguliere werking?",
+      "required": true,
+      "group": "Beslissing",
+      "row": "Wat beslist"
+    },
+    {
+      "id": "overgang",
+      "title": "Overgang naar",
+      "kind": "choice",
+      "enum": "overgang",
+      "required": false,
+      "prompt": "Leidt deze beslissing meteen tot een latere fase (bv. Implementatie bij opname in de reguliere werking, Afgesloten bij stopzetting)? Leeg = enkel Planning.",
+      "group": "Beslissing",
+      "row": "Overgang naar"
+    },
+    {
+      "id": "prioriteit",
+      "title": "Prioriteit",
+      "kind": "input",
+      "prompt": "Wat is de prioriteit?",
+      "required": true,
+      "group": "Beslissing",
+      "row": "Wat is de prioriteit (obv Prioritering & planning)?"
+    },
+    {
+      "id": "uitvoerder",
+      "title": "Uitvoerder",
+      "kind": "input",
+      "prompt": "Wie zal de opdracht (moeten) opnemen?",
+      "required": true,
+      "group": "Beslissing",
+      "row": "Wie zal de opdracht (moeten) opnemen?"
+    },
+    {
+      "id": "inspanning",
+      "title": "Vervolginspanning",
+      "kind": "input",
+      "prompt": "Hoe groot mag de vervolginspanning zijn: tijd voor analyse of projectdefinitie, en kost van de eindoplossing (orde van grootte)?",
+      "required": true,
+      "group": "Beslissing",
+      "row": "Hoe groot mag de vervolginspanning zijn? Hoeveel tijd willen we besteden aan analyse/projectdefinitie, en wat mag de eindoplossing ons kosten (orde van grootte)?"
+    },
+    {
+      "id": "conflicten",
+      "title": "Planningsconflicten",
+      "kind": "input",
+      "prompt": "Zijn er conflicten qua inplanning te verwachten?",
+      "required": true,
+      "group": "Beslissing",
+      "row": "Zijn er conflicten qua inplanning te verwachten?"
+    },
+    {
+      "id": "stuurorgaan",
+      "title": "Stuurorgaan",
+      "kind": "input",
+      "prompt": "Wordt het initiatief neergelegd bij een domeingebonden stuurorgaan?",
+      "required": true,
+      "group": "Beslissing",
+      "row": "Wordt het initiatief neergelegd bij een Domeingebonden stuurorgaan?"
+    },
+    {
+      "id": "bron",
+      "title": "Bron",
+      "kind": "input",
+      "prompt": "Link naar de formele beslissing.",
+      "required": false,
+      "group": "Beslissing",
+      "row": "Bron"
+    },
+    {
+      "id": "gevolg",
+      "title": "Gevolg",
+      "kind": "input",
+      "prompt": "Welke acties volgen, met betrokken tickets?",
+      "required": false,
+      "group": "Beslissing",
+      "row": "Gevolg"
     }
   ],
   "properties": {
     "id": "aiec-beslissing",
     "sections": [
       "datum",
-      "bevoegde"
+      "bevoegde",
+      "vervolg",
+      "overgang",
+      "prioriteit",
+      "uitvoerder",
+      "inspanning",
+      "conflicten",
+      "stuurorgaan",
+      "bron",
+      "gevolg"
     ]
   },
   "sjabloon": {
@@ -158,5 +236,29 @@
     "deel": "Verkenning",
     "vingerafdruk": "439f683934dfd743",
     "omschrijving": "EAG-sjabloon Beoordeling Initiatie & Verkenning (DigiAg), deel Verkenning"
+  },
+  "enums": {
+    "overgang": [
+      {
+        "value": "Implementatie",
+        "label": "Implementatie",
+        "description": "Overgang naar Implementatie"
+      },
+      {
+        "value": "Uitvoering",
+        "label": "Uitvoering",
+        "description": "Overgang naar Uitvoering"
+      },
+      {
+        "value": "Afbouw",
+        "label": "Afbouw",
+        "description": "Overgang naar Afbouw"
+      },
+      {
+        "value": "Afgesloten",
+        "label": "Afgesloten",
+        "description": "Overgang naar Afgesloten"
+      }
+    ]
   }
 }

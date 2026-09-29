@@ -32,17 +32,21 @@ def series(state, history):
     if state['metrics']['done'] or state.get('closed'):end=state['period']
     elif reached:end=max(state['period'],reached)
     else:end=max([max(plan), state['period']]+[r['period'] for r in forward_rows])
-    periods = months(min(plan), end)
+    # One month before the plan starts, at 0%: the first measurement then reads as a line from zero.
+    start = min(plan); lead = f'{int(start[:4])-(start[5:]=="01"):04d}-{(int(start[5:])-2)%12+1:02d}'
+    periods = months(lead, end)
     scope = Decimal(state['metrics']['scope_denominator_md'])
     budget = Decimal(base['budget_md'])
     def pct(value, denominator):
         return None if value is None else float(Decimal(value)*100/denominator)
-    data = {'periods': periods, 'as_of': state['period'], 'reported': [m in records for m in periods], 'closed': bool(state.get('closed'))}
+    data = {'periods': periods, 'as_of': state['period'], 'reported': [m in records or m == lead for m in periods], 'closed': bool(state.get('closed'))}
     for name, metric, denominator in [('delivered', 'delivered_md', scope), ('estimated', 'estimated_md', scope),
                                        ('assumed', 'assumed_md', scope), ('actual', 'actual_md', budget)]:
         data[name] = [pct(records[m]['metrics'][metric], denominator) if m in records else None for m in periods]
     data['plan_scope'] = [pct(plan[m]['scope_md'], scope) if m in plan else None for m in periods]
     data['plan_effort'] = [pct(plan[m]['effort_md'], budget) if m in plan else None for m in periods]
+    for key in ('plan_scope', 'plan_effort', 'delivered', 'actual'):
+        if data[key][0] is None:data[key][0] = 0.0
     data['approved'] = [float((scope+sum((Decimal(r['weight_md']) for c in state['scope_changes'] if c['month'] <= m for r in c['milestones']), Decimal(0)))*100/scope) for m in periods]
     projected={state['period']:state['metrics']['actual_md']} if forward_rows else {}
     projected.update({r['period']:r['total_md'] for r in future})
@@ -129,7 +133,12 @@ def png(data, kind, width=1000):
                 draw.ellipse((x-radius, y-radius, x+radius, y+radius), fill=color)
     def rect(box, fill):
         draw.rectangle(tuple(round(v*scale) for v in box), fill=fill)
-    def point(x, y, color, hollow=False):
+    def point(x, y, color, hollow=False, ring=False):
+        if ring:
+            # A measurement is an open ring around the plan point, so a measurement on plan leaves both visible.
+            r = 8*scale
+            draw.ellipse((x*scale-r, y*scale-r, x*scale+r, y*scale+r), outline=color, width=3*scale)
+            return
         r = 4*scale
         draw.ellipse((x*scale-r, y*scale-r, x*scale+r, y*scale+r), fill='#ffffff' if hollow else color, outline=color, width=2*scale)
     scope = kind == 'scope'
@@ -186,13 +195,12 @@ def png(data, kind, width=1000):
         label(left-12, y(tick), f'{tick:.3g}%', 17, '#687483', 'rm')
     for i in label_indices(count, max(3, int(pw/85))):
         label(x(i), bottom+18, data['periods'][i], 16, '#687483', 'mt')
-    def plot(values, color, dotted=False, hollow=False):
+    def plot(values, color, dotted=False, hollow=False, ring=False):
         for run in runs(values):
             if len(run) > 1:
                 line([(x(i), y(v)) for i, v in run], color, 3, dotted)
             for i, v in run:
-                point(x(i), y(v), color, hollow)
-    plot(plan, BLACK)
+                point(x(i), y(v), color, hollow, ring)
     if scope:
         limit = data['approved']
         steps = [(x(0), y(limit[0]))]
@@ -205,11 +213,13 @@ def png(data, kind, width=1000):
         plot(data['assumed'], GRAY, True, True)
     # The planning starts at the current Actual: draw it first so the measured point stays visible on top.
     if not scope:plot(data.get('forward',[None]*count), ORANGE, True, True)
+    # The plan above the dotted series, the measurement ring on top: a measurement on plan shows both.
+    plot(plan, BLACK)
     # A closed project reads as one gradual line: delivered including running work, delivered where no estimate exists.
     if scope and data.get('closed'):
-        plot([d if e is None else e for d, e in zip(data['delivered'], data['estimated'])], BLUE)
+        plot([d if e is None else e for d, e in zip(data['delivered'], data['estimated'])], BLUE, ring=True)
     else:
-        plot(data['delivered' if scope else 'actual'], BLUE)
+        plot(data['delivered' if scope else 'actual'], BLUE, ring=True)
     stream = BytesIO()
     image.save(stream, format='PNG', optimize=False, compress_level=9)
     return stream.getvalue()
@@ -336,7 +346,7 @@ def appendix(state, data, reports=()):
     reports: titles of the progress reports behind the history, linked from the final report."""
     headers = ['Maand', 'Plan scope', 'Opgeleverd', 'Incl. lopend', 'Goedgekeurd', 'Aanname', 'Plan inzet', 'Besteed']
     rows = []
-    for i, period in enumerate(data['periods']):
+    for i, period in enumerate(data['periods'][1:], 1):   # the lead-in month is no report month
         values = [data[k][i] for k in ('plan_scope', 'delivered', 'estimated', 'approved', 'assumed', 'plan_effort', 'actual')]
         rows.append([period+(' · geen rapport' if not data['reported'][i] else '')]+['onbekend' if v is None else f'{v:.1f}%'.replace('.', ',') for v in values])
     table = '<table><thead><tr>'+''.join('<th>'+h+'</th>' for h in headers)+'</tr></thead><tbody>'+''.join('<tr>'+''.join('<td>'+v+'</td>' for v in row)+'</tr>' for row in rows)+'</tbody></table>'

@@ -325,9 +325,12 @@ def normalize(cat,cfg,objects,identity):
             children+=[dict(g,project=pk,parent_id=str(c['page_id'])) for g in under(c['page_id'])]
         rec=conf._page_record(cfg,cat.schema,raw,children);rec.update(storage=storage,space=raw['space']['key'])
         # Decision pages anywhere under the initiative; 'Overgang naar' comes from their properties block.
-        rec['decisions']=[{'page_id':str(x['id']),'title':x['title'],
-                           'overgang':cat.state(conf.parse_properties(cat.schema,x.get('body',{}).get('storage',{}).get('value',''),'aiec-beslissing').get('Overgang naar'))}
-                          for x in rawpages.values() if 'decisions' in conf._labels(x) and descends(str(x['id']),str(raw['id']))]
+        # A report with a Beslissing block (initiatie, verkenning) counts too once it names a later transition.
+        reports={g['decision_in'] for g in cat.process.get('gates',{}).values() if g.get('decision_in') not in (None,'decisions')}
+        props=lambda x:conf.parse_properties(cat.schema,x.get('body',{}).get('storage',{}).get('value',''),'aiec-beslissing')
+        rec['decisions']=[{'page_id':str(x['id']),'title':x['title'],'overgang':cat.state(props(x).get('Overgang naar'))}
+                          for x in rawpages.values() if descends(str(x['id']),str(raw['id'])) and
+                          ('decisions' in conf._labels(x) or (reports&set(conf._labels(x)) and props(x).get('Overgang naar')))]
         pages.append(rec)
     accounts=objects.get('tempo_account',{})
     for m in objects.get('maintenance',[]):

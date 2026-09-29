@@ -3,6 +3,7 @@
   "title": "Analyserapport",
   "page_title": "{datum} - analyse - {slug}",
   "scope": "initiative",
+  "layout": "table",
   "label": "analyserapport",
   "sections": [
     {
@@ -10,42 +11,54 @@
       "title": "Onderliggend onderzoek",
       "kind": "input",
       "prompt": "Welke bronnen en onderzoeken onderbouwen dit rapport?",
-      "required": true
+      "required": true,
+      "group": "Analyse",
+      "row": "Onderliggend onderzoek"
     },
     {
       "id": "scope",
       "title": "Omvang",
       "kind": "input",
       "prompt": "Wat valt binnen en buiten de opdracht?",
-      "required": true
+      "required": true,
+      "group": "Analyse",
+      "row": "Omvang"
     },
     {
       "id": "classificatie",
       "title": "AI-classificatie",
       "kind": "input",
       "prompt": "Toepassingstype, AI-techniek en delivery-mode met onderbouwing.",
-      "required": true
+      "required": true,
+      "group": "Analyse",
+      "row": "AI-classificatie"
     },
     {
       "id": "oplossing",
       "title": "Oplossingsrichting",
       "kind": "input",
       "prompt": "Welke oplossing stel je voor?",
-      "required": true
+      "required": true,
+      "group": "Analyse",
+      "row": "Oplossingsrichting"
     },
     {
       "id": "data",
       "title": "Data",
       "kind": "input",
       "prompt": "Bestaan, toegang, rechten, kwaliteit en volume.",
-      "required": true
+      "required": true,
+      "group": "Analyse",
+      "row": "Data"
     },
     {
       "id": "risico",
       "title": "Risico en compliance",
       "kind": "input",
       "prompt": "AI Act-klasse, persoonsgegevens, DPIA-oordeel, DPO/CISO-advies met datum; menselijke validatie bij rechtsgevolgen.",
-      "required": true
+      "required": true,
+      "group": "Analyse",
+      "row": "Risico en compliance"
     },
     {
       "id": "dpia",
@@ -53,7 +66,9 @@
       "kind": "choice",
       "enum": "dpia",
       "required": true,
-      "prompt": "Is een DPIA vereist? Beoordeel dit bij elke verwerking van persoonsgegevens."
+      "prompt": "Is een DPIA vereist? Beoordeel dit bij elke verwerking van persoonsgegevens.",
+      "group": "Compliance",
+      "row": "DPIA"
     },
     {
       "id": "dpo",
@@ -61,28 +76,36 @@
       "kind": "choice",
       "enum": "dpo",
       "required": true,
-      "prompt": "Is de DPO gecontacteerd, of is dat niet van toepassing?"
+      "prompt": "Is de DPO gecontacteerd, of is dat niet van toepassing?",
+      "group": "Compliance",
+      "row": "DPO"
     },
     {
       "id": "baten",
       "title": "Baten en aanname",
       "kind": "input",
       "prompt": "Door Kenzo bevestigde claim in manuren, met aanname. Niet zelf berekenen of verzinnen.",
-      "required": true
+      "required": true,
+      "group": "Vervolg",
+      "row": "Baten en aanname"
     },
     {
       "id": "stappen",
       "title": "Volgende stappen",
       "kind": "input",
       "prompt": "Volgende stappen met geschatte inspanning.",
-      "required": true
+      "required": true,
+      "group": "Vervolg",
+      "row": "Volgende stappen"
     },
     {
       "id": "advies",
       "title": "Advies",
       "kind": "input",
       "prompt": "Onderbouwd AI-oordeel; geen beslissing namens het bevoegde orgaan.",
-      "required": true
+      "required": true,
+      "group": "Vervolg",
+      "row": "Advies"
     }
   ],
   "enums": {

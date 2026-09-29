@@ -255,8 +255,8 @@ def _section_body(schema: dict, section: dict, values: dict, atlassian: dict, sa
     if t == "artefacten":
         return f"<p>{_artefacts_macro(schema, section.get('exclude', []))}</p>"
     if t == "detailssummary":
-        label = section.get("label", "decisions")
-        cql = f'label = "{label}" and space = currentSpace() and ancestor = currentContent()'
+        labels = ", ".join(f'"{l}"' for l in section.get("labels", ["decisions"]))
+        cql = f'label in ({labels}) and space = currentSpace() and ancestor = currentContent()'
         return f'<p>{_detailssummary_macro(cql, "Beslissing", section.get("headings", ["Outcome", "Status"]))}</p>'
     raise ValueError(f"page_sections-type '{t}' onbekend")
 

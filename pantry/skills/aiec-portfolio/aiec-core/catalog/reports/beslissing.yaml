@@ -14,7 +14,7 @@
     },
     {
       "id": "besluit",
-      "title": "Besluit",
+      "title": "Wat beslist",
       "kind": "input",
       "prompt": "Wat is besloten?",
       "required": true

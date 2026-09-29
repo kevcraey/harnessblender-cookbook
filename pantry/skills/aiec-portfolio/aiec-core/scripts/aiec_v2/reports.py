@@ -13,6 +13,9 @@ from .report_inputs import INPUT_KINDS, render_input, choice_text
 from .form_files import font_faces
 
 
+TABLE_OPEN='<table class="relative-table wrapped" style="width: 100.0%;"><colgroup><col style="width: 40.0%;"/><col style="width: 60.0%;"/></colgroup><tbody>'
+
+
 def preview_html(title, period, body, fixture=False, fonts=''):
     style=fonts+''':root{--grey-100:#f7f9fc;--grey-300:#cfd5dd;--grey-1000:#333332;--text-subtle:rgba(0,20,46,.6);--accent:#447a6d;--primary:#ffed00;--warning-100:#fff9e8;--warning-400:#ffe49c;--warning-800:#9f5804}*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--grey-1000);font:18px/1.5 "Flanders Art Sans",sans-serif;-webkit-font-smoothing:antialiased}header{border-bottom:6px solid var(--primary)}header>div,main{max-width:1200px;margin:auto;padding:20px 30px}main{padding-bottom:60px}h1{font-size:32px;line-height:1.24;font-weight:500;margin:5px 0 0}h2{font-size:26px;line-height:1.3;font-weight:500;margin:40px 0 15px}h3,h4{font-size:22px;font-weight:500;margin:30px 0 10px}p{margin:0 0 15px}table{display:block;width:100%;overflow-x:auto;border-collapse:collapse;margin:15px 0;font-size:16px}th,td{padding:10px 12px;border-bottom:1px solid var(--grey-300);text-align:left;vertical-align:top}thead th{background:var(--grey-100);font-weight:500}.properties{display:table;width:auto;min-width:min(100%,560px);border:1px solid var(--grey-300);border-radius:3px}.properties th{width:220px;background:var(--grey-100);font-weight:500}.properties td{font-size:18px}aside{padding:15px 20px;background:var(--warning-100);border:1px solid var(--warning-400);border-radius:3px;margin:20px 0}aside strong{color:var(--warning-800)}.report-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}figure{margin:10px 0;border:1px solid var(--grey-300);border-radius:3px;overflow:hidden}figure img{display:block;width:100%;height:auto}figcaption{padding:8px 15px;color:var(--text-subtle);font-size:16px}em{color:var(--text-subtle);font-size:16px;font-style:normal}details{margin:30px 0 0;border-top:1px solid var(--grey-300);padding-top:15px}summary{cursor:pointer;font-weight:500}p,li{overflow-wrap:anywhere}.eyebrow{color:var(--accent);font-size:16px;font-weight:500}@media(max-width:900px){.report-charts{grid-template-columns:1fr}}@media(max-width:600px){header>div,main{padding:15px 16px}h1{font-size:26px}body{font-size:16px}}'''
     label='AIEC · Fictieve voorbeelddata · Concept' if fixture else 'AIEC · Concept ter goedkeuring'
@@ -147,6 +150,11 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
     # A report with its own decision date needs no separate period line.
     if 'datum' not in {s['id'] for s in spec['sections']} and not spec.get('tracking_source') and not maintained:body.append(f'<p>Periode: {escape(period)}</p>')
     in_properties=set((spec.get('properties') or {}).get('sections',[]))
+    # Layout 'table' follows the EAG template: per group one two-column table, question left, answer right.
+    # The group holding the properties is itself the properties block, in its place instead of on top.
+    table=spec.get('layout')=='table';table_rows=[];props_group=None
+    if table and in_properties:
+        props_group=next(s['group'] for s in spec['sections'] if s['id'] in in_properties);in_properties=set()
     if maintained:
         from .maintenance import DETAILS_ID, HIDDEN
         in_properties|=HIDDEN
@@ -158,7 +166,7 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
         md+=[x for n,v in maintained['rows'] for x in (f'**{n}:** '+_cell_text(v),'')]
     measured_state=(prepared or {}).get('state') or (final or {}).get('state')
     headline_md=[]
-    if spec.get('properties'):
+    if spec.get('properties') and not table:
         # Page Properties block: machine-readable for review and the Beslissingen overview.
         sections={s['id']:s for s in spec['sections']};rows=''
         for sid in spec['properties']['sections']:
@@ -172,9 +180,17 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
         body.append(details_macro(cat.schema,rows,details_id=spec['properties']['id']))
         preview_body.append('<table class="properties"><tbody>'+rows+'</tbody></table>')
     current_group=None
+    def flush():
+        if table_rows:
+            fragment=TABLE_OPEN+''.join(table_rows)+'</tbody></table>'
+            if current_group==props_group:
+                body.append(details_macro(cat.schema,''.join(table_rows),details_id=spec['properties']['id']).replace('<table><tbody>',TABLE_OPEN,1))
+            else:body.append(fragment)
+            preview_body.append(fragment);table_rows.clear()
     for section in spec['sections']:
         group=section.get('group')
         if group and group!=current_group:
+            flush()
             md+=[f'## {group}',''];body.append('<h2>'+escape(group)+'</h2>');preview_body.append('<h2>'+escape(group)+'</h2>')
         current_group=group
         if maintained and section['id'] in HIDDEN:
@@ -229,7 +245,10 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
             if section['id']==(spec.get('properties') or {}).get('sections',[None])[-1]:md+=headline_md
             # Values shown in the properties block are not repeated as a section.
             if section_body and section['id'] not in in_properties:
-                body.append(section_body);preview_body.append(section_body)
+                if table:
+                    answer=re.sub(r'^<h[23]>.*?</h[23]>','',section_body,count=1)
+                    table_rows.append('<tr><th scope="row">'+escape(section.get('row') or section['title'])+'</th><td>'+answer+'</td></tr>')
+                else:body.append(section_body);preview_body.append(section_body)
             if maintained and section['id'] in maintained['after']:
                 extra_md,extra_storage=maintained['after'][section['id']]
                 md+=extra_md;body.append(extra_storage);preview_body.append(extra_storage)
@@ -250,6 +269,7 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
                 if not rows:md+=['Geen gegevens in de gelezen bronnen.']
                 md+=['']
             # No snapshot of Jira-owned data in Confluence. The live macro above provides it.
+    flush()
     if measured_state:
         appendix_md,appendix_storage,appendix_html=report_charts.appendix(measured_state,chart_data,[r['title'] for r in final['records']] if final else ())
         md+=appendix_md;body.append(appendix_storage);preview_body.append(appendix_html)

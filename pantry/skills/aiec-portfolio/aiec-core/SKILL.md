@@ -329,17 +329,26 @@ Elke faseovergang heeft een beslissing; `process.yaml` legt per gate vast waar (
 |---|---|---|
 | Captatie → Analyse | captatierapport, initiatierapport | sectie Beslissing van het initiatierapport |
 | Analyse → Planning | analyserapport, verkenningsrapport | sectie Beslissing van het verkenningsrapport |
-| → Implementatie, Uitvoering, Afbouw, Afgesloten | zie gate | aparte beslissing met `overgang` |
+| → Implementatie, Uitvoering, Afbouw, Afgesloten | zie gate | aparte beslissing met `overgang`, of het verkenningsrapport met een ingevulde rij Overgang naar |
 
 Initiatie- en verkenningsrapport volgen de twee delen van het EAG-sjabloon (DigiAg 336528064) en horen onder het
-AI-initiatief; er wordt niets in DigiAg geschreven. Elke definitie bewaart een vingerafdruk van de vragen in haar
+AI-initiatief; er wordt niets in DigiAg geschreven. Ze nemen ook de vorm van het sjabloon over (`layout: table`): per
+groep (Administratieve info, Overweging, Beslissing) één tabel met de sjabloonvraag (`row`) links en het antwoord rechts,
+in plaats van een kop per sectie. De tabel Beslissing is zelf het eigenschappenblok `aiec-beslissing` (Datum, Beslist
+door, Wat beslist, plus de overige sjabloonvragen van dat blok), op zijn plaats en niet bovenaan. Het verkenningsrapport kan in dat blok ook Overgang naar, Bron en
+Gevolg dragen: leidt de verkenning meteen tot bv. Implementatie (opname in de reguliere werking), dan is geen aparte
+beslissing nodig. Captatie- en
+analyserapport gebruiken dezelfde tabelvorm: captatie volgt het handsjabloon (Captatie, Aanbeveling), analyse heeft
+Analyse, Compliance en Vervolg, waarbij Compliance zelf het eigenschappenblok `aiec-analyse` (DPIA, DPO) is. Elke definitie bewaart een vingerafdruk van de vragen in haar
 deel; `collect` leest het sjabloon mee en de review meldt `sjabloon-uit-sync` zodra EAG het aanpast (met de nieuwe
 vingerafdruk), of `sjabloon-niet-gelezen` als het sjabloon niet leesbaar was. Een transitie zonder beslissing krijgt een vraag, en de review
 meldt elke gepasseerde overgang zonder beslissing (`beslissing-ontbreekt`; na vroegtijdig afsluiten enkel de
 afsluitbeslissing). Voor de rapportgates telt de plugin de aanwezigheid van het rapport: een via de plugin gemaakt
 rapport heeft een ingevulde beslissing, een handgemaakte pagina wordt niet inhoudelijk gecontroleerd. Een aparte
-beslissing staat volledig in één eigenschappenblok (`aiec-beslissing`: Overgang naar, Besluit, Beslist door, Datum,
-Bron, Gevolg); daaruit lezen de review en het Beslissingen-overzicht op de initiatiefpagina. Velden in een
+beslissing staat volledig in één eigenschappenblok (`aiec-beslissing`: Overgang naar, Wat beslist, Beslist door, Datum,
+Bron, Gevolg); daaruit lezen de review en het Beslissingen-overzicht op de initiatiefpagina. Dat overzicht toont voor
+elke beslissing dezelfde kolommen (Datum, Beslist door, Wat beslist) en neemt naast aparte beslissingen (`decisions`)
+ook het initiatie- en verkenningsrapport op. Velden in een
 eigenschappenblok worden niet nog eens als sectie herhaald, een beslissing krijgt geen Jira-macro (`jira: false`), en een rapport met een beslissingsdatum krijgt geen
 aparte perioderegel. Oudere beslissingen zonder dat blok geven een info-melding.
 

@@ -3,6 +3,7 @@
   "title": "Captatierapport",
   "page_title": "{datum} - captatie - {slug}",
   "scope": "initiative",
+  "layout": "table",
   "label": "captatierapport",
   "sections": [
     {
@@ -10,63 +11,81 @@
       "title": "Eerste AI-indruk",
       "kind": "input",
       "prompt": "Wat zou AI hier doen? Wie stuurt en beslist?",
-      "required": true
+      "required": true,
+      "group": "Captatie",
+      "row": "Eerste AI-indruk"
     },
     {
       "id": "meerwaarde",
       "title": "Beoogde meerwaarde",
       "kind": "input",
       "prompt": "Volume, frequentie, huidige tijd en geschatte winst in manuren; vermeld onzekerheid.",
-      "required": true
+      "required": true,
+      "group": "Captatie",
+      "row": "Beoogde meerwaarde"
     },
     {
       "id": "overlap",
       "title": "Overlap en raakvlakken",
       "kind": "input",
       "prompt": "Wat bestaat al? Wat kan worden hergebruikt?",
-      "required": true
+      "required": true,
+      "group": "Captatie",
+      "row": "Overlap en raakvlakken"
     },
     {
       "id": "ai-act",
       "title": "AI Act-gevoeligheid",
       "kind": "input",
       "prompt": "Ondersteunt of beslist het systeem? Welke gevolgen?",
-      "required": true
+      "required": true,
+      "group": "Captatie",
+      "row": "AI Act-gevoeligheid"
     },
     {
       "id": "privacy",
       "title": "Persoonsgegevens",
       "kind": "input",
       "prompt": "Zitten er persoonsgegevens in input of dossier? Is DPO betrokken?",
-      "required": true
+      "required": true,
+      "group": "Captatie",
+      "row": "Persoonsgegevens"
     },
     {
       "id": "data",
       "title": "Databeschikbaarheid",
       "kind": "input",
       "prompt": "Bestaat de data, is ze toegankelijk en is er een referentie?",
-      "required": true
+      "required": true,
+      "group": "Captatie",
+      "row": "Databeschikbaarheid"
     },
     {
       "id": "haalbaarheid",
       "title": "Technische haalbaarheid",
       "kind": "input",
       "prompt": "Wat is haalbaar, wat is onzeker?",
-      "required": true
+      "required": true,
+      "group": "Captatie",
+      "row": "Technische haalbaarheid"
     },
     {
       "id": "timing",
       "title": "Timing",
       "kind": "input",
       "prompt": "Welke termijnen en beschikbaarheid zijn relevant?",
-      "required": true
+      "required": true,
+      "group": "Captatie",
+      "row": "Timing"
     },
     {
       "id": "advies",
       "title": "Aanbeveling",
       "kind": "input",
       "prompt": "Is verkenning zinvol, waarom, en welke aanpak en inspanning stel je voor?",
-      "required": true
+      "required": true,
+      "group": "Aanbeveling",
+      "row": "Verkenning waard, parkeren of afwijzen? Met reden en, als er een aanpak voorligt, de verkenning en haar inspanning in grote lijnen."
     }
   ]
 }

@@ -185,6 +185,14 @@ class Catalog:
             if any(g is not None and (not isinstance(g, str) or not g.strip()) for g in groups): raise ValueError('Groep moet tekst zijn')
             runs = [g for i, g in enumerate(groups) if g and (i == 0 or groups[i-1] != g)]
             if len(runs) != len(set(runs)): raise ValueError('Secties van één groep moeten aansluiten')
+            if report.get('layout') not in (None, 'table'): raise ValueError('Onbekende layout: ' + str(report['layout']))
+            if report.get('layout') == 'table' and any(s['kind'] not in ('input', 'choice') or not s.get('group') for s in report['sections']):
+                raise ValueError('Tabellayout vraagt enkel invoer- of keuzesecties met een groep')
+            if report.get('layout') == 'table' and report.get('properties'):
+                props = report['properties']['sections']
+                group = {s['id']: s['group'] for s in report['sections']}
+                if len({group[x] for x in props}) != 1 or sorted(props) != sorted(x for x, g in group.items() if g == group[props[0]]):
+                    raise ValueError('Tabellayout: de eigenschappen vormen samen precies één groep')
             source = report.get('tracking_source')
             if source is not None:
                 if report.get('tracking') or report.get('scope') != 'project' or not isinstance(source, dict) or set(source) != {'report', 'section'}:
