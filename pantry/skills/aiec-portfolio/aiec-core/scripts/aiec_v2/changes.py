@@ -1,13 +1,13 @@
 """Build explicit payloads. Every backend mutation is a separate journalled action."""
 from __future__ import annotations
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from html import escape
 import difflib
 import re
 from uuid import uuid4
 from aiec_lib import confluence as conf, jira, schema as sch
 from .catalog import digest
-from .backend import now, revision
+from .backend import now, revision, INTERN, INTERN_KEY_RE, PROJECT_DETAILS, intern_key
 from .review import datasets, review, decided, decision_question
 from .reports import render
 
@@ -56,6 +56,21 @@ def patch_details(cat, storage, values):
     if extra:blocks[-1]+=conf.details_macro(cat.schema,extra,hidden=True)
     for (s,e),block in reversed(list(zip(spans,blocks))):storage=storage[:s]+block+storage[e:]
     return storage
+
+
+def project_properties(schema,project_key,status,startdatum,decision_title):
+    """Properties of an internal project page: type, status, start date, a link to its decision page, and a hidden technical key."""
+    link=f'<ac:link><ri:page ri:content-title="{conf.esc(decision_title)}"/></ac:link>'
+    rows=(f'<tr><th>Type</th><td>{INTERN}</td></tr><tr><th>Status</th><td>{conf.esc(status)}</td></tr>'
+          f'<tr><th>Startdatum</th><td>{conf.esc(startdatum)}</td></tr><tr><th>Beslissing</th><td>{link}</td></tr>')
+    return (conf.details_macro(schema,rows,details_id=PROJECT_DETAILS)+
+            conf.details_macro(schema,f'<tr><th>Projectkey</th><td>{conf.esc(project_key)}</td></tr>',hidden=True,details_id=PROJECT_DETAILS))
+
+
+def start_date(value):
+    """An internal project's start date: JJJJ-MM-DD. Monthly progress reports are due from its month on."""
+    try:return date.fromisoformat(str(value or '')).isoformat()
+    except ValueError:raise ValueError('Startdatum vereist als JJJJ-MM-DD') from None
 
 
 def make_plan(cat,backend,cfg,request):
@@ -132,6 +147,45 @@ def make_plan(cat,backend,cfg,request):
         fields={f:{'name':u} for f,u in wanted.items() if (raw.get(f) or {}).get('name')!=u}
         if fields:action('issue.update',key.split('-')[0],{'fields':fields},key)
         else:notes.append('Personen staan al zo in Jira.')
+    elif kind=='project-page' and request.get('intern'):
+        # Internal project: no POR ticket, same structure. Needs a formal decision page under the initiative.
+        if key not in issues:raise ValueError('Intern project: key is het AI-initiatief')
+        naam=(request.get('summary') or '').strip();status=request.get('status')
+        if not naam:raise ValueError('Naam van het interne project vereist (summary)')
+        if status not in cat.schema['project_statussen']:raise ValueError('Status moet een van '+', '.join(cat.schema['project_statussen'])+' zijn')
+        startdatum=start_date(request.get('startdatum'))
+        home=page_for(key)
+        decisions=[d for p in snapshot['pages'] if p.get('ai_key')==key for d in p.get('decisions',[]) if d['page_id']==str(request.get('beslissing',''))]
+        if len(decisions)!=1:raise ValueError('Beslissing: geef de page_id van een beslissingspagina onder dit initiatief; een intern project vraagt een formele beslissing')
+        observe('page',decisions[0]['page_id'])
+        if not cfg['atlassian'].get('jira_server_id'):raise ValueError('Jira serverId vereist')
+        # Numbered per initiative; the number is only a technical key, never shown in titles.
+        n=1+max([int(p['key'].rsplit('-',1)[1]) for p in data['projects'] if p.get('type')==INTERN and key in p['initiatives']],default=0)
+        body=('<h2>Eigenschappen</h2>'+project_properties(cat.schema,intern_key(key,n),status,startdatum,decisions[0]['title'])+
+              '<h2>Stand van zaken</h2><p>'+conf._jira_macro(cfg['atlassian'],f'key = {key}')+'</p>'
+              '<h2>Artefacten</h2><p>'+conf._artefacts_macro(cat.schema,['decisions'])+'</p>')
+        create_page(home['id'],f"{INTERN} - {naam}",body,[])
+    elif kind=='project-eigenschappen':
+        # A POR's status and dates live in Jira; only an internal project keeps them on its page.
+        project=next((p for p in data['projects'] if p['key']==key),None)
+        if not project or project.get('type')!=INTERN:raise ValueError('Eigenschappen bijhouden kan enkel voor een intern project; een POR-status staat in Jira')
+        wanted={}
+        if 'status' in request:
+            if request['status'] not in cat.schema['project_statussen']:raise ValueError('Status moet een van '+', '.join(cat.schema['project_statussen'])+' zijn')
+            wanted['Status']=request['status']
+        if 'startdatum' in request:wanted['Startdatum']=start_date(request['startdatum'])
+        if not wanted:raise ValueError('Geef status en/of startdatum')
+        if not project.get('page_id'):raise ValueError('Projectpagina ontbreekt')
+        p=observe('page',project['page_id']);storage=p['body']['storage']['value']
+        spans=[(s0,e0) for s0,e0 in conf.find_details_blocks(cat.schema,storage,PROJECT_DETAILS) if '<th>Status</th>' in storage[s0:e0]]
+        if len(spans)!=1:raise ValueError('Projectpagina heeft geen eenduidig eigenschappenblok met Status')
+        s0,e0=spans[0];new=storage[s0:e0]
+        for label,value in wanted.items():
+            row=re.compile(rf'(<th>{label}</th>\s*<td>).*?(</td>)',re.S)
+            if row.search(new):new=row.sub(lambda m:m.group(1)+conf.esc(value)+m.group(2),new,count=1)
+            # Pages made before the start date was required get the row after Status.
+            else:new=re.sub(r'(<tr><th>Status</th>.*?</tr>)',lambda m:m.group(1)+f'<tr><th>{label}</th><td>{conf.esc(value)}</td></tr>',new,count=1,flags=re.S)
+        update_page(p,storage[:s0]+new+storage[e0:])
     elif kind=='project-page':
         project=next((p for p in data['projects'] if p['key']==key),None)
         if not project:raise ValueError('Onbekend project; link het POR-ticket eerst aan een initiatief')
@@ -211,8 +265,19 @@ def make_plan(cat,backend,cfg,request):
                 old=observe('page',result['replaces']['page_id'])
                 update_page(old,retire(cat.schema,old['body']['storage']['value'],result['title']))
             observe('issue',result['initiative'])
-            if result['scope']=='project':observe('issue',result['target'])
+            if result['scope']=='project' and not INTERN_KEY_RE.fullmatch(result['target']):observe('issue',result['target'])
         notes.append('Rapport wordt als nieuwe momentopname gemaakt, niet over een bestaand rapport heen geschreven.')
+    elif kind=='rapportering':
+        # Internal only: the archive, never Confluence. A change is a new record; the latest counts.
+        from .periods import check_frequency
+        from .review import frequency
+        if key not in issues:raise ValueError('Onbekend AI-initiatief')
+        record=check_frequency({'key':key,'frequentie':request.get('frequentie'),'vanaf':request.get('vanaf'),'datum':now()})
+        current=frequency(snapshot,key)
+        if (current['frequentie'],current.get('vanaf'))==(record['frequentie'],record['vanaf']):notes.append(f"{key} rapporteert al {record['frequentie']}; geen wijziging.")
+        else:
+            action('rapportering.archive','rapportering',record)
+            notes.append(f"Nu: {current['frequentie']}"+(f" vanaf {current['vanaf']}" if current.get('vanaf') else '')+'. Wordt vastgelegd in het archief (commit en push), niet in Confluence.')
     else:raise ValueError('Onbekende verzoeksoort: '+str(kind))
     # Scope guard checks actual objects, not just the caller's claimed scope.
     allowed={cfg['atlassian']['space'],cfg['writes']['test_space']}

@@ -26,9 +26,9 @@ enums:
     - {value: ja, label: Ja}
     - {value: nee, label: Nee}
   kostenpost:
-    - {value: licenties, label: Licenties}
-    - {value: inference, label: Inference}
     - {value: hosting, label: Hosting}
+    - {value: licenties, label: Licentie}
+    - {value: inference, label: Inference}
     - {value: overige, label: Overige}
 
 sections:
@@ -39,7 +39,7 @@ sections:
     required: false
 
   - id: uitval
-    group: Kritikaliteit
+    group: Impact van uitval
     title: Impact van uitval
     kind: input_table
     prompt: Wat is de impact op de organisatie als de toepassing zo lang uitvalt? Eén rij per duur, alle zes.
@@ -48,10 +48,10 @@ sections:
     columns:
       - {id: duur, title: Uitval, type: choice, enum: duur, required: true, unique: true}
       - {id: impact, title: Impact, type: choice, enum: impact, required: true}
-    help: Schaal 1–5 van de VCDV-informatieclassificatie (beschikbaarheid). De impact mag niet dalen naarmate de uitval langer duurt. De code leidt de klasse P1–P3 af; niemand kiest ze zelf.
+    help: Schaal 1–5 van de VCDV-informatieclassificatie (beschikbaarheid). De impact mag niet dalen naarmate de uitval langer duurt. De code leidt de klasse af (kritisch, belangrijk of standaard); niemand kiest ze zelf.
 
   - id: buiten_kantooruren
-    group: Kritikaliteit
+    group: Impact van uitval
     title: Ondersteuning buiten de kantooruren
     kind: choice
     enum: janee
@@ -59,7 +59,7 @@ sections:
     required: true
 
   - id: terugval
-    group: Kritikaliteit
+    group: Impact van uitval
     title: Terugval bij uitval
     kind: input
     prompt: Wat gebeurt er als de AI uitvalt? Kan het proces handmatig verder, en hoe?
@@ -80,36 +80,37 @@ sections:
     group: Begroting
     title: Runkost
     kind: input_table
-    prompt: Welke jaarlijkse kosten in euro heeft de toepassing, los van onderhoud in mandagen? Licenties, inference, hosting, overige.
+    prompt: Welke jaarlijkse kosten in euro heeft de toepassing, los van onderhoud in mandagen? Eén rij per post, alle vier.
     required: true
-    min_rows: 1
+    min_rows: 4
     columns:
-      - {id: post, title: Post, type: choice, enum: kostenpost, required: true}
+      - {id: post, title: Post, type: choice, enum: kostenpost, required: true, unique: true}
       - {id: omschrijving, title: Omschrijving, type: text, required: true}
       - {id: bedrag, title: Bedrag (€/jaar), type: decimal, required: true}
-    help: Geen kost? Eén rij met bedrag 0 en de reden. Runkost is geen omrekening van mandagen naar euro.
+    help: Geen kost voor een post? Omschrijving 'Geen.' en bedrag 0. Runkost is geen omrekening van mandagen naar euro.
 
   - id: modellen
-    group: AI-specifiek onderhoud
-    title: Modellen en versies
+    title: Modellen
     kind: input_table
-    prompt: Welke modellen gebruikt de toepassing, in welke versie, en tot wanneer ondersteunt de leverancier die versie?
+    prompt: Welke (taal)modellen gebruikt de toepassing, tot wanneer ondersteunt de leverancier die versie, wat is het plan van aanpak daarna, en is er een referentiedataset om een nieuwe versie te toetsen? Geen AI-model? Geef een lege lijst.
     required: true
-    min_rows: 1
+    min_rows: 0
     columns:
       - {id: component, title: Onderdeel, type: text, required: true}
       - {id: model, title: Model en versie, type: text, required: true}
       - {id: einde, title: Einde ondersteuning, type: text, required: false, empty: onbekend}
+      - {id: aanpak, title: Plan van aanpak, type: text, required: true}
+      - {id: referentiedataset, title: Referentiedataset, type: choice, enum: janee, required: true}
+    help: Plan van aanpak, bijvoorbeeld een upgrade naar een equivalent model. Per model en per jaar telt de onderhoudskost een upgrade van 5 md met referentiedataset, 10 md zonder. Zonder model verschijnt de sectie niet.
 
   - id: kwaliteit
-    group: AI-specifiek onderhoud
     title: Kwaliteitsbewaking
     kind: input
-    prompt: Met welke evaluatieset wordt de kwaliteit bewaakt, wie hertest, hoe vaak, en bij welke drempel wordt ingegrepen?
+    prompt: Hoe wordt de kwaliteit bewaakt? Wie hertest, hoe vaak, en bij welke drempel wordt ingegrepen? Bij een AI-model ook met welke evaluatieset.
     required: true
 
   - id: afhankelijkheden
-    group: AI-specifiek onderhoud
+    group: Afhankelijkheden
     title: Afhankelijkheden
     kind: input_table
     prompt: Van welke databronnen, API's, diensten, contracten en licenties hangt de toepassing af, en tot wanneer lopen die?
@@ -118,23 +119,27 @@ sections:
     columns:
       - {id: afhankelijkheid, title: Afhankelijkheid, type: text, required: true}
       - {id: einde, title: Loopt tot, type: text, required: false, empty: onbepaald}
+    help: Niet de vanzelfsprekende platformen van het departement, zoals hosting, build of het dataplatform. Andere producten (PROD) staan in de lijst hieronder.
 
-  - id: compliance
-    group: AI-specifiek onderhoud
-    title: Compliance
-    kind: input
-    prompt: Wanneer worden DPIA en AI Act-classificatie herzien? Bij hoog risico ook monitoring na ingebruikname en logging.
+  - id: producten
+    group: Afhankelijkheden
+    title: Producten
+    kind: input_table
+    prompt: Op welke andere producten (PROD-key) steunt de toepassing, en waarvoor? Geen? Geef een lege lijst.
     required: true
+    min_rows: 0
+    columns:
+      - {id: product, title: Product, type: text, required: true, unique: true}
+      - {id: waarvoor, title: Waarvoor, type: text, required: true}
+    help: Enkel producten met een PROD-ticket; de code controleert de key en toont de naam. Andere afhankelijkheden horen in de lijst erboven.
 
   - id: incidenten
-    group: Incidenten en herziening
     title: Incidenten
     kind: input
-    prompt: Waar meldt een gebruiker een incident, en wat is de escalatieketen?
+    prompt: Waar meldt een gebruiker een incident, en wie behandelt het?
     required: true
 
   - id: afbouw
-    group: Incidenten en herziening
     title: Afbouwcriteria
     kind: input
     prompt: Wanneer gaat het product richting Afbouw? Bijvoorbeeld weinig gebruik, een vervallen model, of kosten hoger dan de baten.

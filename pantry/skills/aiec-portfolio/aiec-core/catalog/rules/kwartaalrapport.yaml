@@ -21,6 +21,6 @@
       }
     ]
   },
-  "message": "Rapport over gebruik en opbrengst van het vorige kwartaal niet gevonden.",
-  "action": "Vraag de verantwoordelijke om de kwartaalrapportering aan te vullen."
+  "message": "Rapport over gebruik en opbrengst niet op tijd: de periode die volgens de rapporteringsfrequentie vervallen is (halverwege de volgende periode) heeft geen gebruiksrapport.",
+  "action": "Vraag de verantwoordelijke het gebruiksrapport van die periode (rapport_periode) aan te vullen. Een andere frequentie of startperiode leg je intern vast met een rapportering-voorstel."
 }

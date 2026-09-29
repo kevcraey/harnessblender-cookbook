@@ -131,10 +131,6 @@
       "question": "Bevestig captatietermijn, verlenging, wachtklok en prioriteitsbump; nog geen automatische termijnen of bumps."
     },
     {
-      "id": "rapportdeadline",
-      "question": "Bepaal de inleverdeadline voor maand- en kwartaalrapporten. Tot dan signaleren, niet als te laat kwalificeren."
-    },
-    {
       "id": "meting-nota",
       "question": "Bevestig meting als label en de behandeling van initiatiefgebonden governancenota’s."
     }

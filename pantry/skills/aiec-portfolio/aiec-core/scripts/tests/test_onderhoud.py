@@ -19,11 +19,13 @@ def plan_answers(**extra):
             'terugval': 'Dossierbehandelaars werken handmatig verder.',
             'as_is': [{'md': '0', 'bron': 'Green field'}],
             'runkost': [{'post': 'inference', 'omschrijving': 'Tokens', 'bedrag': '1200'},
-                        {'post': 'hosting', 'omschrijving': 'Container', 'bedrag': '800,50'}],
-            'modellen': [{'component': 'Samenvatting', 'model': 'Model X 1.0', 'einde': '2027-06'}],
+                        {'post': 'hosting', 'omschrijving': 'Container', 'bedrag': '800,50'},
+                        {'post': 'licenties', 'omschrijving': 'Geen.', 'bedrag': '0'},
+                        {'post': 'overige', 'omschrijving': 'Geen.', 'bedrag': '0'}],
+            'modellen': [{'component': 'Samenvatting', 'model': 'Model X 1.0', 'einde': '2027-06', 'aanpak': 'Upgrade naar Model X 2.0', 'referentiedataset': 'ja'}],
+            'producten': [],
             'kwaliteit': 'Evaluatieset van 50 dossiers, elk kwartaal.',
             'afhankelijkheden': [{'afhankelijkheid': 'Dossier-API', 'einde': ''}],
-            'compliance': 'DPIA jaarlijks herzien.',
             'incidenten': 'Servicedesk, dan het AIEC-team.',
             'afbouw': 'Minder dan 10 gebruikers per maand.'}
     data.update(extra)
@@ -50,10 +52,10 @@ def props(storage):
 
 
 def test_class_rule():
-    assert klasse(dict(zip(DURATIONS, [1, 1, 4, 4, 5, 5]))) == 'P1'
-    assert klasse(dict(zip(DURATIONS, [1, 1, 2, 3, 3, 5]))) == 'P2'
-    assert klasse(dict(zip(DURATIONS, [1, 1, 1, 2, 4, 5]))) == 'P2'
-    assert klasse(dict(zip(DURATIONS, [1, 1, 1, 2, 3, 4]))) == 'P3'
+    assert klasse(dict(zip(DURATIONS, [1, 1, 4, 4, 5, 5]))) == 'kritisch'
+    assert klasse(dict(zip(DURATIONS, [1, 1, 2, 3, 3, 5]))) == 'belangrijk'
+    assert klasse(dict(zip(DURATIONS, [1, 1, 1, 2, 4, 5]))) == 'belangrijk'
+    assert klasse(dict(zip(DURATIONS, [1, 1, 1, 2, 3, 4]))) == 'standaard'
 
 
 def test_green_field_plan_derives_class_and_cost(env):
@@ -62,11 +64,21 @@ def test_green_field_plan_derives_class_and_cost(env):
     r = render(cat, b.collect(), 'onderhoud', 'POR-1', '2026-10', plan_answers(), cfg)
     assert r['complete'], r['questions']
     p = props(r['storage'])
-    assert p['Product'].startswith('PROD-1 ') and p['Status'] == 'Actief' and p['Klasse'] == 'P2'
-    assert p['Investering (md)'] == '100' and p['Onderhoud (md/jaar)'] == '20' and p['Runkost (€/jaar)'] == '2000,5'
+    assert p['Product'].startswith('PROD-1 ') and p['Status'] == 'Actief' and p['Klasse'] == 'belangrijk'
+    # 10 md + 12,5% of 0 as-is and of 100 delta + 5 md upgrade of one model with a reference dataset.
+    assert p['Investering (md)'] == '100' and p['Onderhoud (md/jaar)'] == '27,5' and p['Runkost (€/jaar)'] == '2000,5'
     assert p['Vervangt'] == '—' and p['Geldig tot'][:4] == str(int(r['title'][:4])+1)
-    assert 'Afgeleide klasse: P2' in r['storage'] and '10 md vast + 10% van 100 md investering = 20 md' in r['storage']
-    assert '<h2>Product</h2>' not in r['storage'] and '<h3>Bestaande investering</h3>' not in r['storage']
+    s = r['storage']
+    assert '→ Afgeleide klasse: belangrijk.' in s and '<td>Recurrent obv nieuwe investering</td><td>12,5 md</td>' in s
+    assert 'Upgrade Model X 1.0 (Samenvatting), met referentiedataset' in s and '<th>Totaal</th><th>27,5 md</th>' in s
+    assert '<th>Totaal</th><th></th><th>2000,5</th>' in s and s.index('<td>Hosting</td>') < s.index('<td>Licentie</td>') < s.index('<td>Inference</td>')
+    assert '<ac:parameter ac:name="hidden">true</ac:parameter><ac:parameter ac:name="id">aiec-onderhoud</ac:parameter>' in s
+    # The outage group carries the heading once; model and cost inputs are no section of their own.
+    assert s.count('<h2>Impact van uitval</h2>') == 1 and '<h3>Impact van uitval</h3>' not in s and '<h3>Terugval bij uitval</h3>' in s
+    assert '<h2>Product</h2>' not in s and '<h3>Bestaande investering</h3>' not in s
+    assert '<h2>Modellen</h2>' in s and '<td>2027-06</td><td>Upgrade naar Model X 2.0</td><td>Ja</td>' in s
+    assert '<td>Recurrent obv bestaande investering (Green field)</td><td>0 md</td>' in s
+    assert s.count('<h2>Afhankelijkheden</h2>') == 1 and '<h3>Producten</h3><p>Steunt op geen andere producten.</p>' in s
     assert r['history_guard']['report'] == 'vooruitgang' and r['replaces'] is None and 'onderhoudsplan - POR-1' in r['title']
 
 
@@ -84,7 +96,7 @@ def test_off_hours_with_p3_is_a_note(env):
     delivered(env)
     r = render(cat, b.collect(), 'onderhoud', 'POR-1', '2026-10', plan_answers(uitval=matrix(1, 1, 1, 2, 2, 3), buiten_kantooruren='ja'), cfg)
     assert r['complete'] and any('buiten de kantooruren' in n for n in r['notes'])
-    assert props(r['storage'])['Onderhoud (md/jaar)'] == '17,5'
+    assert props(r['storage'])['Onderhoud (md/jaar)'] == '25'
 
 
 def test_needs_progress_report_and_as_is(env):
@@ -125,6 +137,7 @@ def test_new_version_replaces_previous_plan(env):
     # A corrected plan of the same project keeps the as-is: no double count of its own delta.
     same = render(cat, b.collect(), 'onderhoud', 'POR-1', '2026-11', plan_answers(as_is=[]), cfg, 'tweede')
     assert same['complete'] and same['replaces']['title'] == first_title and props(same['storage'])['Investering (md)'] == '100'
+    assert 'Recurrent obv bestaande investering: <ac:link><ri:page ri:content-title="'+first_title+'"/>' in same['storage']
     # A plan from another project builds on the whole previous investment.
     page = next(v for v in b.data['objects']['page'].values() if v['title'] == first_title)
     page['body']['storage']['value'] = page['body']['storage']['value'].replace('<th>Project</th><td>POR-1</td>', '<th>Project</th><td>POR-9</td>')
@@ -171,3 +184,39 @@ def test_gate_asks_onderhoudsplan_per_project_only(env):
     _gate_env(b, [('90', 'opleveringsverslag')])
     q = make_plan(cat, b, cfg, {'kind': 'transition', 'key': 'AI-38', 'to': 'Uitvoering'})['questions']
     assert 'Gate-artefact ontbreekt voor project POR-1: onderhoudsplan' in q and 'Gate-artefact ontbreekt: onderhoudsplan' not in q
+
+
+def test_models_drive_upgrade_cost_and_must_be_answered(env):
+    cat, cfg, b, _ = env
+    delivered(env)
+    none = render(cat, b.collect(), 'onderhoud', 'POR-1', '2026-10', plan_answers(modellen=[]), cfg)
+    assert none['complete'] and props(none['storage'])['Onderhoud (md/jaar)'] == '22,5'
+    assert 'Upgrades van (taal)modellen <ac:structured-macro' in none['storage']
+    assert '<h2>Modellen</h2>' not in none['storage']
+    two = [{'component': 'A', 'model': 'M1', 'aanpak': 'Equivalent model', 'referentiedataset': 'ja'},
+           {'component': 'B', 'model': 'M2', 'aanpak': 'Equivalent model', 'referentiedataset': 'nee'}]
+    assert props(render(cat, b.collect(), 'onderhoud', 'POR-1', '2026-10', plan_answers(modellen=two), cfg)['storage'])['Onderhoud (md/jaar)'] == '37,5'
+    answers = plan_answers(); del answers['modellen']
+    r = render(cat, b.collect(), 'onderhoud', 'POR-1', '2026-10', answers, cfg)
+    assert any(q['section'] == 'modellen' for q in r['questions'])
+
+
+def test_runkost_needs_every_post(env):
+    cat, cfg, b, _ = env
+    delivered(env)
+    r = render(cat, b.collect(), 'onderhoud', 'POR-1', '2026-10', plan_answers(runkost=[{'post': 'hosting', 'omschrijving': 'Geen.', 'bedrag': '0'}]), cfg)
+    assert any(q['section'] == 'runkost' for q in r['questions'])
+
+
+def test_product_dependencies_need_existing_keys(env):
+    cat, cfg, b, _ = env
+    delivered(env)
+    issues = b.data['objects']['issue']
+    issues['PROD-7'] = copy.deepcopy(issues['PROD-1']); issues['PROD-7']['key'] = 'PROD-7'; issues['PROD-7']['fields']['summary'] = 'Kaartdienst'
+    r = render(cat, b.collect(), 'onderhoud', 'POR-1', '2026-10', plan_answers(producten=[{'product': 'PROD-7', 'waarvoor': 'Kaartlagen'}]), cfg)
+    assert r['complete'] and '<td>PROD-7 — Kaartdienst</td><td>Kaartlagen</td>' in r['storage']
+    for key, error in (('PROD-8', 'bestaat niet'), ('PROD-1', 'het product zelf'), ('Kaartdienst', 'geen PROD-key')):
+        with pytest.raises(ValueError, match=error):
+            render(cat, b.collect(), 'onderhoud', 'POR-1', '2026-10', plan_answers(producten=[{'product': key, 'waarvoor': 'x'}]), cfg)
+    answers = plan_answers(); del answers['producten']
+    assert any(q['section'] == 'producten' for q in render(cat, b.collect(), 'onderhoud', 'POR-1', '2026-10', answers, cfg)['questions'])

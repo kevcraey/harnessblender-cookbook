@@ -25,6 +25,7 @@ artefact_labels:
   retrospectieve: terugblik na afsluiten van een project; op verzoek, geen verplichte gate
   initiatierapport: EAG-beoordeling Initiatie (Captatie → Analyse), met de beslissing over verkenning
   verkenningsrapport: EAG-beoordeling Verkenning (Analyse → Planning), met de beslissing over het vervolg
+  productfiche: fiche van het opgeleverde product (PROD), onder het AI-initiatief
 
 # Vier strategische pijlers plus één cross-cutting. Code is de waarheid in het details-blok; de
 # naam mag herformuleerd worden. Set door Kenzo vastgelegd op 2026-09-16; namen en toelichtingen
@@ -68,6 +69,11 @@ statussen:
   - jira: Closed
     naam: Afgesloten
     eind: true
+
+# Status van een intern project (zonder POR-taak): dezelfde namen als de Jira-workflow Portfoliotaak
+# (live gelezen 2026-09-29), zodat regels zoals maandrapport voor beide projecttypes gelijk werken.
+# De projectleider houdt ze zelf bij op de projectpagina (verzoek project-eigenschappen).
+project_statussen: [Backlog, In voorbereiding, KlaarVoorUitvoering, InUitvoering, In Review, Uitgevoerd, Stopgezet]
 
 # Jira-resolutions bij Afgesloten (datamodel §3). Categorie → resolution-namen op de instance
 # (lijst live gelezen 2026-09-16: 30 namen, geen 'uitgevoerd/stopgezet/geannuleerd'). Welke naam
@@ -224,14 +230,14 @@ fields:
     label: AI Act-klasse
     groep: Risico
     type: enum
-    values: [verboden, hoog, beperkt, minimaal, te bepalen]
+    values: [verboden, hoog, beperkt, minimaal, te bepalen, niet van toepassing]
     required: true
     hint: "'te bepalen' mag tot en met Analyse; vanaf Planning wordt het gemeld"
   - key: persoonsgegevens
     label: Persoonsgegevens
     groep: Risico
     type: enum
-    values: [ja, nee, onbekend]
+    values: [ja, nee, onbekend, niet van toepassing]
     required: true
     hint: ja → DPO betrekken (artefact, geen veld)
   - key: batenclaim
@@ -265,6 +271,21 @@ fields:
     required_when:
       - fase_min: Uitvoering
     hint: wie het gebruikt (afdelingen, aantallen als bekend)
+  # Rijpheid is geen fase: ze zegt hoe af de oplossing is, de fase waar het initiatief staat.
+  # Terminologie door Kenzo vastgelegd op 2026-09-29.
+  - key: rijpheid
+    label: Rijpheid
+    groep: Waarde
+    type: enum
+    values: [PoC, Prototype, MVP, Matuur product]
+    value_hints:
+      PoC: bewijst technische haalbaarheid; wegwerpcode; geen gebruikers
+      Prototype: werkt op echte input, wordt gedemonstreerd; niet uitgerold
+      MVP: in productie met minimale scope, echte gebruikers, bekende beperkingen, beheer licht geregeld
+      Matuur product: volwaardig beheer (SLA, monitoring, gevalideerde kwaliteit), breed uitgerold
+    required_when:
+      - fase_min: Uitvoering
+    hint: huidige rijpheid van wat er staat, geen fase; stijgt met vervolgprojecten
   - key: stopreden
     label: Stopreden
     groep: Afsluiting

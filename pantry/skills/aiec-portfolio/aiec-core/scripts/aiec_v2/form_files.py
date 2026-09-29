@@ -56,7 +56,7 @@ def validate_document(doc):
         _object(doc['settings'],['auto_remaining'],['auto_remaining'],'Instellingen')
         if type(doc['settings']['auto_remaining']) is not bool:raise ValueError('Auto-calc moet aan of uit zijn')
     _object(doc['project'], ['key','name'], ['key','name'], 'Project')
-    if not re.fullmatch(r'[A-Z][A-Z0-9_]*-\d+', str(doc['project']['key'])) or not isinstance(doc['project']['name'], str) or not doc['project']['name'].strip():
+    if not re.fullmatch(r'[A-Z][A-Z0-9_]*-\d+(-intern-\d+)?', str(doc['project']['key'])) or not isinstance(doc['project']['name'], str) or not doc['project']['name'].strip():
         raise ValueError('Projectkey en naam zijn verplicht')
     tracking.baseline(doc['baseline'])
     periods = doc['periods']

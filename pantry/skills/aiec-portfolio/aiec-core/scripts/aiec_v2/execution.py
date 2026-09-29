@@ -11,7 +11,7 @@ import json
 import os
 from pathlib import Path
 from .catalog import digest
-from .backend import now, revision
+from .backend import now, revision, ARCHIVE_KINDS
 from aiec_lib.config import guard
 
 
@@ -54,6 +54,11 @@ def validate_plan(plan,cat,cfg,backend):
             ref=action['payload'].get('page_action')
             if action.get('key') is not None or ref not in creates or not isinstance(action['payload'].get('record'),dict):
                 raise Refused('Meetstand moet verwijzen naar een eerdere nieuwe rapportpagina')
+        if action['kind']=='rapportering.archive':
+            from .periods import check_frequency
+            if action.get('key') is not None:raise Refused('Rapporteringsfrequentie draagt de initiatiefkey in de payload')
+            try:check_frequency(action['payload'])
+            except ValueError as error:raise Refused(str(error)) from None
 
 
 def approve(plan,cat,cfg,backend,by,evidence,ack):
@@ -97,7 +102,8 @@ def execute(plan,receipt,cat,cfg,backend,state_dir):
             current=backend.get(p['kind'],p['key'])
             if revision(current)!=p['revision']:raise Refused(f"{p['kind']} {p['key']} is gewijzigd; vraag nieuw akkoord op een nieuw voorstel")
         for a in plan['actions']:
-            if backend.identity['mode']=='live':guard(cfg,'confluence' if a['kind'].startswith('page.') else 'jira',a['scope'],True)
+            # The archive is a git repo, not Atlassian; a page.create in the same plan is guarded.
+            if backend.identity['mode']=='live' and a['kind'] not in ARCHIVE_KINDS:guard(cfg,'confluence' if a['kind'].startswith('page.') else 'jira',a['scope'],True)
             if a['kind']=='page.create' and backend.title_exists(a['scope'],a['payload']['title']):raise Refused('Paginatitel bestaat intussen')
             if a['kind']=='issue.create' and backend.search_duplicate(a['payload']['fields']['summary']):raise Refused('Initiatief bestaat mogelijk al')
         # Durable backup of original objects and exact payloads before any mutation.

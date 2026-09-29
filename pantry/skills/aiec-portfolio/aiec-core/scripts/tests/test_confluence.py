@@ -26,7 +26,7 @@ VALUES = {
     "toepassingstype": ["Documentverwerking", "Beslissingsondersteuning"],
     "ai_techniek": ["Generative AI"], "delivery_mode": "eigen bouw", "ai_act_klasse": "beperkt",
     "persoonsgegevens": "ja", "batenclaim": "", "aanname": "", "opgeleverd": "", "gebruikers": "",
-    "stopreden": "",
+    "rijpheid": "", "stopreden": "",
 }
 
 

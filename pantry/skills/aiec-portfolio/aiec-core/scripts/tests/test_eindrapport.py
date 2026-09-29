@@ -12,6 +12,7 @@ def closing():
     return {'vlag': 'kleine-afwijking',
             'context': 'Aanleiding, doel en opdrachtgever.',
             'resultaat': 'Alle vijf milestones opgeleverd.',
+            'rijpheid': 'MVP',
             'waarde': 'Nog niet gemeten; meting in het eerste kwartaal.',
             'wendingen': 'Datalevering een maand later.\nScope gelijk gebleven.',
             'productverantwoordelijke': 'Afdeling X, teamleider Y.',
@@ -89,3 +90,15 @@ def test_retrospective_links_final_report(env):
     r = render(cat, b.collect(), 'retrospectieve', 'POR-1', '2026-10', {'goed': 'a', 'anders': 'b'}, cfg)
     assert r['complete'] and 'ri:content-title="'+plan['actions'][0]['payload']['title']+'"' in r['storage']
     assert r['storage'].index('<h2>Lessons learned</h2>') < r['storage'].index('<h3>Wat werkte</h3>')
+
+
+def test_final_report_asks_maturity(env):
+    # rijpheid is een verplichte keuze in het eigenschappenblok, met dezelfde waarden als het kenmerk
+    cat, cfg, b, tmp = env
+    closed(env)
+    r = render(cat, b.collect(), 'eindrapport', 'POR-1', '2026-10', closing(), cfg)
+    assert r['complete'] and 'Rijpheid' in r['storage'] and 'MVP' in r['storage']
+    missing = {k: v for k, v in closing().items() if k != 'rijpheid'}
+    assert not render(cat, b.collect(), 'eindrapport', 'POR-1', '2026-10', missing, cfg)['complete']
+    enum = [e['value'] for e in cat.reports['eindrapport']['enums']['rijpheid']]
+    assert enum == next(f['values'] for f in cat.schema['fields'] if f['key'] == 'rijpheid')

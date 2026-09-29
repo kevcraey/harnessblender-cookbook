@@ -1,0 +1,10 @@
+id: geen-product
+scope: initiatives
+severity: warning
+when:
+  all:
+    - {field: soort, op: eq, value: afgebakend}
+    - {field: phase, op: eq, value: Uitvoering}
+    - {field: product_keys, op: empty}
+message: Initiatief in Run zonder gekoppeld PROD-ticket.
+action: Koppel het product (PROD) in Jira aan het initiatief of zijn POR-taak. Hoort er geen product bij, noteer dan waarom. De plugin maakt geen PROD-tickets aan.

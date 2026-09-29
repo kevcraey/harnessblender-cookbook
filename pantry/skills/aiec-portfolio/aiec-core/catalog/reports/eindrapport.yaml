@@ -6,7 +6,7 @@ label: opleveringsverslag
 trigger: Bij afsluiten van een project, na het laatste vooruitgangsrapport en het onderhoudsplan. Bij één project geldt het ook als opleveringsverslag van het initiatief.
 properties:
   id: aiec-eindrapport
-  sections: [vlag]
+  sections: [vlag, rijpheid]
 # Cijfers, grafieken en milestones komen uit de laatste meetstand van dit rapport; er komt geen nieuwe meetstand bij.
 tracking_source:
   report: vooruitgang
@@ -30,6 +30,20 @@ enums:
       symbol: 🔴
       label: Escalatie / risico
       description: Afgesproken resultaat niet gehaald of zware overschrijding
+  # Zelfde waarden als het kenmerk rijpheid in schema.yaml (test_rijpheid_eindrapport bewaakt dat).
+  rijpheid:
+    - value: PoC
+      label: PoC
+      description: Bewijst technische haalbaarheid; wegwerpcode; geen gebruikers
+    - value: Prototype
+      label: Prototype
+      description: Werkt op echte input, wordt gedemonstreerd; niet uitgerold
+    - value: MVP
+      label: MVP
+      description: In productie met minimale scope, echte gebruikers, bekende beperkingen, beheer licht geregeld
+    - value: Matuur product
+      label: Matuur product
+      description: Volwaardig beheer (SLA, monitoring, gevalideerde kwaliteit), breed uitgerold
 
 sections:
   - id: vlag
@@ -54,6 +68,15 @@ sections:
     kind: input
     prompt: Wat was afgesproken, wat is opgeleverd en wat niet? Geef bij wat niet is opgeleverd ook waarom.
     required: true
+
+  - id: rijpheid
+    group: Samenvatting
+    title: Rijpheid
+    kind: choice
+    enum: rijpheid
+    prompt: Welke rijpheid heeft het opgeleverde bij het einde van dit project?
+    required: true
+    help: Rijpheid is geen fase. Een project kan een PoC of prototype opleveren; wat in productie staat is minstens een MVP.
 
   - id: waarde
     group: Samenvatting

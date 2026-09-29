@@ -229,10 +229,13 @@ gebruikers worden geweigerd.
 {"kind":"label","page_id":"12345","label":"captatierapport"}
 ```
 ```json
-{"kind":"report","report":"eindrapport","target":"POR-123","period":"2026-11","inputs":{"vlag":"kleine-afwijking","context":"…","resultaat":"…","waarde":"…","wendingen":"…","productverantwoordelijke":"…","beslissingen":"nee","vervolgstappen":[{"stap":"…","verantwoordelijke":"…","datum":"2027-01-31"}]}}
+{"kind":"rapportering","key":"AI-123","frequentie":"jaar","vanaf":"2026"}
 ```
 ```json
-{"kind":"report","report":"onderhoud","target":"POR-123","period":"2026-11","inputs":{"uitval":[{"duur":"15m","impact":"1"},{"duur":"30m","impact":"1"},{"duur":"1u","impact":"2"},{"duur":"4u","impact":"3"},{"duur":"1d","impact":"4"},{"duur":"1w","impact":"5"}],"buiten_kantooruren":"nee","terugval":"…","as_is":[{"md":"0","bron":"green field"}],"runkost":[{"post":"inference","omschrijving":"…","bedrag":"1800"}],"modellen":[{"component":"…","model":"…","einde":"2027-11"}],"kwaliteit":"…","afhankelijkheden":[{"afhankelijkheid":"…","einde":""}],"compliance":"…","incidenten":"…","afbouw":"…"}}
+{"kind":"report","report":"eindrapport","target":"POR-123","period":"2026-11","inputs":{"vlag":"kleine-afwijking","context":"…","resultaat":"…","rijpheid":"MVP","waarde":"…","wendingen":"…","productverantwoordelijke":"…","beslissingen":"nee","vervolgstappen":[{"stap":"…","verantwoordelijke":"…","datum":"2027-01-31"}]}}
+```
+```json
+{"kind":"report","report":"onderhoud","target":"POR-123","period":"2026-11","inputs":{"uitval":[{"duur":"15m","impact":"1"},{"duur":"30m","impact":"1"},{"duur":"1u","impact":"2"},{"duur":"4u","impact":"3"},{"duur":"1d","impact":"4"},{"duur":"1w","impact":"5"}],"buiten_kantooruren":"nee","terugval":"…","as_is":[{"md":"0","bron":"green field"}],"runkost":[{"post":"hosting","omschrijving":"…","bedrag":"0"},{"post":"licenties","omschrijving":"Geen.","bedrag":"0"},{"post":"inference","omschrijving":"…","bedrag":"1800"},{"post":"overige","omschrijving":"Geen.","bedrag":"0"}],"modellen":[{"component":"…","model":"…","einde":"2027-11","aanpak":"…","referentiedataset":"ja"}],"kwaliteit":"…","afhankelijkheden":[{"afhankelijkheid":"…","einde":""}],"producten":[{"product":"PROD-12","waarvoor":"…"}],"incidenten":"…","afbouw":"…"}}
 ```
 ```json
 {"kind":"report","report":"retrospectieve","target":"POR-123","period":"2026-11","inputs":{"goed":"…","anders":"…"}}
@@ -241,7 +244,7 @@ gebruikers worden geweigerd.
 {"kind":"report","report":"beslissing","target":"AI-38","period":"2026-09","slug":"ingebruikname","inputs":{"overgang":"Uitvoering","besluit":"…","bevoegde":"…","datum":"2026-09-25","bron":"…","gevolg":"…"}}
 ```
 Elk artefact krijgt de titel `JJJJ-MM-DD - type - slug`, zonder `[AI-x]`. De datum is een invoer `datum` als
-die bestaat, anders de laatste dag van de periode bij maand- en kwartaalrapporten, en anders de dag van aanmaak;
+die bestaat, anders de laatste dag van de periode bij periodieke rapporten, en anders de dag van aanmaak;
 pas hem zo nodig achteraf in Confluence aan, behalve bij vooruitgangsrapporten: hun meetstand bewaart de titel.
 Projectrapporten (vooruitgang, onderhoudsplan, eindrapport, retrospectieve) dragen ook de projectkey, in hoofdletters:
 `JJJJ-MM-DD - type - POR-123 - slug`. De agent stelt de slug voor; de gebruiker keurt hem goed met het voorstel.
@@ -251,6 +254,26 @@ Ontbreekt die, dan stopt het voorstel; maak ze eerst:
 ```json
 {"kind":"project-page","key":"POR-123"}
 ```
+**Intern project.** Een project zonder POR-taak is de uitzondering: het enige verschil met een standaardproject
+is dat er geen POR-taak bestaat. Structuur en vereisten blijven identiek (projectpagina, vooruitgangsrapporten,
+eindrapport, onderhoudsplan, gates). Een initiatief kan er meerdere hebben. Het vraagt een formele beslissing, typisch na de
+verkenning, als beslissingspagina onder het initiatief; zonder die pagina weigert het voorstel:
+```json
+{"kind":"project-page","key":"AI-49","intern":true,"summary":"Natuur in je school","status":"InUitvoering","startdatum":"2026-08-01","beslissing":"<page_id beslissing>"}
+```
+De pagina heet `intern - <naam>`, rapporttitels `JJJJ-MM-DD - vooruitgang - intern - slug`; de slug onderscheidt
+projecten. Technisch (archief, formulier, `--target`) heet het project `AI-49-intern-1`, per initiatief genummerd en
+enkel bewaard in het verborgen deel van het eigenschappenblok `aiec-project`; het is geen Jira-key en komt in geen
+titel. Type, Status, Startdatum en Beslissing (link naar de beslissingspagina) staan zichtbaar in hetzelfde blok. De status is een Portfoliotaak-status (`project_statussen` in het schema) en
+wordt niet afgeleid: de projectleider houdt ze bij, net als in Jira. De startdatum (`JJJJ-MM-DD`) is verplicht;
+maandelijkse vooruitgangsrapporten zijn verplicht vanaf die maand. Status en/of startdatum wijzigen:
+```json
+{"kind":"project-eigenschappen","key":"AI-49-intern-1","status":"Uitgevoerd","startdatum":"2026-08-01"}
+```
+De review meldt `intern-zonder-startdatum` (fout), `intern-zonder-beslissing` en `intern-boven-plafond` (Actual van het laatste vooruitgangsrapport
+boven 10 md; het plafond staat in die regel). `uren-op-initiatief` telt enkel POR-projecten, want de uren van een
+intern project staan op het initiatief; `--hours` volgt geen interne projecten.
+
 Het eindrapport draagt het label `opleveringsverslag`. De gate naar Uitvoering vraagt een eindrapport per gelinkt
 project. Bij precies één project geldt dat eindrapport ook als opleveringsverslag van het initiatief; bij meer
 projecten is daarnaast een eigen opleveringsverslag onder de initiatiefpagina nodig.
@@ -272,16 +295,23 @@ Het product is het PROD dat aan het initiatief gekoppeld is; bij meer dan één 
 Er is per product één actief plan. Een nieuw plan zoekt het actieve plan van hetzelfde product, over initiatieven
 heen, en zet het bij publicatie op `Vervangen` met een link naar het nieuwe (een `page.update` in hetzelfde voorstel).
 De code rekent, niemand vult het zelf in:
-- **Klasse** uit de uitvalmatrix (impact 1–5 van de VCDV-schaal per duur, niet dalend): P1 bij impact 4 binnen
-  1 uur; P2 bij impact 4 binnen 1 werkdag of 3 binnen 4 uur; anders P3. Ondersteuning buiten de kantooruren bij P3
-  geeft een opmerking.
+- **Klasse** uit de uitvalmatrix (impact 1–5 van de VCDV-schaal per duur, niet dalend): `kritisch` bij impact 4
+  binnen 1 uur; `belangrijk` bij impact 4 binnen 1 werkdag of 3 binnen 4 uur; anders `standaard`. Geen P-codes:
+  die zijn al de pijlers. Ondersteuning buiten de kantooruren bij `standaard` geeft een opmerking.
 - **Investering** = as-is + delta. As-is komt uit het vorige actieve plan (Investering, of As-is als dat plan van
   hetzelfde project is); zonder vorig plan vraagt het rapport `as_is` (0 bij green field, leeg = onbekend). Delta is
   de Actual van de laatste meetstand van dit project. Onbekend blijft `onvolledig`, nooit 0.
-- **Onderhoud per jaar** = 10 md + 15% (P1), 10% (P2) of 7,5% (P3) van de investering. Runkost (licenties,
-  inference, hosting, overige) staat apart in euro.
+- **Onderhoud per jaar** = 10 md basiskost + 15% (kritisch), 12,5% (belangrijk) of 10% (standaard) van de
+  investering (in de tabel Onderhoudskost apart op as-is en delta) + per model een upgrade van 5 md met
+  referentiedataset of 10 md zonder. De rij voor de bestaande investering linkt naar het vorige plan, of toont
+  zonder vorig plan de bron. Runkost staat apart in euro, met één rij per post (hosting, licentie, inference,
+  overige) en een totaal. AI-specifieke rijen dragen een statuslabel `AI`. Er is geen sectie Compliance.
+- **Modellen** (onderdeel, versie, einde ondersteuning, plan van aanpak, referentiedataset) en **Producten**
+  (PROD-keys waarop het product steunt) zijn verplicht te beantwoorden; een lege lijst betekent geen. Zonder model
+  verschijnt de sectie Modellen niet. Een productkey moet in Jira bestaan (de collector haalt alle PROD-tickets op)
+  en is niet het product zelf. Afhankelijkheden noemen geen vanzelfsprekende platformen (hosting, build, dataplatform).
 
-Het eigenschappenblok `aiec-onderhoud` is de interface voor een latere portfoliosom: vaste labels (Product,
+Het verborgen eigenschappenblok `aiec-onderhoud` is de interface voor een latere portfoliosom: vaste labels (Product,
 Project, Status, Klasse, Ondersteuning buiten kantooruren, As-is (md), Delta (md), Investering (md), Onderhoud
 (md/jaar), Runkost (€/jaar), Team, Onderhoudstaak, Geldig tot, Vervangt, Vervangen door), Status exact `Actief` of
 `Vervangen`, getallen met decimale komma of `onvolledig`. Tel alleen `Actief`. Onderhoudsplannen zonder dat blok
@@ -315,10 +345,30 @@ aparte perioderegel. Oudere beslissingen zonder dat blok geven een info-melding.
 
 De sectie Artefacten op initiatief- en projectpagina's is een content-by-label-macro: enkel pagina's met een gekend
 artefactlabel (behalve `decisions`, die een eigen overzicht hebben) onder de pagina, ook onder projectpagina's.
+Ongelabelde werkdocumenten onder een initiatief vallen buiten de stack en worden niet gemeld. De review
+(`artefactlabel`) waarschuwt alleen bij meer dan één artefactlabel, of bij een ongelabelde pagina die op een
+artefact lijkt: titel `JJJJ-MM-DD - …` of een artefactlabel in de titel. Rapporteer enkel wat ontbreekt.
 
 Het analyserapport legt in zijn eigenschappen (`aiec-analyse`) het DPIA-oordeel (vereist / niet van toepassing) en
 het DPO-oordeel (gecontacteerd / niet van toepassing) vast, met motivering onder Risico en compliance. `geen-dpia`
 zwijgt bij "Niet van toepassing"; `geen-dpo-oordeel` meldt persoonsgegevens zonder DPO-oordeel.
+
+Producten: de plugin maakt geen PROD-tickets aan, maar `geen-product` waarschuwt voor een afgebakend initiatief in
+Run (Uitvoering) zonder gekoppeld PROD-ticket (via initiatief of POR-taak); soms hoort er geen product bij.
+`geen-onderhoudstaak` waarschuwt per gekoppeld product zonder onderhouds-POR-taak: een POR met Bedrijfstoepassing
+(customfield_20131) = het product en een billingkey waarvan het Tempo-account categorie `OND` (onderhoud) heeft.
+Alleen die categorie beslist; `Investeringstype` en de status van taak of account tellen niet mee.
+`product-zonder-applicatiefiche` en `product-zonder-team` waarschuwen per gekoppeld product zonder Applicatiefiche
+(customfield_20118) of VerantwoordelijkTeam (customfield_12615).
+
+Rapportering: een rapport over periode N is op tijd tot halverwege periode N+1 (maand: de 15de; kwartaal: de 15de
+van de tweede maand; halfjaar: eind van de derde maand; jaar: 30 juni). De review vraagt telkens de laatste periode
+waarvan die termijn verstreken is. Het vooruitgangsrapport is maandelijks per project. Het gebruiksrapport
+(`gebruik`, periode `JJJJ-Qn`, `JJJJ-Hn` of `JJJJ`) volgt de rapporteringsfrequentie van het initiatief:
+`kwartaal` (standaard), `halfjaar`, `jaar` of `niet`, met `vanaf` als eerste periode die telt. Die frequentie is
+intern: ze staat niet in Confluence maar in het meetstandenarchief (`rapportering/<AI-key>/<tijdstip>.json`,
+commit en push via het `rapportering`-voorstel); een wijziging is een nieuw bestand, het laatste telt. Een
+gebruiksrapport telt voor de periode op zijn regel `Periode:`; alleen zonder die regel beslist de titeldatum.
 
 Een beslissing komt onder `[AI-x] Beslissingen`, of onder `parent_id` als die is opgegeven. Ontbreekt de
 Beslissingen-pagina, dan stopt het voorstel.

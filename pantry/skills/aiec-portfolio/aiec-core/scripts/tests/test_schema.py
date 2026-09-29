@@ -67,3 +67,16 @@ def test_required_when():
     assert sch.required_now(S, f(S, "stopreden"), {**closed, "resolution": None})
     assert not sch.required_now(S, f(S, "stopreden"), {**closed, "resolution": "uitgevoerd"})
     assert not sch.required_now(S, f(S, "stopreden"), base)
+
+
+def test_rijpheid():
+    # rijpheid is geen fase: vrij vóór Uitvoering, verplicht vanaf Uitvoering
+    f = sch.field(S, "rijpheid")
+    assert f["values"] == ["PoC", "Prototype", "MVP", "Matuur product"]
+    assert sch.normalize_value(S, f, "mvp") == ("MVP", None)
+    assert sch.normalize_value(S, f, "matuur product") == ("Matuur product", None)
+    assert sch.normalize_value(S, f, "product")[1]                       # geen losse synoniemen
+    base = {"values": {"soort": "afgebakend"}, "soort": "afgebakend", "status": "Implementatie",
+            "resolution": None}
+    assert not sch.required_now(S, f, {**base, "fase": 3})
+    assert sch.required_now(S, f, {**base, "fase": 4, "status": "Uitvoering"})

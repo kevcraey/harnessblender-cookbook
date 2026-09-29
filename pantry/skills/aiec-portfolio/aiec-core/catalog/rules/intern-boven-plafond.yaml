@@ -1,0 +1,9 @@
+id: intern-boven-plafond
+scope: projects
+severity: warning
+when:
+  all:
+    - {field: type, op: eq, value: intern}
+    - {field: actual_md, op: gt, value: 10}
+message: Intern project boven het plafond van 10 mandagen (Actual van het laatste vooruitgangsrapport).
+action: Bespreek met Kenzo of het project een POR-taak nodig heeft. Het plafond staat in deze regel.

@@ -24,6 +24,9 @@ Live geverifieerd tijdens WP-B (read-only, 2026-09-16):
 - Changelog: veld `status` (fromString/toString = Jira-statusnaam) en veld `Link` met toString
   "This issue includes AI-30" / "This issue is gerelateerd aan EAG-927"; toString = None betekent
   dat de link net verwijderd is.
+- Onderhoud van een product: POR-taak met Bedrijfstoepassing (customfield_20131) = PROD-key en een
+  billingkey waarvan het Tempo-account (/rest/tempo-accounts/1/account/key/{key}) categorie `OND`
+  (onderhoud) heeft. Bv. PROD-98 ↔ POR-2157 (ZENDAN_OND), PROD-100 ↔ POR-2212 (QGISZEND_OND).
 - createmeta voor Initiative staat op /rest/api/2/issue/createmeta/AI/issuetypes/13506 (de oude
   /issue/createmeta geeft 404).
 """
@@ -43,6 +46,10 @@ GERELATEERD = "Gerelateerd"
 
 EPIC_LINK = "customfield_10510"
 BILLINGKEY = "customfield_12012"
+BEDRIJFSTOEPASSING = "customfield_20131"
+# Op PROD-tickets (geverifieerd op PROD-100): applicatiefiche is een URL, het team een keuzeveld.
+APPLICATIEFICHE = "customfield_20118"
+VERANTWOORDELIJK_TEAM = "customfield_12615"
 DATUM_ONTVANGST = "customfield_14415"
 VERANTWOORDELIJKE = "customfield_10614"
 TREKKER = "customfield_19014"

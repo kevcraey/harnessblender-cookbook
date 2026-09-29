@@ -85,7 +85,7 @@ def documents(cat):
               'Fases en open proceskeuzes: [[aiec-portfolio-proces]].']
     out={'aiec-schema.md':'\n'.join(lines)+'\n'}
     lines=header('Rapportsjablonen','aiec-core/catalog/reports')
-    lines+=['De projectkey hoort in projectrapporttitels. Maand: JJJJ-MM. Operationeel kwartaal: JJJJ-Qn.',
+    lines+=['De projectkey hoort in projectrapporttitels. Maand: JJJJ-MM. Gebruik: JJJJ-Qn, JJJJ-Hn of JJJJ, volgens de interne rapporteringsfrequentie. Op tijd: tot halverwege de volgende periode.',
             'Feiten uit Jira blijven in Confluence live via macro’s. Inhoudelijke antwoorden komen van de maker.','']
     for r in cat.reports.values():
         lines += [f"## {r['title']} (`{r['id']}`)",f"Scope: {r['scope']} · label: `{r.get('label') or 'lokaal concept'}`.",'']
@@ -106,7 +106,7 @@ def documents(cat):
             else:lines += [f"- **{section['title']}:** {section['kind']} uit `{section['source']}`; door code samengesteld."]
         if r.get('tracking'): lines += ['', 'Met vaste meetbasis, Remaining, onveranderlijke maandstanden en scope-/inzetgrafieken. Publicatie maakt een nieuwe pagina met twee PNG-bijlagen; eerst de HTML-preview goedkeuren.']
         if r.get('tracking_source'): lines += ['', f"Kopcijfers, grafieken zonder projectie, milestones tegenover Baseline, scopebesluiten en Vooruitgangshistoriek komen uit de laatste meetstand van `{r['tracking_source']['report']}`, vóór de sectie {r['tracking_source']['section']}. Er komt geen nieuwe meetstand bij."]
-        if r.get('maintenance'): lines += ['', f"De code leidt de klasse af uit de uitvalmatrix (P1: impact groot binnen 1 uur; P2: groot binnen 1 werkdag of merkbaar binnen 4 uur; anders P3) en begroot onderhoud als 10 md + 15% / 10% / 7,5% van de investering. Investering = as-is uit het vorige actieve plan van het product + Actual van de laatste meetstand van `{r['maintenance']['source']}`. Publicatie zet het vorige plan op Vervangen. Het eigenschappenblok `aiec-onderhoud` is de bron voor een latere portfoliosom."]
+        if r.get('maintenance'): lines += ['', f"De code leidt de klasse af uit de uitvalmatrix (kritisch: impact groot binnen 1 uur; belangrijk: groot binnen 1 werkdag of merkbaar binnen 4 uur; anders standaard) en begroot onderhoud als 10 md + 15% / 12,5% / 10% van de investering + per model 5 md (met referentiedataset) of 10 md (zonder). Productafhankelijkheden zijn bestaande PROD-keys. Investering = as-is uit het vorige actieve plan van het product + Actual van de laatste meetstand van `{r['maintenance']['source']}`. Publicatie zet het vorige plan op Vervangen. Het eigenschappenblok `aiec-onderhoud` is de bron voor een latere portfoliosom."]
         if r['id'] == 'vooruitgang': lines += ['', 'Los invulsjabloon: [[aiec-maandrapport]].']
         lines+=['']
     out['aiec-sjablonen.md']='\n'.join(lines)+'\n'

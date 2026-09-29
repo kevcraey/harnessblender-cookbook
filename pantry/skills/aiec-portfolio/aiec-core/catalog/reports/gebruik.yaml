@@ -34,5 +34,5 @@
       "required": true
     }
   ],
-  "cadence": "quarterly"
+  "cadence": "periodic"
 }

@@ -1,0 +1,9 @@
+id: intern-zonder-beslissing
+scope: projects
+severity: warning
+when:
+  all:
+    - {field: type, op: eq, value: intern}
+    - {field: beslissing_ok, op: eq, value: false}
+message: Intern project zonder geldige beslissing. Eigenschap Beslissing verwijst niet naar een beslissingspagina onder het initiatief.
+action: Laat de formele beslissing vastleggen (typisch na de verkenning) en verwijs ernaar op de projectpagina. Anders hoort er een POR-taak bij.

@@ -40,8 +40,8 @@ zijn een registratie van toestemming, geen bewijs dat een mens is geauthenticeer
 | Fase wijzigen | `kind: transition`. Vraag de formele beslissing (wie, datum, bron, uitkomst). Code controleert beschikbare Jira-transitie en gate. Onvolledige gates of ontbrekende stukken blokkeren het voorstel; geen workaround. |
 | Captatie/analyse/onderhoudsplan/eindrapport/retrospectieve | `A report` levert brongegevens, sjabloon en vragen. Vraag de maker om inhoudelijke oordelen. Herhaal met de antwoorden. `kind: report` stelt een nieuwe Confluence-kindpagina voor. |
 | Cijfers aanleveren via formulier | Geef een zelfstandig HTML-programma en actueel projectbestand via `A form build` / `A form export`. De projectleider vult cijfers en vlaggen in en levert het gedownloade bestand aan. Lees het met `A form import`; vul daarna ontbrekende rapporttekst aan en maak het normale publicatievoorstel. Lokale maandafsluiting is geen publicatie. |
-| Maandrapport | Gebruik `vooruitgang`: projectgezondheid, 2–5 regels wijzigingen, milestonetabel, beslissingen en volgende periode. Scope is de POR-taak; titel bevat AI-key, POR-key en maand. Projectleider levert Actual, Remaining, inhoud en vlaggen; code zet de vaste Baseline en rekent de grafieken uit. Vraag de oorspronkelijke meetbasis eenmaal expliciet; hergebruik daarna de vastgelegde historiek. Nieuwe scope vraagt een formeel besluit en vast gewicht. Toon de HTML-preview en vragen vóór akkoord. Zie de kernskill voor `tracking`; vul ontbrekende maanden nooit zelf aan. Bij ontbrekend rapport: mailvoorstel maken, niet verzenden. |
-| Gebruik en opbrengst | Scope is het operationele initiatief; kwartaalperiode. Niet verwarren met een POR-taak op InUitvoering. |
+| Maandrapport | Gebruik `vooruitgang`: projectgezondheid, 2–5 regels wijzigingen, milestonetabel, beslissingen en volgende periode. Scope is het project: de POR-taak, of bij een intern project `AI-x-intern-n` (zie kernskill). Projectleider levert Actual, Remaining, inhoud en vlaggen; code zet de vaste Baseline en rekent de grafieken uit. Vraag de oorspronkelijke meetbasis eenmaal expliciet; hergebruik daarna de vastgelegde historiek. Nieuwe scope vraagt een formeel besluit en vast gewicht. Toon de HTML-preview en vragen vóór akkoord. Zie de kernskill voor `tracking`; vul ontbrekende maanden nooit zelf aan. Bij ontbrekend rapport: mailvoorstel maken, niet verzenden. |
+| Gebruik en opbrengst | Scope is het operationele initiatief; periode volgens de interne rapporteringsfrequentie (kwartaal, halfjaar of jaar; `rapportering`-voorstel). Niet verwarren met een POR-taak op InUitvoering. |
 | Stand of kwartaaltoelichting | Rapportconcept uit de snapshot, met bronmoment en hiaten. Gebruik bronverwijzingen; reken cijfers niet zelf uit. Publicatie/verzending is in v2 nog handmatig na review. |
 | Review/migratie Confluence | Verzamel de hele AI-space inclusief ongeclassificeerde kandidaatpagina’s. `A review`. Bespreek afwijkingen, maak kleine herstelvoorstellen. Geen pagina’s verwijderen of samenvoegen zonder apart voorstel en back-up. |
 | Nieuwe regel, rapport of processtap | Gebruik `../aiec-maintainer/SKILL.md`. Pas niet terloops de actieve catalogus aan. |
@@ -63,5 +63,9 @@ Gebruik code voor ophalen, joins, tellingen, aanwezigheid, periodes, rendering e
 model voor broninterpretatie, vraagstelling en proza. Schakel de read-only `aiec-dossier`-agent alleen in
 als een dossier veel ongestructureerde informatie bevat. Eenvoudige taken hebben geen extra agent nodig.
 Batenclaims, aannames, classificaties en besluiten worden niet als feiten ingevuld zonder bevoegde bron.
+Benoem hoe af een oplossing is uitsluitend met de rijpheidstermen uit het kenmerk Rijpheid (PoC, Prototype,
+MVP, Matuur product), niet met losse woorden als prototype, product of oplossing. Rijpheid is geen fase: een
+initiatief in Uitvoering kan een MVP draaien. Neem een rijpheid uit een bron niet over als die met de
+definities botst; vraag het.
 
 Begin bij de vault-note `aiec-portfolio` als de gebruiker uitleg over de werkwijze vraagt.

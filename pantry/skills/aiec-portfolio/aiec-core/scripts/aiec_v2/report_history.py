@@ -78,6 +78,28 @@ def archive_name(record):
     return f"{record['report']}/{record['target']}/{record['period']}.json"
 
 
+RAPPORTERING = 'rapportering'
+
+
+def rapportering_name(record):
+    return f"{RAPPORTERING}/{record['key']}/{record['datum'][:19].replace(':', '')}.json"
+
+
+def read_rapportering(root):
+    """All recorded reporting frequencies; a changed frequency is a new file, never an overwrite."""
+    from .periods import check_frequency
+    root = Path(root).expanduser()
+    if not (root/'.git').exists():
+        raise ValueError(f'Meetstandenarchief ontbreekt of is geen git-repo: {root}')
+    records = []
+    for path in sorted((root/RAPPORTERING).glob('*/*.json')):
+        record = check_frequency(json.loads(path.read_text()))
+        if rapportering_name(record) != str(path.relative_to(root)):
+            raise ValueError(f'Rapporteringsfrequentie staat op een verkeerde plaats in het archief: {path.relative_to(root)}')
+        records.append(record)
+    return records
+
+
 def read_archive(root):
     """All archived measurements as {'page_id', 'record'} entries; a missing archive is an error, not empty history."""
     root = Path(root).expanduser()
@@ -85,6 +107,8 @@ def read_archive(root):
         raise ValueError(f'Meetstandenarchief ontbreekt of is geen git-repo: {root}')
     entries = []
     for path in sorted(root.glob('*/*/*.json')):
+        # Reporting frequencies share the archive but are no measurements.
+        if path.relative_to(root).parts[0] == RAPPORTERING: continue
         entry = json.loads(path.read_text())
         if not isinstance(entry, dict) or set(entry) != {'page_id', 'record'} or not isinstance(entry['record'], dict):
             raise ValueError(f'Ongeldige meetstand in archief: {path.relative_to(root)}')
@@ -124,6 +148,9 @@ def load(spec, snapshot, target, initiative):
         if ident in linked:
             continue
         title = page.get('title', '')
+        # An internal project is new: no legacy pages without a measurement exist for it.
+        if re.fullmatch(r'.+-intern-\d+', target):
+            continue
         refs = {r.upper() for r in re.findall(r'(?<![\w-])'+re.escape(target.rsplit('-', 1)[0])+r'-\d+(?![\w-])', title, re.I)}
         relevant = target in refs if refs else any(re.search(r'(?<![\w-])'+re.escape(key)+r'(?![\w-])', title, re.I) for key in (target, initiative) if key)
         if spec.get('label') in page.get('labels', []) and relevant:

@@ -1,6 +1,5 @@
 """Generic report definitions: code provides facts, people provide judgments."""
 from __future__ import annotations
-import calendar
 from copy import deepcopy
 from datetime import date
 from html import escape
@@ -8,6 +7,7 @@ import re
 import unicodedata
 from .catalog import get, matches, placeholders
 from .review import datasets, review
+from . import periods
 from aiec_lib.confluence import _cell_text, _jira_macro, details_macro
 from .report_inputs import INPUT_KINDS, render_input, choice_text
 from .form_files import font_faces
@@ -22,9 +22,7 @@ def preview_html(title, period, body, fixture=False, fonts=''):
 def title_date(spec, period, today=None):
     """Default datum in de paginatitel: laatste dag van de periode bij periodieke rapporten,
     anders de dag van aanmaak. Een invoer 'datum' gaat altijd voor."""
-    if spec.get('cadence'):
-        year=int(period[:4]);month=int(period[6])*3 if 'Q' in period else int(period[5:7])
-        return date(year,month,calendar.monthrange(year,month)[1]).isoformat()
+    if spec.get('cadence'):return periods.last_day(period).isoformat()
     return (today or date.today()).isoformat()
 
 
@@ -44,9 +42,12 @@ def linked_page(cat, data, report_id, target, initiative):
     """Newest page of a project report for this project, found by label and title pattern; None without one."""
     linked=cat.reports[report_id]
     parts=re.split(r'\{(\w+)\}',linked['page_title'])
-    forms={'datum':r'\d{4}-\d{2}-\d{2}','project':re.escape(target),'slug':r'[a-z0-9]+(?:-[a-z0-9]+)*'}
+    # The title carries the project's title key: the POR key, or 'intern' for an internal project.
+    title_key=next((p.get('title_key') or p['key'] for p in data['projects'] if p['key']==target),target)
+    forms={'datum':r'\d{4}-\d{2}-\d{2}','project':re.escape(title_key),'slug':r'[a-z0-9]+(?:-[a-z0-9]+)*'}
     pattern=''.join(forms[p] if i%2 else re.escape(p) for i,p in enumerate(parts))
-    hits=sorted(a['title'] for a in data['artifacts'] if a.get('initiative')==initiative and linked.get('label') in a.get('labels',[]) and re.fullmatch(pattern,a.get('title','')))
+    # Under a project page only that project's pages count: several internal projects share the title key.
+    hits=sorted(a['title'] for a in data['artifacts'] if a.get('initiative')==initiative and a.get('project') in (None,target) and linked.get('label') in a.get('labels',[]) and re.fullmatch(pattern,a.get('title','')))
     return hits[-1] if hits else None
 
 
@@ -58,15 +59,18 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
     if set(inputs)-allowed:raise ValueError('Onbekende invoersectie: '+', '.join(set(inputs)-allowed))
     scope=spec['scope']
     if scope!='portfolio' and not target:raise ValueError('Rapport vraagt een initiatief- of projectkey')
-    if not period or not re.fullmatch(r'\d{4}-(0[1-9]|1[0-2]|Q[1-4])',period):raise ValueError('Periode vereist: JJJJ-MM of JJJJ-Qn')
-    if spec.get('cadence')=='monthly' and 'Q' in period:raise ValueError('Maandrapport vraagt JJJJ-MM')
-    if spec.get('cadence')=='quarterly' and 'Q' not in period:raise ValueError('Kwartaalrapport vraagt JJJJ-Qn')
+    if not period:raise ValueError('Periode vereist: JJJJ-MM, JJJJ-Qn, JJJJ-Hn of JJJJ')
+    periods.parse(period)
+    if spec.get('cadence')=='monthly' and periods.parse(period)[2]!=1:raise ValueError('Maandrapport vraagt JJJJ-MM')
+    # A usage report covers the initiative's reporting period: quarter, half year or year.
+    if spec.get('cadence')=='periodic' and periods.parse(period)[2]==1:raise ValueError('Gebruiksrapport vraagt JJJJ-Qn, JJJJ-Hn of JJJJ')
     data=datasets(cat,snapshot);data['findings']=review(cat,snapshot)
-    initiative=target if scope=='initiative' else None
+    initiative=target if scope=='initiative' else None;intern=False
     if scope=='project':
         candidates=[p for p in data['projects'] if p['key']==target]
         if len(candidates)!=1:raise ValueError('Project ontbreekt of is dubbel')
         keys=candidates[0].get('initiatives',[]);project_summary=candidates[0].get('summary')
+        title_key=candidates[0].get('title_key') or target;intern=candidates[0].get('type')=='intern'
         if len(keys)!=1:raise ValueError('Project heeft geen eenduidige initiatiefkoppeling; eerst reviewen')
         initiative=keys[0]
     if initiative and len([i for i in data['initiatives'] if i['key']==initiative])!=1:raise ValueError('Initiatief ontbreekt of is dubbel')
@@ -80,7 +84,7 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
             if datum and not re.fullmatch(r'\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])',datum):raise ValueError('Datum voor de paginatitel moet JJJJ-MM-DD zijn')
             parts['datum']=datum or title_date(spec,period)
         if 'project' in placeholders(spec['page_title']):
-            parts['project']=target
+            parts['project']=title_key
             # Default slug from the Jira summary: visible in the proposal, overridable with slug.
             slug=slug or slugify(project_summary)
         if 'slug' in placeholders(spec['page_title']):
@@ -136,7 +140,7 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
     # A decision is self-contained; it needs no live ticket view.
     if initiative and spec.get('jira',True):
         if cfg:
-            macro=_jira_macro(cfg['atlassian'],f'key in ({initiative}{", "+target if scope=="project" else ""})')
+            macro=_jira_macro(cfg['atlassian'],f'key in ({initiative}{", "+target if scope=="project" and not intern else ""})')
             if not macro:raise ValueError('Jira serverId ontbreekt; geen statische kopie als vervanging')
             body.append(macro)
         else:body.append('<p>Live Jira-verwijzing wordt bij publicatie toegevoegd.</p>')
@@ -149,7 +153,7 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
         # Properties block: the interface for a later portfolio sum over active plans.
         rows=''.join(f'<tr><th>{escape(name)}</th><td>{value}</td></tr>' for name,value in maintained['rows'])
         plain=lambda v:re.sub(r'<ac:link>.*?<ac:link-body>(.*?)</ac:link-body></ac:link>',r'<strong>\1</strong>',v)
-        body.append(details_macro(cat.schema,rows,details_id=DETAILS_ID))
+        body.append(details_macro(cat.schema,rows,hidden=True,details_id=DETAILS_ID))
         preview_body.append('<table class="properties"><tbody>'+''.join(f'<tr><th>{escape(n)}</th><td>{plain(v)}</td></tr>' for n,v in maintained['rows'])+'</tbody></table>')
         md+=[x for n,v in maintained['rows'] for x in (f'**{n}:** '+_cell_text(v),'')]
     measured_state=(prepared or {}).get('state') or (final or {}).get('state')
@@ -180,7 +184,9 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
                 extra_md,extra_storage=maintained['after'][section['id']]
                 md+=extra_md;body.append(extra_storage);preview_body.append(extra_storage)
             continue
-        md += [f"{'###' if group else '##'} {section['title']}",'']
+        # A section named after its group needs no second heading.
+        same=group==section['title']
+        if not same:md += [f"{'###' if group else '##'} {section['title']}",'']
         if section['kind']=='link':
             # A reference to the linked report's page, by its title pattern; no link without the page.
             linked=cat.reports[section['report']];hit=linked_page(cat,data,section['report'],target,initiative)
@@ -202,7 +208,8 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
                 md[-2:-2]=[message,''];preview_body.append('<p>'+message+'</p>')
         if section['kind'] in INPUT_KINDS:
             section_md,section_body,section_questions=render_input(spec,section,working.get(section['id']))
-            if group and section_body.startswith('<h2>'):section_body='<h3>'+section_body[4:].replace('</h2>','</h3>',1)
+            if same and section_body.startswith('<h2>'):section_body=section_body.split('</h2>',1)[1]
+            elif group and section_body.startswith('<h2>'):section_body='<h3>'+section_body[4:].replace('</h2>','</h3>',1)
             if prepared and section['id']==spec['tracking']['section']:
                 if prepared['state']:
                     chart_md,chart_storage,chart_html=report_charts.fragments(prepared['state'],chart_data,assets)

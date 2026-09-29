@@ -16,6 +16,6 @@
       }
     ]
   },
-  "message": "Vooruitgangsrapport over de vorige maand niet gevonden.",
-  "action": "Stel voor de projectleider te mailen. Niet zelf verzenden. Geen afgesproken deadline: dit is een ontbrekend rapport, geen oordeel over te laat indienen."
+  "message": "Vooruitgangsrapport over de vervallen maand niet gevonden: op tijd is tegen de 15de van de volgende maand.",
+  "action": "Stel voor de projectleider te mailen. Niet zelf verzenden. Een POR-project heeft geen startdatum: in de eerste helft van de tweede projectmaand kan dit de maand vóór de start zijn. Een intern project rapporteert vanaf de maand van zijn startdatum."
 }

@@ -1,0 +1,8 @@
+id: product-zonder-team
+scope: products
+severity: warning
+when:
+  all:
+    - {field: verantwoordelijk_team, op: empty}
+message: Product zonder verantwoordelijk team.
+action: Vul in het PROD-ticket het veld VerantwoordelijkTeam in.

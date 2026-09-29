@@ -1,0 +1,8 @@
+id: product-zonder-applicatiefiche
+scope: products
+severity: warning
+when:
+  all:
+    - {field: applicatiefiche, op: empty}
+message: Product zonder applicatiefiche.
+action: Vul in het PROD-ticket het veld Applicatiefiche in met de link naar de fiche.

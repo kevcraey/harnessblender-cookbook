@@ -12,7 +12,7 @@ from aiec_v2.backend import FixtureBackend, LiveBackend, normalize
 from aiec_v2.changes import make_plan, patch_details
 from aiec_v2.execution import approve, execute, Refused
 from aiec_v2.reports import render
-from aiec_v2.review import review, previous_period, in_period, datasets
+from aiec_v2.review import review, in_period, datasets
 from aiec_lib import config, confluence as conf
 
 
@@ -202,9 +202,9 @@ def test_month_report_per_project(env):
 
 
 def test_period_rollover():
-    assert previous_period(date(2026,1,2))=='2025-12'
-    assert previous_period(date(2026,1,2),True)=='2025-Q4'
-    assert previous_period(date(2026,4,1),True)=='2026-Q1'
+    from aiec_v2.periods import due
+    assert due(date(2026,1,16),1)=='2025-12' and due(date(2026,1,15),1)=='2025-11'
+    assert due(date(2026,2,16),3)=='2025-Q4' and due(date(2026,4,1),3)=='2025-Q4'
 
 
 def test_duplicate_root_not_hidden(env):
@@ -516,11 +516,13 @@ def test_in_period_reads_old_and_new_titles():
 
 
 def test_previous_report_found_with_new_title(env):
-    cat,cfg,b,_=env;s=b.collect();today=date(2026,9,15)
+    cat,cfg,b,_=env;s=b.collect();today=date(2026,9,16)
     s['pages'][0]['children'].append({'page_id':'102','title':'2026-08-31 - vooruitgang - por-1','labels':['vooruitgangsrapport'],'last_modified':'2026-09-01'})
     from aiec_v2.review import datasets
     d=datasets(cat,s,today)
     assert next(p for p in d['projects'] if p['key']=='POR-1')['previous_report']
+    # Until the 15th, August is not due yet: July is, and has no report here.
+    assert not next(p for p in datasets(cat,s,date(2026,9,15))['projects'] if p['key']=='POR-1')['previous_report']
 
 
 def _gate_env(b,labels_by_parent):
@@ -701,3 +703,56 @@ def test_analysis_report_properties_hold_dpia_and_dpo(env):
     r=render(cat,s,'analyse','AI-38','2026-09',inputs,cfg,'proef')
     assert conf.parse_properties(cat.schema,r['storage'],'aiec-analyse')=={'DPIA':'Niet van toepassing','DPO':'Gecontacteerd'}
     assert r['storage'].count('Niet van toepassing')==1
+
+
+def maintenance(key, bk, prod='PROD-1'):
+    return {'key': key, 'fields': {'summary': 'Onderhoud', 'status': {'name': 'InUitvoering'},
+            'customfield_20131': {'key': prod}, 'customfield_12012': {'key': bk}}}
+
+
+def test_product_needs_maintenance_task_with_onderhoud_account(env):
+    cat,cfg,b,_=env
+    rules=lambda:[f['key'] for f in review(cat,b.collect()) if f['rule']=='geen-onderhoudstaak']
+    assert rules()==['PROD-1']
+    b.data['objects']['maintenance']=[maintenance('POR-9','X_OND')]
+    b.data['objects']['tempo_account']={'X_OND':{'key':'X_OND','category':{'key':'INV','name':'investering'}}}
+    assert rules()==['PROD-1']   # an investment account is not maintenance
+    b.data['objects']['tempo_account']['X_OND']['category']={'key':'OND','name':'onderhoud'}
+    assert rules()==[]
+    assert b.collect()['products'][0]['onderhoud_billingkeys']==['X_OND']
+
+
+def test_initiative_in_run_without_product_is_warned(env):
+    cat,cfg,b,_=env;o=b.data['objects']['issue']
+    o['AI-38']['fields']['status']={'name':'Run'}
+    warned=lambda:[f for f in review(cat,b.collect()) if f['rule']=='geen-product']
+    assert warned()==[]
+    o['POR-1']['fields']['issuelinks']=[]
+    assert [(f['key'],f['severity']) for f in warned()]==[('AI-38','warning')]
+
+
+def test_product_needs_application_sheet_and_team(env):
+    cat,cfg,b,_=env;f=b.data['objects']['issue']['PROD-1']['fields']
+    rules=lambda:sorted(x['rule'] for x in review(cat,b.collect()) if x['rule'].startswith('product-zonder'))
+    assert rules()==['product-zonder-applicatiefiche','product-zonder-team']
+    f['customfield_20118']='https://example.org/fiche';f['customfield_12615']={'value':'Decibel'}
+    assert rules()==[]
+    assert b.collect()['products'][0]['verantwoordelijk_team']=='Decibel'
+
+
+def test_computed_scripted_fields_are_not_a_change(env):
+    cat,cfg,b,tmp=env;b.data['objects']['issue']['AI-38']['fields'].update(customfield_16210=6427303,customfield_16211=0.0089057)
+    p,r=approved(env,{'kind':'transition','key':'AI-38','to':'Analyse','decision':{'by':'Kris','date':'2026-09-25','source':'test','outcome':'Verkennen'}})
+    b.data['objects']['issue']['AI-38']['fields'].update(customfield_16210=6427383,customfield_16211=0.0089056)
+    execute(p,r,cat,cfg,b,tmp/'state')
+    assert b.get('issue','AI-38')['fields']['status']['name']=='In Analyse'
+
+
+def test_unlabeled_working_document_is_outside_the_stack(env):
+    cat,cfg,b,_=env;_gate_env(b,[('100','x'),('100','x'),('100','x')])
+    pages=b.data['objects']['page']
+    for pid,title in (('201','Evaluatie prompts v1'),('202','2026-09-01 - analyse - proef'),('203','[AI-38] Captatierapport — 2026-07')):
+        pages[pid]['title']=title;pages[pid]['metadata']['labels']['results']=[]
+    flagged={f['message'].split(':')[0] for f in review(cat,b.collect()) if f['rule']=='artefactlabel'}
+    assert 'Evaluatie prompts v1' not in flagged
+    assert {'2026-09-01 - analyse - proef','[AI-38] Captatierapport — 2026-07'}<=flagged

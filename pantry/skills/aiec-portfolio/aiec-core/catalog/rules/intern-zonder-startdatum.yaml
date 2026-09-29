@@ -1,0 +1,9 @@
+id: intern-zonder-startdatum
+scope: projects
+severity: error
+when:
+  all:
+    - {field: type, op: eq, value: intern}
+    - {field: startdatum_ok, op: eq, value: false}
+message: Intern project zonder geldige startdatum. Eigenschap Startdatum ontbreekt of is geen JJJJ-MM-DD.
+action: Vraag de projectleider de startdatum en stel project-eigenschappen voor. Vooruitgangsrapporten zijn verplicht vanaf die maand.

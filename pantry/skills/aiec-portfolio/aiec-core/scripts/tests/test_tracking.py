@@ -54,6 +54,21 @@ def publish(env, period='2026-09', data=None, measure=None):
     return plan, result
 
 
+
+def test_live_guard_does_not_treat_archive_as_jira(env, monkeypatch):
+    cat, cfg, backend, tmp = env
+    monkeypatch.setitem(cfg['writes'], 'mode', 'production'); backend.identity['mode'] = 'live'
+    plan, outcome = publish(env)
+    assert [r['action'] for r in outcome['results']] == ['1', '2', '3', '4']
+
+
+def test_revision_ignores_links_that_search_omits():
+    from aiec_v2.backend import revision
+    page = {'id': '1', 'version': {'number': 1}, '_links': {'webui': '/x', 'self': '/y'}}
+    got = copy.deepcopy(page); got['_links'].update({'base': 'https://c', 'context': '/confluence'})
+    assert revision(page) == revision(got)
+    assert revision(page) != revision({**page, 'version': {'number': 2}})
+
 @pytest.mark.parametrize('index,expected', [(4, 65), (5, 70), (6, 75)])
 def test_five_equal_milestones(env, index, expected):
     p = prepared(env, index)

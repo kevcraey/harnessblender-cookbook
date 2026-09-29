@@ -1,10 +1,11 @@
 """Review is a pure calculation over a dated snapshot; it never repairs data."""
 from __future__ import annotations
 from collections import Counter
-from datetime import date, timedelta
+from datetime import date
 import re
 from aiec_lib import confluence as conf, schema as sch
 from .catalog import matches
+from . import periods, report_history
 
 
 def day(value):
@@ -12,23 +13,35 @@ def day(value):
     except (TypeError, ValueError): return None
 
 
-def previous_period(today, quarterly=False):
-    if quarterly:
-        q = (today.month-1)//3
-        return f'{today.year if q else today.year-1}-Q{q if q else 4}'
-    return (today.replace(day=1)-timedelta(days=1)).strftime('%Y-%m')
-
-
 def in_period(title, period, kind):
     """Hoort een rapporttitel bij deze periode? Oude titels dragen de periode letterlijk
     ('— 2026-08'), nieuwe beginnen met datum en type ('2026-08-31 - vooruitgang - por-1')."""
     if not re.match(r'\d{4}-\d{2}-\d{2} - ', title):
         return period in title
-    m = re.match(r'(\d{4})-(\d{2})-\d{2} - '+re.escape(kind)+' - ', title)
+    m = re.match(r'(\d{4})-(\d{2})-(\d{2}) - '+re.escape(kind)+' - ', title)
     if not m:
         return False
-    year, month = int(m.group(1)), int(m.group(2))
-    return period == (f'{year}-Q{(month-1)//3+1}' if 'Q' in period else f'{year}-{month:02d}')
+    return periods.containing(date(*map(int, m.groups())), periods.parse(period)[2]) == period
+
+
+def reported(artifact, period, kind):
+    """A report's own 'Periode:' line decides; the title only for pages without one."""
+    found = re.search(r'<p>Periode: ([^<]+)</p>', artifact.get('storage') or '')
+    return found.group(1).strip() == period if found else in_period(artifact.get('title', ''), period, kind)
+
+
+def frequency(snapshot, key):
+    """The latest recorded reporting frequency of an initiative; kwartaal without one."""
+    rows = sorted((r for r in snapshot.get('rapportering', []) if r.get('key') == key), key=lambda r: r['datum'])
+    return rows[-1] if rows else {'key': key, 'frequentie': periods.DEFAULT, 'vanaf': None}
+
+
+def usage_due(snapshot, key, today):
+    """The usage period that should be reported by now, or None when nothing is due yet."""
+    f = frequency(snapshot, key)
+    if f['frequentie'] not in periods.FREQUENCIES: return None
+    period = periods.due(today, periods.FREQUENCIES[f['frequentie']])
+    return None if f.get('vanaf') and periods.start(period) < periods.start(f['vanaf']) else period
 
 
 def decided(cat, row, target):
@@ -63,10 +76,25 @@ def datasets(cat, snapshot, today=None):
         # Project artefacts hang under the project page; older reports only carry the key in their title.
         mine = [a for a in artifacts if a.get('initiative') in p.get('initiatives', []) and (a.get('project') == p['key'] or
                 (not a.get('project') and re.search(r'(?<![A-Z0-9-])'+re.escape(p['key'])+r'(?![0-9])', a.get('title',''), re.I)))]
-        r['previous_report'] = any('vooruitgangsrapport' in a.get('labels', []) and
-            in_period(a.get('title',''), previous_period(today), 'vooruitgang') for a in mine)
+        # On time until the 15th of the next month. A POR project carries no start date: in the first half of a
+        # project's second month, the month before its start counts as due. An internal project reports from its start month.
+        month = periods.due(today, 1)
+        r['previous_report'] = any('vooruitgangsrapport' in a.get('labels', []) and reported(a, month, 'vooruitgang') for a in mine)
         r['artifact_labels'] = sorted({l for a in artifacts if a.get('project') == p['key'] for l in a.get('labels', [])})
         r['page_id'] = next((a['page_id'] for a in artifacts if a.get('project_page') == p['key']), None)
+        if p.get('type') == 'intern':
+            # The decision must be a decision page under the same initiative; effort is Actual of the last measurement.
+            home = [x for x in pages if x.get('ai_key') in p.get('initiatives', [])]
+            r['beslissing_ok'] = bool(p.get('beslissing')) and any(d['title'] == p['beslissing'] for x in home for d in x.get('decisions', []))
+            start = day(p.get('startdatum'))
+            r['startdatum_ok'] = start is not None
+            if start and periods.start(month) < start.replace(day=1): r['previous_report'] = True
+            r['actual_md'] = None
+            if 'vooruitgang' in cat.reports and 'meetstanden' in snapshot:
+                try:
+                    records = report_history.load(cat.reports['vooruitgang'], snapshot, p['key'], p['initiatives'][0])['records']
+                    if records and records[-1]['metrics'].get('actual_md') is not None: r['actual_md'] = float(records[-1]['metrics']['actual_md'])
+                except ValueError: pass   # a broken history is reported by the report itself
         projects.append(r)
     initiatives = []
     for issue in snapshot.get('issues', []):
@@ -78,6 +106,8 @@ def datasets(cat, snapshot, today=None):
         r.update({'phase': cat.state(issue.get('status_raw') or issue.get('status')),
                   'page_id':p.get('page_id'), 'page_count':len(candidates),
                   'project_keys':[x['key'] for x in projects if issue['key'] in x.get('initiatives', [])],
+                  'por_keys':[x['key'] for x in projects if issue['key'] in x.get('initiatives', []) and x.get('type') != 'intern'],
+                  'product_keys':[x['key'] for x in snapshot.get('products', []) if issue['key'] in x.get('initiatives', [])],
                   'artifact_labels':sorted({l for a in artifacts if a['initiative']==issue['key'] for l in a.get('labels',[])}),
                   'own_labels':sorted({l for a in artifacts if a['initiative']==issue['key'] and not a.get('project') for l in a.get('labels',[])}),
                   'decision_transitions':sorted({d['overgang'] for d in p.get('decisions',[]) if d.get('overgang')})})
@@ -88,7 +118,9 @@ def datasets(cat, snapshot, today=None):
         r['dpo_oordeel']=next((x['DPO'] for x in analysis if x.get('DPO')),None)
         dates = [d for d in [day(issue.get('updated')),day(p.get('last_activity'))] if d]
         r['inactive_days'] = (today-max(dates)).days if dates else None
-        r['previous_report'] = any(a['initiative']==issue['key'] and 'vooruitgangsrapport' in a.get('labels',[]) and in_period(a.get('title',''), previous_period(today,True), 'gebruik') for a in artifacts)
+        f = frequency(snapshot, issue['key']); due = usage_due(snapshot, issue['key'], today)
+        r.update(rapportfrequentie=f['frequentie'], rapport_vanaf=f.get('vanaf'), rapport_periode=due)
+        r['previous_report'] = due is None or any(a['initiative']==issue['key'] and 'vooruitgangsrapport' in a.get('labels',[]) and reported(a, due, 'gebruik') for a in artifacts)
         h = snapshot.get('hours',{}).get('per_initiative',{}).get(issue['key'], {})
         total, direct = h.get('period_h'), h.get('direct_h')
         r['direct_hours_share'] = direct/total if isinstance(total,(float,int)) and total>0 and isinstance(direct,(float,int)) else None
@@ -156,7 +188,10 @@ def review(cat, snapshot, today=None):
         for child in p.get('children',[]):
             if child.get('project_page'):continue
             labels=set(child.get('labels',[]))&set(cat.schema['artefact_labels'])
-            if len(labels)!=1:emit('artefactlabel','warning',f"{child.get('title')}: {len(labels)} artefactlabels.",'Stel classificatie voor en bespreek die; geen automatische herlabeling.')
+            # Unlabeled working documents are outside the stack; only pages that look like an artefact count.
+            title=child.get('title','')
+            looks=re.match(r'\d{4}-\d{2}-\d{2} - ',title) or any(l in title.lower() for l in cat.schema['artefact_labels'])
+            if len(labels)>1 or (not labels and looks):emit('artefactlabel','warning',f"{child.get('title')}: {len(labels)} artefactlabels.",'Stel classificatie voor en bespreek die; geen automatische herlabeling.')
             if 'vooruitgangsrapport' in labels:
                 title=child.get('title','')
                 if not re.search(r'\b\d{4}-(?:0[1-9]|1[0-2]|Q[1-4])\b',title):

@@ -1,0 +1,8 @@
+id: geen-onderhoudstaak
+scope: products
+severity: warning
+when:
+  all:
+    - {field: onderhoud_keys, op: empty}
+message: Product zonder onderhouds-POR-taak.
+action: Maak of koppel een POR-taak met Bedrijfstoepassing = dit product en een billingkey met Tempo-categorie onderhoud (OND).
