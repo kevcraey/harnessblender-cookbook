@@ -136,8 +136,8 @@ def png(data, kind, width=1000):
     def point(x, y, color, hollow=False, ring=False):
         if ring:
             # A measurement is an open ring around the plan point, so a measurement on plan leaves both visible.
-            r = 8*scale
-            draw.ellipse((x*scale-r, y*scale-r, x*scale+r, y*scale+r), outline=color, width=3*scale)
+            r, w = (8, 3) if ring is True else (ring, 2.5)
+            draw.ellipse((x*scale-r*scale, y*scale-r*scale, x*scale+r*scale, y*scale+r*scale), outline=color, width=round(w*scale))
             return
         r = 4*scale
         draw.ellipse((x*scale-r, y*scale-r, x*scale+r, y*scale+r), fill='#ffffff' if hollow else color, outline=color, width=2*scale)
@@ -209,12 +209,13 @@ def png(data, kind, width=1000):
         if len(steps) > 1:
             line(steps, TEAL, 2, True)
         plot(data.get('expected_scope', [None]*count), ORANGE, True, True)
-        if not data.get('closed'):plot(data['estimated'], BLUE, True, True)
         plot(data['assumed'], GRAY, True, True)
     # The planning starts at the current Actual: draw it first so the measured point stays visible on top.
     if not scope:plot(data.get('forward',[None]*count), ORANGE, True, True)
     # The plan above the dotted series, the measurement ring on top: a measurement on plan shows both.
     plot(plan, BLACK)
+    # Incl. running work is the headline scope figure: above the plan, as a thin ring, so on plan it stays visible.
+    if scope and not data.get('closed'):plot(data['estimated'], BLUE, True, ring=6.5)
     # A closed project reads as one gradual line: delivered including running work, delivered where no estimate exists.
     if scope and data.get('closed'):
         plot([d if e is None else e for d, e in zip(data['delivered'], data['estimated'])], BLUE, ring=True)
