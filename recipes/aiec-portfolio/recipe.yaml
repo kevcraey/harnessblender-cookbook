@@ -1,6 +1,6 @@
 description: "Praktisch AIEC-portfoliobeheer \u2014 code-first, review en expliciete\
   \ goedkeuring"
-version: 2.4.30
+version: 2.4.35
 selections:
   skills:
   - source: pantry/skills/aiec-portfolio/portfolio
@@ -15,4 +15,4 @@ selections:
   guidelines: []
   mcps: []
   plugins: []
-content_hash: fed02a7bb89388c6
+content_hash: 1f12b772542338d6

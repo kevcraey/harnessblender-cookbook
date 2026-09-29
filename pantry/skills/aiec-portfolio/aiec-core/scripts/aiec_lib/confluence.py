@@ -247,7 +247,8 @@ def _section_body(schema: dict, section: dict, values: dict, atlassian: dict, sa
         return f"<p>{esc(samenvatting) if samenvatting else esc(section.get('placeholder', ''))}</p>"
     if t == "jira-issue":
         key = values.get("ai_key") or ""
-        macro = _jira_macro(atlassian, f"key = {key} OR issue in linkedIssues({key})") if key else ""
+        # Linked issues only from the portfolio projects; other Jira projects are noise here.
+        macro = _jira_macro(atlassian, f"(key = {key} OR issue in linkedIssues({key})) AND project in (PROD, POR, EAG, AI)") if key else ""
         return f"<p>{macro}</p>" if macro else "<p>(Jira-macro ontbreekt: geen AI-key of geen serverId)</p>"
     if t == "children":
         return f"<p>{CHILDREN_MACRO}</p>"

@@ -185,7 +185,7 @@ def test_render_page_volgt_page_sections():
                 for s in S["page_sections"]]
     assert posities == sorted(posities)
     assert xml.startswith('<h2>Stand van zaken</h2>')
-    assert '<ac:parameter ac:name="jqlQuery">key = AI-25 OR issue in linkedIssues(AI-25)</ac:parameter>' in xml
+    assert '<ac:parameter ac:name="jqlQuery">(key = AI-25 OR issue in linkedIssues(AI-25)) AND project in (PROD, POR, EAG, AI)</ac:parameter>' in xml
     assert '<ac:parameter ac:name="serverId">56e4142a-0105-3cf7-b7a8-b308d7369863</ac:parameter>' in xml
     assert 'ac:name="contentbylabel"' in xml and conf.CHILDREN_MACRO not in xml
     assert '&quot;captatierapport&quot;' in xml and '&quot;decisions&quot;, ' not in xml   # beslissingen apart
