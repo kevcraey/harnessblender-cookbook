@@ -124,9 +124,17 @@ A form export --snapshot snapshot.json --target POR-123 --period 2026-10 --out P
 A form export --snapshot snapshot.json --target POR-123 --period 2026-09 --tracking meetbasis.json --out POR-123_2026-09.aiec.json
 A form import --snapshot verse-snapshot.json --file POR-123_2026-10.aiec.json --out rapportverzoek.json
 A form import --snapshot verse-snapshot.json --file project.aiec.json --period 2026-09 --out septemberverzoek.json
+A form open --snapshot verse-snapshot.json --target POR-123
+A form import --snapshot verse-snapshot.json --target POR-123 --out rapportverzoek.json
 A propose --request rapportverzoek.json --out voorstel.json
 ```
 
+`form open` is de snelle weg voor wie zelf invult: het schrijft `<project>_<maand>.html` naar `[form].dir`
+(standaard `~/Downloads`) met het project ingebakken en opent het in de browser. Zonder `--period` is de werkmaand
+de maand na de laatste meetstand. Staat er in die map een bewaard `<project>_<maand>*.aiec.json` (de download
+van **Werk bewaren**, ook met browsersuffix ` (1)`), dan hervat het de nieuwste daarvan; `--fresh` exporteert
+opnieuw. `form import --target` zonder `--file` leest datzelfde bewaarde bestand. Het HTML-bestand wordt telkens
+opnieuw gemaakt; het werk zit in de download.
 Bij de eerste export zonder bestaande meetstand is `--tracking` met de bevestigde baseline nodig.
 Bij volgende exports wordt de gepubliceerde historie meegenomen en een nieuwe onbevestigde werkmaand
 klaargezet. Geef het gegenereerde HTML-bestand door, niet `form/index.html`: dat is ongebouwde broncode.

@@ -9,6 +9,7 @@ import argparse
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 import yaml
 from aiec_lib import config
@@ -53,7 +54,8 @@ def parser():
     q=s.add_parser('form');fs=q.add_subparsers(dest='form_action',required=True)
     x=fs.add_parser('build');x.add_argument('--out',required=True)
     x=fs.add_parser('export');x.add_argument('--snapshot',required=True);x.add_argument('--target',required=True);x.add_argument('--period',required=True);x.add_argument('--tracking');x.add_argument('--out',required=True)
-    x=fs.add_parser('import');x.add_argument('--snapshot',required=True);x.add_argument('--file',required=True);x.add_argument('--period');x.add_argument('--out',required=True)
+    x=fs.add_parser('open',help='Formulier met het project erin, geopend in de browser');x.add_argument('--snapshot',required=True);x.add_argument('--target',required=True);x.add_argument('--period',help='Standaard: maand na de laatste meetstand');x.add_argument('--tracking');x.add_argument('--dir',help='Standaard [form].dir');x.add_argument('--fresh',action='store_true',help='Bewaard concept negeren');x.add_argument('--no-open',action='store_true')
+    x=fs.add_parser('import');x.add_argument('--snapshot',required=True);x.add_argument('--file',help='Standaard: laatst bewaarde <target>_<period>.aiec.json in [form].dir');x.add_argument('--target');x.add_argument('--period');x.add_argument('--out',required=True)
     q=s.add_parser('show');q.add_argument('--plan',required=True)
     q=s.add_parser('approve');q.add_argument('--plan',required=True);q.add_argument('--by',required=True);q.add_argument('--evidence',required=True);q.add_argument('--ack',required=True);q.add_argument('--out',required=True)
     q=s.add_parser('apply');q.add_argument('--plan',required=True);q.add_argument('--approval',required=True)
@@ -98,8 +100,21 @@ def main(argv=None):
                 print(str(output.resolve()))
             elif args.form_action=='export':
                 emit(form_files.export_project(cat,read_json(args.snapshot),args.target,args.period,read_json(args.tracking) if args.tracking else None),args.out)
+            elif args.form_action=='open':
+                snapshot=read_json(args.snapshot);folder=Path(args.dir or cfg['form']['dir']).expanduser()
+                doc,draft=form_files.prepare(cat,snapshot,args.target,folder,args.period,read_json(args.tracking) if args.tracking else None,args.fresh)
+                period=doc['periods'][-1]['period'];output=folder/f'{args.target}_{period}.html'  # Regenerated each time; the saved .aiec.json is the work.
+                output.parent.mkdir(parents=True,exist_ok=True);output.write_text(form_files.build_html(cat,doc),encoding='utf-8')
+                if not args.no_open:subprocess.run(['open',str(output)],check=True)
+                emit({'form':str(output),'period':period,'project':f'bewaard concept {draft}' if draft else 'verse export'})
             else:
-                emit(form_files.import_request(cat,read_json(args.snapshot),form_files.read_document(args.file),args.period),args.out)
+                file=args.file
+                if not file:
+                    if not args.target:raise ValueError('Geef --file of --target')
+                    period=args.period or form_files.next_period(cat,read_json(args.snapshot),args.target)
+                    file=form_files.saved_draft(cfg['form']['dir'],args.target,period)
+                    if not file:raise ValueError(f'Geen bewaard projectbestand {args.target}_{period}*.aiec.json in {cfg["form"]["dir"]}')
+                emit(form_files.import_request(cat,read_json(args.snapshot),form_files.read_document(file),args.period),args.out)
             return 0
         if args.cmd=='extend':
             if args.action=='propose':emit(extensions.propose(cat,args.kind,Path(args.file).read_text()),args.out)

@@ -256,8 +256,37 @@ def font_faces(folder):
                    % (weight, base64.b64encode((folder/'fonts'/name).read_bytes()).decode()) for weight, name in FONTS)
 
 
-def build_html(cat):
+def _script_json(value):
+    return json.dumps(value, ensure_ascii=False).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
+
+
+def build_html(cat, doc=None):
+    """The standalone form; with `doc` that project opens at once."""
     folder = cat.root/'form'
     text = (folder/'index.html').read_text().replace('/*__FONTS__*/', font_faces(folder))
-    data = json.dumps(contract(cat), ensure_ascii=False).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
-    return text.replace('/*__STYLE__*/',(folder/'style.css').read_text()).replace('/*__CONTRACT__*/',data).replace('/*__MODEL__*/',(folder/'model.js').read_text()).replace('/*__APP__*/',(folder/'app.js').read_text())
+    text = text.replace('/*__PROJECT__*/', _script_json(validate_document(doc) if doc else None))
+    return text.replace('/*__STYLE__*/',(folder/'style.css').read_text()).replace('/*__CONTRACT__*/',_script_json(contract(cat))).replace('/*__MODEL__*/',(folder/'model.js').read_text()).replace('/*__APP__*/',(folder/'app.js').read_text())
+
+
+def next_period(cat, snapshot, key):
+    project, initiative = _project(cat, snapshot, key)
+    records = report_history.load(cat.reports['vooruitgang'], snapshot, key, initiative)['records']
+    if not records:raise ValueError('Nog geen meetstand: geef --period en --tracking met de bevestigde baseline')
+    last = records[-1]['period']
+    return tracking.months(last, f'{int(last[:4])+1:04d}-{last[5:]}')[1]
+
+
+def saved_draft(folder, key, period):
+    """Newest saved project file for this month; browsers add ' (1)' to repeated downloads."""
+    files = sorted(Path(folder).expanduser().glob(f'{key}_{period}*.aiec.json'), key=lambda p:p.stat().st_mtime)
+    return files[-1] if files else None
+
+
+def prepare(cat, snapshot, key, folder, period=None, supplied=None, fresh=False):
+    """Project for `form open`: a saved draft of the work month wins over a fresh export."""
+    period = period or next_period(cat, snapshot, key)
+    draft = None if fresh else saved_draft(folder, key, period)
+    if not draft:return export_project(cat, snapshot, key, period, supplied), None
+    doc = read_document(draft)
+    if doc['project']['key']!=key or doc['periods'][-1]['period']!=period:raise ValueError(f'{draft.name} hoort niet bij {key} {period}')
+    return doc, draft

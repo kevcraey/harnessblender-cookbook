@@ -242,3 +242,27 @@ def test_form_texts_reach_the_report(env):
     request=form_files.import_request(cat,b.collect(),doc)
     result=render(cat,b.collect(),'vooruitgang','POR-1',request['period'],request['inputs'],cfg,tracking=request['tracking'])
     assert result['complete'] and 'Regel twee.' in result['storage'] and 'Verder met milestone 5.' in result['storage']
+
+
+def test_form_open_embeds_project_and_resumes_saved_draft(env):
+    cat,cfg,b,tmp=env;snap=b.collect()
+    doc,draft=form_files.prepare(cat,snap,'POR-1',tmp,'2026-06',five_basis())
+    assert draft is None and doc['periods'][-1]['period']=='2026-06'
+    html=form_files.build_html(cat,doc);assert '/*__' not in html and '"key": "POR-1"' in html
+    assert '<script id="aiec-project" type="application/json">null</script>' in form_files.build_html(cat)
+    saved=copy.deepcopy(doc);saved['periods'][-1]['inputs']['vlag']='groen'
+    (tmp/'POR-1_2026-06.aiec.json').write_text(json.dumps(doc))
+    newer=tmp/'POR-1_2026-06 (1).aiec.json';newer.write_text(json.dumps(saved))
+    got,draft=form_files.prepare(cat,snap,'POR-1',tmp,'2026-06',five_basis())
+    assert draft==newer and got['periods'][-1]['inputs']['vlag']=='groen'
+    assert form_files.prepare(cat,snap,'POR-1',tmp,'2026-06',five_basis(),fresh=True)[1] is None
+    with pytest.raises(ValueError):form_files.next_period(cat,snap,'POR-1')  # No meetstand yet: month must be given.
+
+
+def test_form_open_cli(env):
+    cat,cfg,b,tmp=env;script=str(CORE/'scripts/aiec.py');snapshot=tmp/'snapshot.json';snapshot.write_text(json.dumps(b.collect()))
+    basis=tmp/'basis.json';basis.write_text(json.dumps(five_basis()))
+    cmd=[sys.executable,script,'form','open','--snapshot',str(snapshot),'--target','POR-1','--period','2026-06','--tracking',str(basis),'--dir',str(tmp),'--no-open']
+    run=subprocess.run(cmd,capture_output=True,text=True);assert run.returncode==0,run.stderr
+    assert json.loads(run.stdout)['form']==str(tmp/'POR-1_2026-06.html') and 'Fictief' in (tmp/'POR-1_2026-06.html').read_text()
+    assert subprocess.run(cmd,capture_output=True).returncode==0  # The form is regenerated, not refused.

@@ -142,4 +142,6 @@ $('future-factor-mode').onchange=e=>{if(!editable())return;const t=current().tra
 $('future-factor-value').addEventListener('input',e=>{if(!editable())return;current().tracking.future_factor=e.target.value.trim()||'1';changed();});
 window.AIECApp={getDocument:()=>doc?M.copy(doc):null,getEvaluation:()=>evaluation?M.copy(evaluation):null,load,example,contract:C};
 render();
+const preset=JSON.parse($('aiec-project').textContent);  // Set by `form open`: the project opens without a file dialog.
+if(preset)load(preset,preset.project.key+'_'+preset.periods.at(-1).period+'.aiec.json');
 })();

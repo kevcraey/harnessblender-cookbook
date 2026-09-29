@@ -43,6 +43,10 @@ path = "~/Library/CloudStorage/Dropbox/1-Kenzo/1-Second-Brain"
 [meetstanden]
 path = "~/Library/CloudStorage/Dropbox/1-Kenzo/2-Work/26-ai-expertisecentrum/aiec-meetstanden"
 push = true
+
+# Invulformulier: `form open` zet hier het HTML-bestand en zoekt hier bewaarde projectbestanden (browserdownloads).
+[form]
+dir = "~/Downloads"
 """
 
 DEFAULTS: dict = tomllib.loads(DEFAULT_CONFIG_TOML)
