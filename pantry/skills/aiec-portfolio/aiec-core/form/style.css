@@ -10,7 +10,7 @@
 --vl-border--radius:3px;--vl-border--width:1px;
 --accent:var(--vl-color--domg-hoofdkleur);
 /* Grafiekreeksen: gelijk aan app.js drawCharts en report_charts.py. */
---chart-plan:var(--vl-color--grey-1000);--chart-actual:var(--vl-color--action);--chart-approved:var(--vl-color--primary-niveau2-800);--chart-forward:var(--vl-color--warning-800);--chart-assumed:var(--vl-color--grey-600);--chart-band:var(--vl-color--success-100);--chart-future:var(--vl-color--grey-100)}
+--chart-plan:var(--vl-color--grey-1000);--chart-actual:var(--vl-color--action);--chart-estimated:#c9a800;--chart-approved:var(--vl-color--grey-600);--chart-forward:var(--vl-color--warning-800);--chart-assumed:var(--vl-color--grey-300);--chart-band:var(--vl-color--action-100);--chart-future:var(--vl-color--grey-100)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--vl-color--background-default);color:var(--vl-color--text-default);font:16px/1.5 "Flanders Art Sans",sans-serif;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -90,11 +90,11 @@ td input.correction{width:160px;text-align:left;font-size:12px}
 .legend-item{display:flex;align-items:center;gap:6px;white-space:nowrap}
 .swatch{width:25px;height:0;border-top:2px solid var(--chart-plan);display:inline-block}
 .swatch.delivered{border-color:var(--chart-actual)}
-.swatch.estimated{border-color:var(--chart-actual);border-top-style:dotted}
+.swatch.estimated{border-color:var(--chart-estimated);border-top-style:dotted}
 .swatch.forward{border-color:var(--chart-forward);border-top-style:dotted}
 .swatch.approved{border-color:var(--chart-approved);border-top-style:dashed}
 .swatch.assumed{border-color:var(--chart-assumed);border-top-style:dotted}
-.swatch.band{height:11px;border:var(--vl-border--width) solid var(--vl-color--success-400);background:var(--chart-band)}
+.swatch.band{height:11px;border:var(--vl-border--width) solid var(--vl-color--grey-300);background:var(--chart-band)}
 .swatch.future{height:11px;border:var(--vl-border--width) solid var(--vl-color--border-default);background:var(--chart-future)}
 .swatch.missing{height:11px;border:var(--vl-border--width) solid var(--vl-color--border-default);background:repeating-linear-gradient(135deg,var(--vl-color--grey-100),var(--vl-color--grey-100) 3px,var(--vl-color--grey-300) 3px,var(--vl-color--grey-300) 4px)}
 .chart{width:100%;margin-top:10px}

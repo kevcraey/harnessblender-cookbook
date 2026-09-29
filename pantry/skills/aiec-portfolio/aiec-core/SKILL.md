@@ -98,8 +98,8 @@ Gebruik een verse `collect`: oude snapshots zonder rapporthistoriek zijn niet ge
 voegt geen maand toe aan de historiek. Maanden worden chronologisch toegevoegd; een oudere maand achteraf
 invoegen of een vastgelegde maand corrigeren vraagt afzonderlijke review, niet een gewone maandupdate.
 
-Grafieken: zwart **Plan**, blauw vol **Opgeleverd**, blauw gestippeld **Opgeleverd incl. lopend**. Bij inzet:
-blauw vol **Werkelijk besteed**. Elke grafiek heeft een eigen legende; blauwgroen is goedgekeurde scope, groen
+Grafieken: zwart **Plan**, blauw vol **Opgeleverd**, geel gestippeld **Opgeleverd incl. lopend**. Bij inzet:
+blauw vol **Werkelijk besteed**. Elke grafiek heeft een eigen legende; grijs gestippeld is goedgekeurde scope, lichtblauw
 ±10 procentpunt rond het oorspronkelijke plan. Scope en inzet kunnen boven 100% uitkomen. Ontbrekende
 maanden blijven gaten. ‘Klaar’ volgt de opleverstatus van alle goedgekeurde milestones, nooit een schatting.
 Opbouw van het vooruitgangsrapport: eigenschappenblok (`aiec-vooruitgang`) met de vlag, opgeleverde scope en
@@ -140,7 +140,7 @@ Bij volgende exports wordt de gepubliceerde historie meegenomen en een nieuwe on
 klaargezet. Geef het gegenereerde HTML-bestand door, niet `form/index.html`: dat is ongebouwde broncode.
 De vormgeving volgt Flux (huisstijl Departement Omgeving, zoals `maak-presentatie`): `form build` bakt
 Flanders Art Sans uit `form/fonts/` in als data-URI. De grafiekkleuren in `form/style.css`, `form/app.js`
-en `report_charts.py` zijn dezelfde Flux-tokens; pas ze samen aan.
+en `report_charts.py` zijn dezelfde Flux-tokens plus het gele accent `#c9a800` voor incl. lopend; pas ze samen aan.
 
 `form import` schrijft alleen een gewoon rapportverzoek. De kern rekent opnieuw; browseruitkomsten of
 lokale ‘gepubliceerd’-labels zijn geen autoriteit. Een oudere lokale maand

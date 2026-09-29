@@ -12,9 +12,10 @@ from . import monthly_planning
 # Flux-tokens (release 2.19.0), gelijk aan de grafiekreeksen in form/style.css en form/app.js.
 BLACK = '#333332'  # grey-1000
 BLUE = '#0055cc'  # action
-TEAL = '#278e93'  # primary-niveau2-800
-GRAY = '#8695a8'  # grey-600
-GREEN = '#ecf6ee'  # success-100
+GOLD = '#c9a800'  # geel accent (donkerder dan primary #ffed00, leesbaar op wit)
+TEAL = '#8695a8'  # grey-600: goedgekeurde scope
+GRAY = '#cfd5dd'  # grey-300: aanname
+GREEN = '#e4ebf5'  # action-100: band ±10 procentpunt
 ORANGE = '#9f5804'  # warning-800
 
 
@@ -146,7 +147,7 @@ def png(data, kind, width=1000):
     label(34, 13, 'Scope' if scope else 'Inzet', 26)
     items = [(BLACK, 'Plan (oorspronkelijk)', False, False), (BLUE, 'Opgeleverd' if scope else 'Werkelijk besteed', False, False)]
     if scope:
-        items += ([] if data.get('closed') else [(BLUE, 'Opgeleverd incl. lopend', True, False)])+[(TEAL, 'Goedgekeurde scope', True, False)]
+        items += ([] if data.get('closed') else [(GOLD, 'Opgeleverd incl. lopend', True, False)])+[(TEAL, 'Goedgekeurde scope', True, False)]
     if not scope and any(v is not None for v in data.get('forward',[])):
         items.append((ORANGE, 'Actuele inzetplanning', True, False))
     if scope and any(v is not None for v in data['assumed']):
@@ -215,7 +216,7 @@ def png(data, kind, width=1000):
     # The plan above the dotted series, the measurement ring on top: a measurement on plan shows both.
     plot(plan, BLACK)
     # Incl. running work is the headline scope figure: above the plan, as a thin ring, so on plan it stays visible.
-    if scope and not data.get('closed'):plot(data['estimated'], BLUE, True, ring=6.5)
+    if scope and not data.get('closed'):plot(data['estimated'], GOLD, True, ring=6.5)
     # A closed project reads as one gradual line: delivered including running work, delivered where no estimate exists.
     if scope and data.get('closed'):
         plot([d if e is None else e for d, e in zip(data['delivered'], data['estimated'])], BLUE, ring=True)
@@ -260,7 +261,7 @@ def fragments(state, data, assets):
     # The monthly planning itself is visible as the orange lines; only a scaled projection needs a word.
     factor = state.get('future_factor', 1.0)
     scaled = [] if state.get('planning') is None or factor == 1 else ['Backlog is in de projectie geschaald met factor '+f'{factor:.2f}'.replace('.', ',')+'.']
-    md = ['## Scope en inzet', '', detail, done, *scaled, '', 'Elke grafiek: zwart Plan; blauw vol Opgeleverd / Werkelijk besteed; blauw gestippeld Opgeleverd incl. lopend. Oranje gestippeld: actuele inzetplanning en de scope die daarmee verwacht wordt. Groen: ±10 procentpunt.', '']
+    md = ['## Scope en inzet', '', detail, done, *scaled, '', 'Elke grafiek: zwart Plan; blauw vol Opgeleverd / Werkelijk besteed; geel gestippeld Opgeleverd incl. lopend. Oranje gestippeld: actuele inzetplanning en de scope die daarmee verwacht wordt. Grijs gestippeld: goedgekeurde scope. Lichtblauw: ±10 procentpunt.', '']
     text = '<p>'+escape(detail)+' '+done+'</p>'+''.join('<p>'+escape(line)+'</p>' for line in scaled)
     storage, preview = figures(data, assets, summary, '<h2>Scope en inzet</h2>'+text)
     return md, storage, preview
@@ -272,7 +273,7 @@ def figures(data, assets, summary, lead):
     preview = lead+'<div class="report-charts">'
     for asset in assets:
         title = 'Scope' if asset['kind'] == 'scope' else 'Inzet'
-        legend = 'zwart Plan; blauw Opgeleverd of Werkelijk besteed.' if data.get('closed') else 'zwart Plan; blauw vol Opgeleverd of Werkelijk besteed; blauw gestippeld Opgeleverd incl. lopend.'
+        legend = 'zwart Plan; blauw Opgeleverd of Werkelijk besteed.' if data.get('closed') else 'zwart Plan; blauw vol Opgeleverd of Werkelijk besteed; geel gestippeld Opgeleverd incl. lopend.'
         alt = title+' — '+summary+' Legende: '+legend
         storage += '<p><ac:image ac:width="900" ac:alt="'+escape(alt, quote=True)+'"><ri:attachment ri:filename="'+escape(asset['filename'], quote=True)+'"/></ac:image></p>'
         mobile = base64.b64encode(png(data, asset['kind'], width=600)).decode()
