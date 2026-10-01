@@ -88,7 +88,7 @@ def documents(cat):
         f"| {k} | {', '.join(v['jira'])} | {v['tekst']} |" for k,v in s['resoluties'].items()]
     lines += ['','Een andere resolution op een afgesloten initiatief is een reviewmelding. Bij stopgezet of geannuleerd',
               'gelden de fasegebonden kenmerken niet meer; enkel de overige verplichte kenmerken en de stopreden.',
-              'Fases en open proceskeuzes: [[aiec-portfolio-proces]].']
+              'Fases en procesbeslissingen: [[aiec-portfolio-proces]].']
     out={'aiec-schema.md':'\n'.join(lines)+'\n'}
     lines=header('Rapportsjablonen','aiec-core/catalog/reports')
     lines+=['De projectkey hoort in projectrapporttitels. Maand: JJJJ-MM. Gebruik: JJJJ-Qn, JJJJ-Hn of JJJJ, volgens de interne rapporteringsfrequentie. Op tijd: tot halverwege de volgende periode.',

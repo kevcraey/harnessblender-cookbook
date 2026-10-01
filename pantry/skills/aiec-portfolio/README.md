@@ -12,7 +12,7 @@ agents/aiec-dossier.md      optionele read-only dossierlezer
 aiec-maintainer/           gecontroleerd uitbreiden
 aiec-core/
   schema.yaml              kenmerken, enums en pijlers
-  catalog/process.yaml     gates en expliciete open proceskeuzes
+  catalog/process.yaml     gates, procesbeslissingen en eventuele open keuzes
   catalog/rules/           declaratieve controles
   catalog/reports/         bronnen, vragen en rapportopbouw
   catalog/capabilities/    beschikbare handelingen

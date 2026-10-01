@@ -2,6 +2,13 @@
 
 Laatste controle: 2026-10-01. Deze controles zijn uitgevoerd door de bouwsessie, zonder live mutaties.
 
+## Procesbeslissingen — release 2.4.59
+
+Lokaal geïnstalleerd op 2026-10-01. **371 geslaagde tests**. Alle kern- en skillbestanden zijn byte-identiek
+aan de bron. `open_decisions` is leeg; parkeren, statusafleiding, deadlines, meting-nota en de gate naar
+Implementatie staan in `decided`. Fase "Wacht op analyse" en label `meting` zijn geschrapt. Fixture: de gate
+naar Implementatie vraagt enkel een beslissing; het mechanisme voor een onvolledige gate blijft getest.
+
 ## Ad-hocvraag te lang open — release 2.4.57 (tekstcorrectie portfolio-skill in 2.4.58)
 
 Lokaal geïnstalleerd op 2026-10-01. **370 geslaagde tests**, waarvan één nieuw. Alle kern- en skillbestanden

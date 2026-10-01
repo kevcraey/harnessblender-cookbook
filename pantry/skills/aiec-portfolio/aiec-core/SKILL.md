@@ -12,7 +12,7 @@ Python 3.12 (uv beheert de runtime). Alle globale vlaggen staan vóór het subco
 ## Bronnen en bestanden
 
 - `schema.yaml`: kenmerken, waarden, pijlers en Confluence-structuur.
-- `catalog/process.yaml`: fasebenamingen, gates en open proceskeuzes.
+- `catalog/process.yaml`: fasebenamingen, gates, procesbeslissingen (`decided`) en eventuele open keuzes.
 - `catalog/rules/*.yaml`: controles over gelezen gegevens.
 - `catalog/reports/*.yaml`: rapporten, bronnen, vragen en opbouw.
 - `catalog/capabilities/*.yaml`: beschikbare handelingen.

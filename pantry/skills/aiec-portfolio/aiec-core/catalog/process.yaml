@@ -7,12 +7,6 @@
       ],
       "rank": 0
     },
-    "Wacht op analyse": {
-      "aliases": [
-        "Wacht op analyse"
-      ],
-      "rank": 1
-    },
     "Analyse": {
       "aliases": [
         "In Analyse",
@@ -23,8 +17,7 @@
     "Planning": {
       "aliases": [
         "Prioritering en planning",
-        "Planning",
-        "Wacht op implementatie"
+        "Planning"
       ],
       "rank": 2
     },
@@ -99,34 +92,13 @@
       "defined": true,
       "decision_in": "decisions"
     },
-    "Wacht op analyse": {
-      "defined": false,
-      "question": "Bevestig de workflow en afleiding uit POR vóór deze transitie."
-    },
     "Implementatie": {
-      "defined": false,
-      "question": "De gate naar Implementatie is nog niet volledig vastgelegd; bevestig voorwaarden en gekoppelde POR/PROD-acties.",
+      "artifacts": [],
+      "defined": true,
       "decision_in": "decisions"
     }
   },
-  "open_decisions": [
-    {
-      "id": "parkeren",
-      "question": "Parkeren in dezelfde fase of afsluiten als niet nu? Beide komen voor in oude teksten."
-    },
-    {
-      "id": "statusafleiding",
-      "question": "Bevestig acht statussen en de afleiding uit EAG/POR/PROD; de instance-mapping is nog niet volledig bevestigd."
-    },
-    {
-      "id": "deadlines",
-      "question": "Bevestig captatietermijn, verlenging, wachtklok en prioriteitsbump; nog geen automatische termijnen of bumps."
-    },
-    {
-      "id": "meting-nota",
-      "question": "Bevestig meting als label en de behandeling van initiatiefgebonden governancenota’s."
-    }
-  ],
+  "open_decisions": [],
   "decided": [
     {
       "id": "instroom",
@@ -139,6 +111,36 @@
       "date": "2026-10-01",
       "by": "Kenzo",
       "rule": "Eén Jira-resolution per afsluitcategorie: uitgevoerd → 'uitgevoerd', stopgezet → 'Stopgezet', geannuleerd → 'geannuleerd'. Een initiatief afgesloten met een andere resolution is een reviewmelding om recht te zetten."
+    },
+    {
+      "id": "parkeren",
+      "date": "2026-10-01",
+      "by": "Kenzo",
+      "rule": "Geen parkeerstatus. Wat nu niet kan, wordt afgesloten als stopgezet met een stopreden (bv. geen capaciteit). Hervatten gebeurt via de transitie naar Captatie met een nieuwe beslissing; dezelfde key en geschiedenis blijven. 'stilgevallen' (90 dagen) is het beslismoment."
+    },
+    {
+      "id": "statusafleiding",
+      "date": "2026-10-01",
+      "by": "Kenzo",
+      "rule": "De Jira-status van het initiatief is de waarheid: zeven statussen, één per fase. Geen afleiding uit EAG, POR of PROD en geen wachtstatussen. Afwijkingen met gekoppelde tickets zijn reviewpunten."
+    },
+    {
+      "id": "deadlines",
+      "date": "2026-10-01",
+      "by": "Kenzo",
+      "rule": "Geen captatietermijn, verlenging, wachtklok of prioriteitsbump. De enige klokken zijn 'stilgevallen' (90 dagen) en 'adhoc-te-lang-open' (30 dagen). Rapporten zijn tijdig tot halverwege de volgende periode (de 15e voor een maandrapport)."
+    },
+    {
+      "id": "meting-nota",
+      "date": "2026-10-01",
+      "by": "Kenzo",
+      "rule": "Geen apart label 'meting' of governancenota. Metingen zitten in het vooruitgangsrapport; een governancenota is een verslag, of een beslissing (decisions) als er beslist wordt."
+    },
+    {
+      "id": "gate-implementatie",
+      "date": "2026-10-01",
+      "by": "Kenzo",
+      "rule": "De overgang naar Implementatie vraagt enkel een formele beslissing (decisions)."
     }
   ],
   "rules_note": "Regels signaleren. Een ontbrekende gatevoorwaarde vraagt een expliciete, gelogde uitzondering; nooit een stilzwijgende keuze."

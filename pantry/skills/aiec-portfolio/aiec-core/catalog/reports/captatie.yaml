@@ -85,7 +85,7 @@
       "prompt": "Is verkenning zinvol, waarom, en welke aanpak en inspanning stel je voor?",
       "required": true,
       "group": "Aanbeveling",
-      "row": "Verkenning waard, parkeren of afwijzen? Met reden en, als er een aanpak voorligt, de verkenning en haar inspanning in grote lijnen."
+      "row": "Verkenning waard, nu niet of afwijzen? Met reden en, als er een aanpak voorligt, de verkenning en haar inspanning in grote lijnen."
     }
   ]
 }

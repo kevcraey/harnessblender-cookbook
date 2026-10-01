@@ -168,8 +168,17 @@ def test_gate_child_changed_refuses(env):
 
 
 def test_incomplete_gate_not_guessed(env):
-    cat,cfg,b,_=env;p=make_plan(cat,b,cfg,{'kind':'transition','key':'AI-38','to':'Implementatie'})
+    cat,cfg,b,_=env;cat.process['gates']['Implementatie']={'defined':False,'question':'Gate nog niet vastgelegd.'}
+    p=make_plan(cat,b,cfg,{'kind':'transition','key':'AI-38','to':'Implementatie'})
     assert any('nog niet' in q for q in p['questions']) and not p['actions']
+
+
+def test_gate_implementatie_needs_only_a_decision(env):
+    cat,cfg,b,_=env;req={'kind':'transition','key':'AI-38','to':'Implementatie'}
+    assert any("'Overgang naar' Implementatie" in q for q in make_plan(cat,b,cfg,req)['questions'])
+    _decision_page(b,'300','100','Implementatie')
+    q=make_plan(cat,b,cfg,req)['questions']
+    assert not any('Beslissing' in x or 'Gate-artefact' in x or 'nog niet' in x for x in q)
 
 
 def test_reports_questions_and_no_jira_copy(env):

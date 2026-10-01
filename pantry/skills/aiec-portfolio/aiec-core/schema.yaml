@@ -21,7 +21,6 @@ artefact_labels:
   dpia: gegevensbeschermingseffectbeoordeling
   advies: advies van DPO, CISO, juridische dienst of architectuur
   vooruitgangsrapport: maandrapport project of kwartaalrapport operationeel initiatief
-  meting: meetrapport; labelkeuze nog te bevestigen
   retrospectieve: terugblik na afsluiten van een project; op verzoek, geen verplichte gate
   initiatierapport: EAG-beoordeling Initiatie (Captatie → Analyse), met de beslissing over verkenning
   verkenningsrapport: EAG-beoordeling Verkenning (Analyse → Planning), met de beslissing over het vervolg
