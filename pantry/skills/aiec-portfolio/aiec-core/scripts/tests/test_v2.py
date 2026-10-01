@@ -358,7 +358,7 @@ def test_schema_document_uses_current_generator(env,capsys):
     output=capsys.readouterr().out
     assert 'aiec-portfolio-uitbreiden' in output
     assert 'aiec.py schema --out' not in output
-    assert 'oude resolution-suggesties zijn niet bevestigd' in output
+    assert '| stopgezet | Stopgezet |' in output
 
 
 def test_generic_rule_operators():
@@ -794,3 +794,91 @@ def test_unlabeled_working_document_is_outside_the_stack(env):
     flagged={f['message'].split(':')[0] for f in review(cat,b.collect()) if f['rule']=='artefactlabel'}
     assert 'Evaluatie prompts v1' not in flagged
     assert {'2026-09-01 - analyse - proef','[AI-38] Captatierapport — 2026-07'}<=flagged
+
+
+def test_adhocvraag_is_task_under_epic(env):
+    cat,cfg,b,tmp=env;p,r=approved(env,{'kind':'ad-hocvraag','vraag':'Kan AI helpen bij X?','context':'Mail van Y'})
+    key=execute(p,r,cat,cfg,b,tmp/'state')['results'][0]['result']['key']
+    f=b.data['objects']['issue'][key]['fields']
+    assert f['issuetype']['name']=='Task' and f['customfield_10510']=='AI-95' and f['status']['name']=='Backlog'
+    assert f['summary']=='Kan AI helpen bij X?' and f['description']=='Mail van Y'
+
+
+def test_adhocvraag_needs_one_sentence(env):
+    cat,cfg,b,_=env
+    for vraag in ('',' ','Regel een\nRegel twee'):
+        with pytest.raises(ValueError):make_plan(cat,b,cfg,{'kind':'ad-hocvraag','vraag':vraag})
+
+
+def _close_env(b):
+    b.data['transitions']['AI-38']=[{'id':'71','name':'Closed','to':{'name':'Closed'},'fields':{'resolution':{'required':False}}}]
+    _decision_page(b,'300','100','Afgesloten')
+    page=b.data['objects']['page']['100']['body']['storage']
+    page['value']=patch_details(Catalog(),page['value'],{'toepassingstype':'Documentverwerking','ai_techniek':'NLP','delivery_mode':'eigen bouw',
+        'batenclaim':'10 uur per maand','aanname':'Proef','opgeleverd':'Proefversie','gebruikers':'Testteam','rijpheid':'PoC'})
+
+
+def test_close_needs_category(env):
+    cat,cfg,b,_=env;_close_env(b)
+    p=make_plan(cat,b,cfg,{'kind':'transition','key':'AI-38','to':'Afgesloten'})
+    assert any('Afsluitcategorie vereist' in q for q in p['questions']) and not p['actions']
+
+
+def test_close_sets_the_one_resolution(env):
+    cat,cfg,b,tmp=env;_close_env(b)
+    p,r=approved(env,{'kind':'transition','key':'AI-38','to':'Afgesloten','categorie':'uitgevoerd'})
+    assert p['actions'][0]['payload']=={'transition':{'id':'71'},'fields':{'resolution':{'name':'uitgevoerd'}}}
+    execute(p,r,cat,cfg,b,tmp/'state')
+    assert not [f for f in review(cat,b.collect()) if f['key']=='AI-38' and f['rule']=='afsluiting-zonder-categorie']
+
+
+def test_close_without_resolution_field_refused(env):
+    cat,cfg,b,_=env;_close_env(b);b.data['transitions']['AI-38'][0]['fields']={}
+    p=make_plan(cat,b,cfg,{'kind':'transition','key':'AI-38','to':'Afgesloten','categorie':'uitgevoerd'})
+    assert any('geen resolution' in q for q in p['questions']) and not p['actions']
+
+
+def test_closed_with_other_resolution_flagged(env):
+    cat,cfg,b,_=env;f=b.data['objects']['issue']['AI-38']['fields']
+    f['status']={'name':'Closed'}
+    for name,flagged in (('Fixed',True),(None,True),('Stopgezet',False),('geannuleerd',False)):
+        f['resolution']={'name':name} if name else None
+        hits=[x for x in review(cat,b.collect()) if x['key']=='AI-38' and x['rule']=='afsluiting-zonder-categorie']
+        assert bool(hits)==flagged,name
+
+
+def test_close_cancelled_needs_only_stopreden(env):
+    cat,cfg,b,tmp=env
+    b.data['transitions']['AI-38']=[{'id':'71','name':'Closed','to':{'name':'Closed'},'fields':{'resolution':{'required':False}}}]
+    _decision_page(b,'300','100','Afgesloten')
+    req={'kind':'transition','key':'AI-38','to':'Afgesloten','categorie':'geannuleerd'}
+    assert [q for q in make_plan(cat,b,cfg,req)['questions'] if 'ontbreekt' in q]==['Stopreden ontbreekt.']
+    page=b.data['objects']['page']['100']['body']['storage'];page['value']=patch_details(cat,page['value'],{'stopreden':'geen meerwaarde'})
+    p,r=approved(env,req);assert not p['questions'];execute(p,r,cat,cfg,b,tmp/'state')
+    assert not [f for f in review(cat,b.collect()) if f['key']=='AI-38' and f['severity']=='error']
+    b.data['objects']['issue']['AI-38']['fields']['resolution']={'name':'uitgevoerd'}
+    assert any(f['message']=='Batenclaim ontbreekt.' for f in review(cat,b.collect()) if f['key']=='AI-38')
+
+
+def test_adhoc_dataset_and_related_questions(env):
+    cat,cfg,b,tmp=env
+    p,r=approved(env,{'kind':'ad-hocvraag','vraag':'Kan AI bezwaren samenvatten?'});first=execute(p,r,cat,cfg,b,tmp/'state')['results'][0]['result']['key']
+    rows=datasets(cat,b.collect())['adhoc']
+    assert [x['key'] for x in rows]==[first] and rows[0]['open'] and rows[0]['age_days']==0
+    with pytest.raises(ValueError,match='Verwant'):make_plan(cat,b,cfg,{'kind':'ad-hocvraag','vraag':'Nog een?','verwant':['AI-999']})
+    p,r=approved(env,{'kind':'ad-hocvraag','vraag':'Kan AI adviezen samenvatten?','context':'Mail','verwant':[first]})
+    assert any('Terugkerende vraag' in n for n in p['notes'])
+    second=execute(p,r,cat,cfg,b,tmp/'state')['results'][0]['result']['key']
+    assert b.data['objects']['issue'][second]['fields']['description']==f'Mail\n\nVerwant: {first}'
+    assert 'AI-38' not in [x['key'] for x in datasets(cat,b.collect())['adhoc']]
+
+
+def test_adhoc_open_too_long_flagged(env):
+    from datetime import timedelta
+    cat,cfg,b,tmp=env
+    p,r=approved(env,{'kind':'ad-hocvraag','vraag':'Oude vraag?'});key=execute(p,r,cat,cfg,b,tmp/'state')['results'][0]['result']['key']
+    f=b.data['objects']['issue'][key]['fields']
+    def flagged(days,resolution=None):
+        f['created']=(date.today()-timedelta(days=days)).isoformat()+'T09:00:00';f['resolution']={'name':resolution} if resolution else None
+        return any(x['rule']=='adhoc-te-lang-open' and x['key']==key for x in review(cat,b.collect()))
+    assert flagged(31) and not flagged(30) and not flagged(45,'Fixed')

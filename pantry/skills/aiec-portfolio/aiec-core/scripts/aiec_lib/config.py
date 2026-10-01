@@ -20,6 +20,8 @@ jira_url = "https://jira.omgeving.vlaanderen.be/jira"
 space = "AI"
 jira_project = "AI"
 eag_project = "EAG"
+# Beslissing instroom: ad-hocvragen worden een Task onder deze epic, geen initiatief
+adhoc_epic = "AI-95"
 templates_parent = 411959725
 briefings_parent = 398330761
 space_home = 390605009

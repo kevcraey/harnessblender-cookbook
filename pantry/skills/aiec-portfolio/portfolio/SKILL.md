@@ -35,9 +35,11 @@ zijn een registratie van toestemming, geen bewijs dat een mens is geauthenticeer
 
 | Vraag | Aanpak |
 | --- | --- |
-| Nieuw initiatief | Vraag titel en probleemomschrijving; zoek mogelijke dubbels en EAG. Stel eerst het Jira-initiatief voor. Gebruik de verkregen key voor een volgend voorstel met pagina en eventuele EAG-link. De instroomdrempel is nog een open proceskeuze; beslis niet zelf dat een vraag buiten het portfolio valt. |
+| Nieuwe vraag | Intake: vraag de vraag in één zin, de opdrachtgever, de waarde die die ervan verwacht, en of die bevestigt er inspanning en prioriteit aan te geven. Beide bevestigd: nieuw initiatief. Anders: ad-hocvraag (promotie kan later). Twijfel je, vraag het. |
+| Nieuw initiatief | Vraag titel en probleemomschrijving; zoek mogelijke dubbels en EAG. Stel eerst het Jira-initiatief voor. Gebruik de verkregen key voor een volgend voorstel met pagina en eventuele EAG-link. |
+| Ad-hocvraag | Geen initiatief. Een Task onder epic AI-95 (Ad-hocvragen, onder AI-48) met de vraag in één zin als summary; stel `ad-hocvraag` voor (vraag + context: wie, wanneer, bron). Vergelijk eerst met de eerdere ad-hocvragen in de snapshot (`adhoc`, ook afgesloten) en met de initiatieven; lijkt de vraag op eerdere, zeg dat met de keys en geef ze mee als `verwant`. Een terugkerende vraag is geen dubbel om te weigeren maar een signaal: stel voor de vragen te bundelen tot één vraag die een initiatief kan worden. Uren op de task. Maximaal 30 dagen open, dan afsluiten of promoveren. Promoveren als de opdrachtgever waarde verwacht én inspanning en prioriteit bevestigt; promotie = issuetype naar Initiative via Jira-Move (zelfde key, Kenzo in de UI), niet sluiten en linken. Collect leest ze in de dataset `adhoc`; de review meldt wie langer dan 30 dagen openstaat (`adhoc-te-lang-open`). |
 | Gegevens bijwerken | `kind: details`, uitsluitend de gewijzigde kenmerken. Code behoudt onbekende rijen en tekst. Onbekende kenmerken gaan naar de review. |
-| Fase wijzigen | `kind: transition`. Vraag de formele beslissing (wie, datum, bron, uitkomst). Code controleert beschikbare Jira-transitie en gate. Onvolledige gates of ontbrekende stukken blokkeren het voorstel; geen workaround. |
+| Fase wijzigen | `kind: transition`. Vraag de formele beslissing (wie, datum, bron, uitkomst). Code controleert beschikbare Jira-transitie en gate. Onvolledige gates of ontbrekende stukken blokkeren het voorstel; geen workaround. Afsluiten: vraag de categorie (uitgevoerd, stopgezet, geannuleerd) en geef `categorie` mee; bij stopgezet of geannuleerd ook de stopreden. |
 | Captatie/analyse/onderhoudsplan/eindrapport/retrospectieve | `A report` levert brongegevens, sjabloon en vragen. Vraag de maker om inhoudelijke oordelen. Herhaal met de antwoorden. `kind: report` stelt een nieuwe Confluence-kindpagina voor. |
 | Formulier voor een project klaarzetten | Verse `A collect`, dan `A form open --snapshot … --target <projectkey>`: het formulier opent in de browser met het project erin, werkmaand = maand na de laatste meetstand. Een bewaard concept van die maand in `[form].dir` (standaard `~/Downloads`) wordt hervat; `--fresh` negeert het. Geen losse bestanden aanreiken. |
 | Cijfers aanleveren via formulier | Geef een zelfstandig HTML-programma en actueel projectbestand via `A form build` / `A form export`. De projectleider vult cijfers en vlaggen in en levert het gedownloade bestand aan. Lees het met `A form import`; vul daarna ontbrekende rapporttekst aan en maak het normale publicatievoorstel. Lokale maandafsluiting is geen publicatie. |
@@ -57,6 +59,11 @@ in het reviewconcept; een onbeantwoorde vraag is niet opgelost en verdwijnt niet
 Een rapport of advies kan wel bestaan maar verkeerd opgeslagen of gelabeld zijn. Stel de vermoedelijke
 koppeling voor met bron, vraag bevestiging. De maker van het analyserapport bepaalt of een DPIA nodig is
 en vraagt de adviezen aan. Een compliancewaarschuwing is geen compliancegoedkeuring.
+
+Sluit af met de ad-hocvragen (`adhoc` in de snapshot). Groepeer vragen die over hetzelfde gaan, ook als ze
+anders geformuleerd zijn of al afgesloten zijn. Dat is een oordeel, geen code: noem per thema de keys en
+waarom ze samenhoren. Bij twee of meer verwante vragen: stel voor dat Kenzo met de opdrachtgevers een
+gebundelde vraag bespreekt die een initiatief kan worden.
 
 ## Omgaan met taalmodellen
 

@@ -111,10 +111,6 @@
   },
   "open_decisions": [
     {
-      "id": "instroom",
-      "question": "Altijd een initiatief bij rechtstreekse instroom, of pas boven een halve dag? Naslag en oudere procesbeschrijving verschillen."
-    },
-    {
       "id": "parkeren",
       "question": "Parkeren in dezelfde fase of afsluiten als niet nu? Beide komen voor in oude teksten."
     },
@@ -123,16 +119,26 @@
       "question": "Bevestig acht statussen en de afleiding uit EAG/POR/PROD; de instance-mapping is nog niet volledig bevestigd."
     },
     {
-      "id": "resoluties",
-      "question": "Bevestig Jira-resoluties per afsluitcategorie; geen automatische classificatie op oude gokmapping."
-    },
-    {
       "id": "deadlines",
       "question": "Bevestig captatietermijn, verlenging, wachtklok en prioriteitsbump; nog geen automatische termijnen of bumps."
     },
     {
       "id": "meting-nota",
       "question": "Bevestig meting als label en de behandeling van initiatiefgebonden governancenota’s."
+    }
+  ],
+  "decided": [
+    {
+      "id": "instroom",
+      "date": "2026-10-01",
+      "by": "Kenzo",
+      "rule": "Een ad-hocvraag wordt geen initiatief maar een Task onder epic AI-95 (Ad-hocvragen, onder AI-48): de vraag in één zin, uren op de task. Ze staat maximaal 30 dagen open en wordt dan afgesloten of gepromoveerd. Promoveren kan wanneer de opdrachtgever er waarde van verwacht en bevestigt dat die er de nodige inspanning en prioriteit aan geeft. Promotie tot initiatief gebeurt door het issuetype naar Initiative te wijzigen (zelfde key, via Jira-Move), niet door sluiten en linken."
+    },
+    {
+      "id": "resoluties",
+      "date": "2026-10-01",
+      "by": "Kenzo",
+      "rule": "Eén Jira-resolution per afsluitcategorie: uitgevoerd → 'uitgevoerd', stopgezet → 'Stopgezet', geannuleerd → 'geannuleerd'. Een initiatief afgesloten met een andere resolution is een reviewmelding om recht te zetten."
     }
   ],
   "rules_note": "Regels signaleren. Een ontbrekende gatevoorwaarde vraagt een expliciete, gelogde uitzondering; nooit een stilzwijgende keuze."

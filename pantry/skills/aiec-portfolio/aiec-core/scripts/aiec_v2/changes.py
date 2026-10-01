@@ -127,6 +127,21 @@ def make_plan(cat,backend,cfg,request):
         if request.get('received'):fields['customfield_14415']=request['received']
         action('issue.create',cfg['atlassian']['jira_project'],{'fields':fields})
         notes.append('Na aanmaak: met de verkregen AI-key een afzonderlijk voorstel voor initiatiefpagina en eventuele EAG-link. Geen lege artefactpagina’s.')
+    elif kind=='ad-hocvraag':
+        # Decision instroom: a small question is a Task under the ad-hoc epic, never an initiative.
+        vraag=request.get('vraag','').strip()
+        if not vraag or '\n' in vraag:raise ValueError('De vraag in één zin vereist')
+        fields={'project':{'key':cfg['atlassian']['jira_project']},'issuetype':{'name':'Task'},'summary':vraag,
+                jira.EPIC_LINK:cfg['atlassian']['adhoc_epic']}
+        # Related earlier questions are a judgement by the agent; code only checks the keys exist.
+        known={x['key'] for x in snapshot.get('adhoc',[])}|set(issues)
+        verwant=request.get('verwant') or []
+        if not isinstance(verwant,list) or set(verwant)-known:raise ValueError('Verwant: enkel bestaande ad-hocvragen of initiatieven')
+        tekst='\n\n'.join(x for x in (request.get('context','').strip(),'Verwant: '+', '.join(verwant) if verwant else '') if x)
+        if tekst:fields['description']=tekst
+        if verwant:notes.append(f'Terugkerende vraag: verwant aan {len(verwant)} eerdere. Overweeg een gebundelde vraag als initiatief.')
+        action('issue.create',cfg['atlassian']['jira_project'],{'fields':fields})
+        notes.append('Uren op deze task boeken. Maximaal 30 dagen open, dan afsluiten of promoveren tot initiatief (Jira-Move, zelfde key).')
     elif kind=='initiative-page':
         if any(p.get('ai_key')==key for p in snapshot['pages']):raise ValueError('Initiatief heeft al een kandidaatpagina; eerst reviewen')
         values=dict(request.get('values',{}),ai_key=key)
@@ -222,18 +237,27 @@ def make_plan(cat,backend,cfg,request):
         single=next(iter(per_project.values())) if len(per_project)==1 else set()
         needed=[x for x in gate.get('artifacts',[]) if x not in own and x not in gate.get('project_only',[]) and not (x in gate.get('project_artifacts',[]) and x in single)]
         questions += ['Gate-artefact ontbreekt: '+x for x in needed]
+        # Closing sets the one resolution of the chosen category (decision resoluties).
+        resolution=None
+        if target=='Afgesloten':
+            categorie=request.get('categorie')
+            if categorie in cat.schema['resoluties']:resolution=cat.schema['resoluties'][categorie]['jira'][0]
+            else:questions.append('Afsluitcategorie vereist: '+', '.join(cat.schema['resoluties']))
         future=__import__('copy').deepcopy(snapshot)
         for i in future['issues']:
-            if i['key']==key:i['status_raw']=target
+            if i['key']==key:i['status_raw']=target;i['resolution']=resolution or i.get('resolution')
         questions += [x['message'] for x in review(cat,future) if x['key']==key and x['severity']=='error']
-        if target=='Afgesloten':questions.append('Bevestig de Jira-resolution en afsluitcategorie; deze mapping is nog open. Afsluiten wordt nog niet uitgevoerd.')
         options=[t for t in backend.transitions(key) if cat.state(t.get('to',{}).get('name'))==target]
         if len(options)!=1:questions.append('Geen eenduidige beschikbare Jira-transitie naar deze fase.')
         if questions:notes.append('Geen statuswijziging uitvoerbaar zolang deze vragen openstaan.')
         else:
-            required=[k for k,v in options[0].get('fields',{}).items() if v.get('required')]
+            fields=options[0].get('fields',{});payload={'transition':{'id':options[0]['id']}}
+            if resolution:
+                if 'resolution' in fields:payload['fields']={'resolution':{'name':resolution}}
+                else:questions.append('Het Jira-transitiescherm laat geen resolution toe; afsluiten zou een initiatief zonder categorie geven.')
+            required=[k for k,v in fields.items() if v.get('required') and not (k=='resolution' and resolution)]
             if required:questions.append('Jira-transitiescherm vraagt extra velden: '+', '.join(required))
-            else:action('issue.transition',key.split('-')[0],{'transition':{'id':options[0]['id']}},key)
+            elif not questions:action('issue.transition',key.split('-')[0],payload,key)
         notes.append('EAG/POR/PROD worden niet stilzwijgend mee gewijzigd. Afwijkingen en benodigde vervolgacties blijven reviewpunten.')
     elif kind=='report':
         result=render(cat,snapshot,request['report'],request.get('target'),request.get('period'),request.get('inputs'),cfg,request.get('slug'),request.get('tracking'))

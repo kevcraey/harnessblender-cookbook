@@ -77,14 +77,17 @@ def documents(cat):
         timing=_verplicht_tekst(f)
         if f.get('notice_when_v2'):timing+='; tijdens Analyse alleen melden'
         if f['key']=='eag_key':timing='afgebakend: koppeling controleren, uitzonderingen met Kenzo bespreken'
-        if f['key']=='stopreden':timing='bij afsluiting zonder realisatie; resolution-mapping nog open'
+        if f['key']=='stopreden':timing='bij afsluiting als stopgezet of geannuleerd'
         lines += [f"| {f['label']} (`{f['key']}`) | {values} | {timing} |"]
     for f in s['fields']:
         if f.get('hint') or f.get('value_hints'):
             lines += ['',f"### {f['label']}",f.get('hint','')]
             for value,hint in f.get('value_hints',{}).items():lines += [f'- **{value}:** {hint}']
     lines += ['','## Artefactlabels','']+[f'- `{k}` — {v}' for k,v in s['artefact_labels'].items()]
-    lines += ['','De oude resolution-suggesties zijn niet bevestigd en worden niet gebruikt om automatisch af te sluiten.',
+    lines += ['','## Afsluitcategorieën','','| Categorie | Jira-resolution | Betekenis |','| --- | --- | --- |']+[
+        f"| {k} | {', '.join(v['jira'])} | {v['tekst']} |" for k,v in s['resoluties'].items()]
+    lines += ['','Een andere resolution op een afgesloten initiatief is een reviewmelding. Bij stopgezet of geannuleerd',
+              'gelden de fasegebonden kenmerken niet meer; enkel de overige verplichte kenmerken en de stopreden.',
               'Fases en open proceskeuzes: [[aiec-portfolio-proces]].']
     out={'aiec-schema.md':'\n'.join(lines)+'\n'}
     lines=header('Rapportsjablonen','aiec-core/catalog/reports')

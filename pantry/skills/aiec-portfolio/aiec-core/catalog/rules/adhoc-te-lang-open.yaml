@@ -1,0 +1,9 @@
+id: adhoc-te-lang-open
+scope: adhoc
+severity: warning
+when:
+  all:
+    - {field: open, op: eq, value: true}
+    - {field: age_days, op: gt, value: 30}
+message: Ad-hocvraag staat langer dan 30 dagen open.
+action: Afsluiten, of promoveren tot initiatief als de opdrachtgever waarde verwacht en inspanning en prioriteit bevestigt (Jira-Move, zelfde key).

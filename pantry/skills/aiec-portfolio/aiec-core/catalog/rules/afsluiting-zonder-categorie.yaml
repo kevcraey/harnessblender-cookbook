@@ -1,0 +1,22 @@
+{
+  "id": "afsluiting-zonder-categorie",
+  "scope": "initiatives",
+  "severity": "error",
+  "when": {
+    "all": [
+      {
+        "field": "phase",
+        "op": "in",
+        "value": [
+          "Afgesloten"
+        ]
+      },
+      {
+        "field": "afsluitcategorie",
+        "op": "empty"
+      }
+    ]
+  },
+  "message": "Afgesloten met een Jira-resolution die bij geen afsluitcategorie hoort.",
+  "action": "Zet de resolution recht: uitgevoerd, Stopgezet of geannuleerd."
+}

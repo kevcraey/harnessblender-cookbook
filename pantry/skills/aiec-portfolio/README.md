@@ -148,7 +148,7 @@ adapters of uitvoerhandelingen vragen gewone codewijzigingen, tests en expliciet
   een re-read vlak vóór schrijven verkleint maar elimineert de race niet.
 - Onbekende kenmerken, menselijke proza en niet-gewijzigde cellen worden behouden. Dubbele blokken of
   dubbele bekende rijen worden geweigerd in plaats van weggepoetst.
-- Geen delete, mailverzending, automatische prioriteitsbump of onbevestigde resolution-mapping.
+- Geen delete, mailverzending of automatische prioriteitsbump.
 
 ## Testen
 

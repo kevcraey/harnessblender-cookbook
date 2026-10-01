@@ -211,6 +211,10 @@ def required_now(schema: dict, f: dict, ctx: dict) -> bool:
             if _fold(str(ctx.get("soort") or values.get("soort") or "")) != _fold(v):
                 return False
         elif k == "fase_min":
+            # Closed without realisation: phase-bound fields are no longer demanded (beslist 2026-10-01).
+            if _fold(str(ctx.get("status") or "")) == _fold("Afgesloten") and \
+                    resolution_category(schema, ctx.get("resolution")) != "uitgevoerd":
+                return False
             fase = ctx.get("fase")
             if fase is None or fase < fase_index(schema, v):
                 return False

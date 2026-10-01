@@ -12,7 +12,7 @@ from .report_inputs import INPUT_KINDS, validate_definitions
 
 CORE = Path(__file__).resolve().parents[2]
 OPERATORS = {'eq', 'ne', 'in', 'not_in', 'empty', 'filled', 'contains', 'gt', 'gte'}
-SOURCES = {'initiatives', 'projects', 'products', 'artifacts', 'findings'}
+SOURCES = {'initiatives', 'projects', 'products', 'artifacts', 'adhoc', 'findings'}
 
 
 def placeholders(template):
@@ -124,11 +124,12 @@ class Catalog:
         for f in self.schema['fields']:
             for k in ('required_when_v2', 'notice_when_v2'): check_expr(f.get(k))
         columns = {
-            'initiatives': {f['key'] for f in self.schema['fields']} | {'key','summary','phase','status','status_raw','fase','resolution','created','updated','last_transition','eag_keys','links','children','billingkey','labels','assignee','trekker','verantwoordelijke','confluence_page_ids','url','page_id','page_count','project_keys','product_keys','artifact_labels','own_labels','decision_transitions','dpia_oordeel','dpo_oordeel','inactive_days','previous_report','rapportfrequentie','rapport_vanaf','rapport_periode','direct_hours_share','por_keys'},
+            'initiatives': {f['key'] for f in self.schema['fields']} | {'key','summary','phase','status','status_raw','fase','resolution','afsluitcategorie','created','updated','last_transition','eag_keys','links','children','billingkey','labels','assignee','trekker','verantwoordelijke','confluence_page_ids','url','page_id','page_count','project_keys','product_keys','artifact_labels','own_labels','decision_transitions','dpia_oordeel','dpo_oordeel','inactive_days','previous_report','rapportfrequentie','rapport_vanaf','rapport_periode','direct_hours_share','por_keys'},
             'projects': {'key','type','title_key','summary','status','assignee','updated','initiatives','url','previous_report','artifact_labels','page_id','beslissing','beslissing_ok','startdatum','startdatum_ok','actual_md'},
             'products': {'key','summary','status','assignee','updated','initiatives','url','onderhoud_keys','onderhoud_billingkeys','applicatiefiche','verantwoordelijk_team'},
             'artifacts': {'key','page_id','title','labels','last_modified','storage','initiative','project','project_page','parent_id'},
             'findings': {'rule','severity','key','page_id','message','action'},
+            'adhoc': {'key','summary','description','status','resolution','created','resolved','url','open','age_days'},
         }
         def paths(expr, scope):
             if not expr: return

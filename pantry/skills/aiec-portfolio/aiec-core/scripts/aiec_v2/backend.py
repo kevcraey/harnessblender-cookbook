@@ -63,6 +63,7 @@ class FixtureBackend:
         elif kind=='issue.transition':
             p=objects['issue'][key];transition=next(t for t in self.transitions(key) if t['id']==payload['transition']['id'])
             p['fields']['status']=transition['to'];p['fields']['updated']=now();result={'key':key}
+            if 'resolution' in payload.get('fields',{}):p['fields']['resolution']=payload['fields']['resolution']
         elif kind=='issue.link':
             a,b=payload['inwardIssue']['key'],payload['outwardIssue']['key']
             objects['issue'][a]['fields'].setdefault('issuelinks',[]).append({'type':payload['type'],'outwardIssue':{'key':b}})
@@ -100,7 +101,7 @@ class FixtureBackend:
             entries.append(deepcopy(payload));result={'archive':name}
         elif kind=='issue.create':
             project=payload['fields']['project']['key'];keys=[int(x.split('-')[1]) for x in objects['issue'] if x.startswith(project+'-')]
-            key=f'{project}-{max(keys+[0])+1}';payload['fields'].update(status={'name':'Captatie'},updated=now(),created=now())
+            key=f'{project}-{max(keys+[0])+1}';payload['fields'].update(status={'name':'Backlog' if payload['fields']['issuetype'].get('name')=='Task' else 'Captatie'},updated=now(),created=now())
             objects['issue'][key]=dict(payload,key=key);result={'key':key}
         else:raise ValueError('Onbekende actie '+kind)
         # Atomic replace, action journal is maintained separately by execution engine.
@@ -133,6 +134,9 @@ class LiveBackend:
         a=self.cfg['atlassian'];objects={'issue':{},'page':{}}
         roots=jira._search(self.jc,f'project = {a["jira_project"]} AND issuetype = Initiative',fields='*all')
         for i in roots:objects['issue'][i['key']]=i
+        # Ad-hoc questions (decision instroom), open and closed: recurring questions can become an initiative.
+        for i in jira._search(self.jc,f'"Epic Link" = {a["adhoc_epic"]}',fields=f'summary,description,status,resolution,created,resolutiondate,issuetype,{jira.EPIC_LINK}'):
+            objects['issue'][i['key']]=i
         # Follow explicit links only. Billingkey coincidence is not a verified relationship.
         pending=[l['key'] for i in roots for l in jira._links(i) if l['key'].split('-')[0] in ('EAG','POR','PROD')]
         while pending:
@@ -347,4 +351,9 @@ def normalize(cat,cfg,objects,identity):
         if len(p['initiatives'])>1:gaps.append(f"{p['key']} hangt aan meerdere initiatieven; uren niet zonder verdeelsleutel optellen.")
     templates={str(k):{'version':(t.get('version') or {}).get('number'),'storage':t.get('body',{}).get('storage',{}).get('value','')} for k,t in objects.get('template',{}).items()}
     catalog={x['key']:x['fields'].get('summary') or '' for x in list(rawissues.values())+objects.get('product_catalog',[]) if x['key'].startswith('PROD-')}
-    return {'version':2,'collected_at':now(),'source':identity,'issues':issues,'pages':pages,'projects':list(projects.values()),'products':list(products.values()),'product_catalog':catalog,'report_pages':report_pages,'templates':templates,'gaps':gaps}
+    adhoc=sorted(({'key':x['key'],'summary':x['fields'].get('summary') or '','description':x['fields'].get('description') or '',
+                   'status':(x['fields'].get('status') or {}).get('name'),'resolution':(x['fields'].get('resolution') or {}).get('name'),
+                   'created':x['fields'].get('created'),'resolved':x['fields'].get('resolutiondate'),
+                   'url':a['jira_url'].rstrip('/')+'/browse/'+x['key']}
+                  for x in rawissues.values() if x['fields'].get(jira.EPIC_LINK)==a['adhoc_epic']),key=lambda r:str(r['created']))
+    return {'version':2,'collected_at':now(),'source':identity,'issues':issues,'adhoc':adhoc,'pages':pages,'projects':list(projects.values()),'products':list(products.values()),'product_catalog':catalog,'report_pages':report_pages,'templates':templates,'gaps':gaps}

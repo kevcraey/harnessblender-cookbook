@@ -229,6 +229,13 @@ Wijzig de modus nooit als neveneffect van een opdracht. `--fixture` blijft altij
 {"kind":"transition","key":"AI-38","to":"Analyse"}
 ```
 ```json
+{"kind":"transition","key":"AI-38","to":"Afgesloten","categorie":"stopgezet"}
+```
+Afsluiten vraagt `categorie` (uitgevoerd, stopgezet of geannuleerd) en zet de bijhorende Jira-resolution
+(`uitgevoerd`, `Stopgezet`, `geannuleerd`) op het transitiescherm. Een andere resolution op een afgesloten
+initiatief meldt de regel `afsluiting-zonder-categorie`. Bij stopgezet of geannuleerd vraagt afsluiten geen
+fasegebonden kenmerken (toepassingstype, batenclaim, rijpheid …), wel de stopreden.
+```json
 {"kind":"people","key":"AI-38","assignee":"<jira-gebruikersnaam>","verantwoordelijke":"<jira-gebruikersnaam>"}
 ```
 Assignee is de werkverdeling (wie eraan werkt), Verantwoordelijke de inhoudelijk verantwoordelijke;
@@ -237,6 +244,12 @@ gebruikers worden geweigerd.
 ```json
 {"kind":"new-initiative","title":"Titel","description":"Probleem en gewenste uitkomst"}
 ```
+```json
+{"kind":"ad-hocvraag","vraag":"De vraag in één zin","context":"Wie vroeg het, wanneer, eventuele bron","verwant":["AI-21"]}
+```
+Een ad-hocvraag wordt een Task onder de epic `adhoc_epic` (standaard AI-95); geen pagina, geen EAG.
+`verwant` (optioneel) somt eerdere ad-hocvragen of initiatieven op die over hetzelfde gaan; ze komen in de
+beschrijving. Collect leest alle ad-hocvragen (open en afgesloten) in de dataset `adhoc` (met `open`, `age_days`).
 ```json
 {"kind":"initiative-page","key":"AI-123","parent_id":"390605009","summary":"Bevestigde beschrijving","values":{"soort":"afgebakend","pijler":"P3"}}
 ```
@@ -406,6 +419,6 @@ bevestigen. Confluence Server negeert labels in de create-payload; nieuwe pagina
 ## Grenzen
 
 Geen modelgestuurde berekeningen, verborgen statusafleiding, automatisch parkeren of sluiten. Onbekende
-procesregels blijven vragen. De huidige release blokkeert afsluiten zolang de resolution-mapping open is;
+procesregels blijven vragen. Afsluiten vraagt een afsluitcategorie en zet de ene bijhorende resolution;
 ook gates die nog niet af zijn worden niet verzonnen. Jira ondersteunt hier geen atomische revisievoorwaarde:
 de controle vlak voor schrijven verkleint concurrentierisico maar kan het niet volledig uitsluiten.

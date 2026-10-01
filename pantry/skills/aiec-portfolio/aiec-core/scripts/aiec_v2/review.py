@@ -104,6 +104,7 @@ def datasets(cat, snapshot, today=None):
         r = dict(values)
         r.update(issue)
         r.update({'phase': cat.state(issue.get('status_raw') or issue.get('status')),
+                  'afsluitcategorie': sch.resolution_category(cat.schema, issue.get('resolution')),
                   'page_id':p.get('page_id'), 'page_count':len(candidates),
                   'project_keys':[x['key'] for x in projects if issue['key'] in x.get('initiatives', [])],
                   'por_keys':[x['key'] for x in projects if issue['key'] in x.get('initiatives', []) and x.get('type') != 'intern'],
@@ -127,7 +128,9 @@ def datasets(cat, snapshot, today=None):
         # A claim without its assumption must not propagate into a report.
         if not r.get('aanname'): r['batenclaim'] = ''
         initiatives.append(r)
-    return {'initiatives':initiatives,'projects':projects,'products':snapshot.get('products',[]),'artifacts':artifacts}
+    adhoc = [dict(x, open=not x.get('resolution'), age_days=(today-day(x['created'])).days if day(x.get('created')) else None)
+             for x in snapshot.get('adhoc', [])]
+    return {'initiatives':initiatives,'projects':projects,'products':snapshot.get('products',[]),'artifacts':artifacts,'adhoc':adhoc}
 
 
 def review(cat, snapshot, today=None):
@@ -168,7 +171,7 @@ def review(cat, snapshot, today=None):
             required = (matches(f['required_when_v2'],i) if 'required_when_v2' in f else
                         sch.required_now(cat.schema,f,ctx) and (rank>=1 or f['key'] in ('ai_key','soort')))
             if f['key']=='stopreden' and phase=='Afgesloten':
-                required = not bool(vals.get('opgeleverd'))  # no guessed resolution mapping
+                required = sch.resolution_category(cat.schema,i.get('resolution'))!='uitgevoerd'
             if required:emit('verplicht-veld','error',f"{f['label']} ontbreekt.",'Vraag de inhoudelijk verantwoordelijke om aanvulling.')
             elif f.get('notice_when_v2') and matches(f['notice_when_v2'],i):emit('aan-te-vullen','info',f"{f['label']} is nog onbekend.",'Aanvullen tijdens Analyse; Other is geen vervanging voor onbekend.')
         links=i.get('eag_keys',[])

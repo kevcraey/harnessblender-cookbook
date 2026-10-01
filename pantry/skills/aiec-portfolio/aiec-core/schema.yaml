@@ -75,20 +75,19 @@ statussen:
 # De projectleider houdt ze zelf bij op de projectpagina (verzoek project-eigenschappen).
 project_statussen: [Backlog, In voorbereiding, KlaarVoorUitvoering, InUitvoering, In Review, Uitgevoerd, Stopgezet]
 
-# Jira-resolutions bij Afgesloten (datamodel §3). Categorie → resolution-namen op de instance
-# (lijst live gelezen 2026-09-16: 30 namen, geen 'uitgevoerd/stopgezet/geannuleerd'). Welke naam
-# bij welke categorie hoort is een VOORSTEL, te bevestigen door Kenzo. Onbekende naam → geen categorie
-# → 'geen-stopreden' meldt het initiatief.
+# Jira-resolutions bij Afgesloten (datamodel §3). Beslist door Kenzo op 2026-10-01: één resolution per
+# categorie. Een initiatief afgesloten met een andere resolution heeft geen categorie; de regel
+# 'afsluiting-zonder-categorie' meldt het. Afsluiten zet de eerste naam uit `jira`.
 resoluties:
   uitgevoerd:
     tekst: volledig uitgevoerd
-    jira: [Gerealiseerd, Afgehandeld, Done, Fixed, Goedgekeurd]
+    jira: [uitgevoerd]
   stopgezet:
     tekst: na opstart gestopt
-    jira: [Stopgezet, "Wordt niet verder behandeld", Inactief]
+    jira: [Stopgezet]
   geannuleerd:
     tekst: nooit opgestart
-    jira: [Ingetrokken, Declined, "Won't Do", Geweigerd, Dubbel, Duplicate]
+    jira: [geannuleerd]
 
 # Eigenschappen van een initiatief (rijen van het details-blok, in deze volgorde).
 #   key            sleutel in JSON en voorstel-bestanden
@@ -96,7 +95,8 @@ resoluties:
 #   type           text | enum | multi | pijler
 #   required       altijd verplicht
 #   required_when  lijst van voorwaarden die allemaal moeten gelden (soort, fase_min, status,
-#                  resolution_not, filled) vóór het veld verplicht is
+#                  resolution_not, filled) vóór het veld verplicht is. Een fase_min-voorwaarde geldt
+#                  niet voor een initiatief afgesloten als stopgezet of geannuleerd.
 #   not_inferable  een agent kan dit niet afleiden; blijft leeg met markering KENZO
 fields:
   - key: ai_key

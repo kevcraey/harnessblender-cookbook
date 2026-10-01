@@ -1,6 +1,61 @@
 # Verificatie AIEC-portfolio v2
 
-Laatste controle: 2026-09-26. Deze controles zijn uitgevoerd door de bouwsessie, zonder live mutaties.
+Laatste controle: 2026-10-01. Deze controles zijn uitgevoerd door de bouwsessie, zonder live mutaties.
+
+## Ad-hocvraag te lang open — release 2.4.57 (tekstcorrectie portfolio-skill in 2.4.58)
+
+Lokaal geïnstalleerd op 2026-10-01. **370 geslaagde tests**, waarvan één nieuw. Alle kern- en skillbestanden
+zijn byte-identiek aan de bron. `adhoc` staat in `SOURCES`; de regel `adhoc-te-lang-open` is via
+`extend propose/approve/apply` toegevoegd (akkoord Kenzo in gesprek). Fixture: 31 dagen open meldt, 30 dagen
+niet, afgesloten niet. Live: geen open ad-hocvragen op 2026-10-01, dus geen meldingen te verwachten.
+
+## Terugkerende ad-hocvragen — release 2.4.56
+
+Lokaal geïnstalleerd op 2026-10-01. **369 geslaagde tests**, waarvan één nieuw. Alle kern- en skillbestanden
+zijn byte-identiek aan de bron.
+
+Gecontroleerd: de fixture levert een `adhoc`-dataset met `open` en `age_days`; initiatieven blijven zonder
+tasks; `verwant` weigert onbekende keys en komt in de beschrijving. Live gelezen: de JQL `"Epic Link" = AI-95`
+geeft de 10 ad-hocvragen. Niet getest: een volledige live collect met deze dataset.
+
+## Afsluitvelden — release 2.4.55
+
+Lokaal geïnstalleerd op 2026-10-01. **368 geslaagde tests**, waarvan één nieuw. Alle 122 kern- en
+skillbestanden zijn byte-identiek aan de bron.
+
+Gecontroleerd: annuleren vanuit Captatie vraagt enkel de stopreden; daarna geen reviewfouten. Met resolution
+`uitgevoerd` blijven fasegebonden kenmerken (zoals batenclaim) verplicht.
+
+## Afsluitcategorieën — release 2.4.54
+
+Lokaal geïnstalleerd op 2026-10-01. **367 geslaagde tests**, waarvan vier nieuw. Alle **122** geïnstalleerde
+kern- en skillbestanden (zonder caches) zijn byte-identiek aan de bron.
+
+Gecontroleerd:
+- `resoluties` staat als beslist in `process.yaml`: één resolution per categorie (`uitgevoerd`, `Stopgezet`,
+  `geannuleerd`).
+- Afsluiten zonder `categorie` geeft een vraag; met categorie zet de transitie de juiste resolution; zonder
+  resolution-veld op het transitiescherm geen actie.
+- De regel `afsluiting-zonder-categorie` meldt `Fixed` en een lege resolution, niet `Stopgezet`/`geannuleerd`.
+- Live gelezen: het Closed-scherm van initiatieven laat alle 33 resolutions toe, ook de drie gekozen.
+
+Niet getest: een echte afsluiting via de plugin.
+
+## Instroom en ad-hocvragen — release 2.4.53
+
+Lokaal geïnstalleerd op 2026-10-01. De volledige testsuite telt **363 geslaagde tests**, waarvan twee nieuw
+voor `ad-hocvraag`. Alle **126** geïnstalleerde kern- en skillbestanden zijn byte-identiek aan de bron; bron
+en installatie hebben dezelfde catalogusfingerprint (`3ab6035c…`).
+
+Gecontroleerd:
+- `instroom` staat als beslist in `process.yaml` (2026-10-01, Kenzo), met promotiecriterium.
+- `ad-hocvraag` maakt in de fixture een Task met Epic Link `adhoc_epic` (AI-95), status Backlog; een lege
+  vraag of een vraag over meerdere regels wordt geweigerd.
+- Dezelfde voorstel-, akkoord-, back-up- en journaalweg als `new-initiative`.
+
+Niet getest: een echte Task-aanmaak via de Jira-REST-API van de plugin. De dubbelcontrole vergelijkt enkel met
+Initiative-titels, niet met bestaande ad-hoc-tasks. Collect en review lezen ad-hoc-tasks niet; er is geen
+signaal na 30 dagen.
 
 ## Zelfstandig invulprogramma — release 2.3.0
 
@@ -139,7 +194,7 @@ publieke repository of gedeelde HTML-pagina.
 - Volledige POR/PROD-dekking: de huidige expliciete Jira-links leverden geen gekoppelde tickets op.
   Billingkey-only relaties vragen nog implementatie en bevestiging.
 - Volledige financiële kwartaalrapportage, mailverzending, cronjobs, gedeelde reviewtakenlijst en Pi-package.
-- Open procesbeslissingen zoals instroom, parkeren, wachtgates en resolution-mapping.
+- Open procesbeslissingen zoals parkeren en wachtgates.
 
 Een fixture-akkoord is geen toestemming voor een echte mutatie. Testresultaten bewijzen het geteste
 gedrag, niet dat bestaande dossiers inhoudelijk of juridisch in orde zijn.
