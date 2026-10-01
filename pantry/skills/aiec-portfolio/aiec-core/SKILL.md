@@ -242,8 +242,12 @@ Assignee is de werkverdeling (wie eraan werkt), Verantwoordelijke de inhoudelijk
 `trekker` kan ook. Gebruik de Jira-gebruikersnaam, niet de weergavenaam; onbekende of inactieve
 gebruikers worden geweigerd.
 ```json
-{"kind":"new-initiative","title":"Titel","description":"Probleem en gewenste uitkomst"}
+{"kind":"new-initiative","title":"Titel","description":"Probleem en gewenste uitkomst","soort":"afgebakend"}
 ```
+Soort staat op de Confluence-pagina (bron) én in het Jira-veld Werkorganisatie: afgebakend → `Project`,
+doorlopend → `Doorlopende werking`. `soort` bij aanmaak en een `details`-wijziging van soort zetten dat veld;
+een `details` met de bestaande soort zet het enkel in Jira recht. De regel `werkorganisatie-afwijkend` meldt
+een leeg of afwijkend veld.
 ```json
 {"kind":"ad-hocvraag","vraag":"De vraag in één zin","context":"Wie vroeg het, wanneer, eventuele bron","verwant":["AI-21"]}
 ```

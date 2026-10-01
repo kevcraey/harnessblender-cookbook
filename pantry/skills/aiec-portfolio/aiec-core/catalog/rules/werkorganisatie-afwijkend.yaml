@@ -1,0 +1,6 @@
+id: werkorganisatie-afwijkend
+scope: initiatives
+severity: warning
+when: {field: werkorganisatie_afwijkend, op: eq, value: true}
+message: Jira-veld Werkorganisatie is leeg of stemt niet overeen met de soort op de Confluence-pagina.
+action: Voorstel `details` met de soort van de pagina; dat zet Werkorganisatie in Jira recht (Confluence is de bron).

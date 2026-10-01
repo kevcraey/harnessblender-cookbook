@@ -2,6 +2,14 @@
 
 Laatste controle: 2026-10-01. Deze controles zijn uitgevoerd door de bouwsessie, zonder live mutaties.
 
+## Werkorganisatie — release 2.4.60
+
+Lokaal geïnstalleerd op 2026-10-01. **373 geslaagde tests**; kernbestanden byte-identiek aan de bron.
+Soort wordt gespiegeld naar Jira Werkorganisatie (customfield_14113: afgebakend → Project, doorlopend →
+Doorlopende werking) bij `new-initiative` met `soort` en bij `details` met soort. Regel
+`werkorganisatie-afwijkend` meldt een leeg of afwijkend veld. Live alleen gelezen: veld leeg op alle 15
+initiatieven; de regel meldt de 6 met gekende soort (AI-3, 5, 6, 7, 47, 49). Schrijven niet live beproefd.
+
 ## Procesbeslissingen — release 2.4.59
 
 Lokaal geïnstalleerd op 2026-10-01. **371 geslaagde tests**. Alle kern- en skillbestanden zijn byte-identiek

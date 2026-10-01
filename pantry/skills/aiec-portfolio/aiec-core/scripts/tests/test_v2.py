@@ -891,3 +891,30 @@ def test_adhoc_open_too_long_flagged(env):
         f['created']=(date.today()-timedelta(days=days)).isoformat()+'T09:00:00';f['resolution']={'name':resolution} if resolution else None
         return any(x['rule']=='adhoc-te-lang-open' and x['key']==key for x in review(cat,b.collect()))
     assert flagged(31) and not flagged(30) and not flagged(45,'Fixed')
+
+
+def test_werkorganisatie_mirrors_soort(env):
+    # Beslist 2026-10-01: soort staat op Confluence én in Jira Werkorganisatie; Confluence is de bron.
+    from aiec_lib import jira
+    cat,cfg,b,tmp=env
+    def flagged():return any(x['rule']=='werkorganisatie-afwijkend' and x['key']=='AI-38' for x in review(cat,b.collect()))
+    assert flagged()   # fixture: soort afgebakend, Jira-veld leeg
+    # Same soort again: page unchanged, Jira field set (retrofit route).
+    p,r=approved(env,{'kind':'details','key':'AI-38','values':{'soort':'afgebakend'}})
+    assert [a['kind'] for a in p['actions']]==['issue.update']
+    execute(p,r,cat,cfg,b,tmp/'state')
+    assert b.data['objects']['issue']['AI-38']['fields'][jira.WERKORGANISATIE]=={'value':'Project'} and not flagged()
+    assert not make_plan(cat,b,cfg,{'kind':'details','key':'AI-38','values':{'soort':'afgebakend'}})['actions']
+    p,r=approved(env,{'kind':'details','key':'AI-38','values':{'soort':'doorlopend'}})
+    assert sorted(a['kind'] for a in p['actions'])==['issue.update','page.update']
+    execute(p,r,cat,cfg,b,tmp/'state')
+    assert b.data['objects']['issue']['AI-38']['fields'][jira.WERKORGANISATIE]=={'value':'Doorlopende werking'} and not flagged()
+
+
+def test_new_initiative_sets_werkorganisatie(env):
+    from aiec_lib import jira
+    cat,cfg,b,tmp=env
+    p,r=approved(env,{'kind':'new-initiative','title':'Nieuw voorbeeld','description':'Een testvraag.','soort':'doorlopend'})
+    key=execute(p,r,cat,cfg,b,tmp/'state')['results'][0]['result']['key']
+    assert b.data['objects']['issue'][key]['fields'][jira.WERKORGANISATIE]=={'value':'Doorlopende werking'}
+    with pytest.raises(ValueError,match='Soort'):make_plan(cat,b,cfg,{'kind':'new-initiative','title':'X','description':'Y','soort':'project'})

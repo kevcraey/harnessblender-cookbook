@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from datetime import date
 import re
-from aiec_lib import confluence as conf, schema as sch
+from aiec_lib import confluence as conf, jira, schema as sch
 from .catalog import matches
 from . import periods, report_history
 
@@ -105,6 +105,9 @@ def datasets(cat, snapshot, today=None):
         r.update(issue)
         r.update({'phase': cat.state(issue.get('status_raw') or issue.get('status')),
                   'afsluitcategorie': sch.resolution_category(cat.schema, issue.get('resolution')),
+                  # Unknown soort is reported by verplicht-veld; only a known soort can disagree with Jira.
+                  'werkorganisatie_afwijkend': values.get('soort') in jira.WERKORGANISATIE_SOORT and
+                      issue.get('werkorganisatie')!=jira.WERKORGANISATIE_SOORT[values['soort']],
                   'page_id':p.get('page_id'), 'page_count':len(candidates),
                   'project_keys':[x['key'] for x in projects if issue['key'] in x.get('initiatives', [])],
                   'por_keys':[x['key'] for x in projects if issue['key'] in x.get('initiatives', []) and x.get('type') != 'intern'],

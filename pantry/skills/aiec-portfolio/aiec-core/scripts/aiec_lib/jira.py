@@ -8,7 +8,8 @@ Vaste feiten (uit tempo.py van de routine-plugin, geverifieerd op deze instance)
   create/edit-scherm van Initiative; enkel lezen).
 - Create-scherm Initiative: summary, description, priority, assignee, Datum ontvangst
   (customfield_14415), Verantwoordelijke (customfield_10614), Trekker (customfield_19014),
-  Stakeholder(s) (customfield_20213).
+  Stakeholder(s) (customfield_20213). Werkorganisatie (customfield_14113, single select: Project,
+  Doorlopende werking) staat op create- en editscherm.
 - JQL op `issuelinks` wordt geweigerd; links lees je per issue uit het veld `issuelinks`.
 - /rest/api/2/search met maxResults ≤ 100 en startAt-paginering; changelog via expand=changelog.
 - Worklogs: /rest/api/2/issue/{key}/worklog (Tempo-worklogs zijn Jira-worklogs op Server).
@@ -53,11 +54,14 @@ VERANTWOORDELIJK_TEAM = "customfield_12615"
 DATUM_ONTVANGST = "customfield_14415"
 VERANTWOORDELIJKE = "customfield_10614"
 TREKKER = "customfield_19014"
+# Werkorganisatie (single select) spiegelt de Confluence-soort, voor wie enkel Jira leest (beslist 2026-10-01).
+WERKORGANISATIE = "customfield_14113"
+WERKORGANISATIE_SOORT = {"afgebakend": "Project", "doorlopend": "Doorlopende werking"}
 
 # Velden die we altijd opvragen; alles wat hieronder geparsed wordt staat hierin.
 FIELDS = ",".join(["summary", "status", "resolution", "created", "updated", "issuetype",
                    "issuelinks", "labels", "subtasks", "timespent", "description",
-                   EPIC_LINK, BILLINGKEY, DATUM_ONTVANGST, VERANTWOORDELIJKE, TREKKER])
+                   EPIC_LINK, BILLINGKEY, DATUM_ONTVANGST, VERANTWOORDELIJKE, TREKKER, WERKORGANISATIE])
 
 # Confluence-verwijzing in de description: /pages/431293025 én ?pageId=431293025 komen beide voor.
 PAGE_RE = re.compile(r"(?:pages/|pageId=)(\d+)")
@@ -161,6 +165,7 @@ def _to_initiative(cfg: dict, schema: dict, issue: dict) -> dict:
         "assignee": _user(f.get("assignee")),
         "trekker": _user(f.get(TREKKER)),
         "verantwoordelijke": _user(f.get(VERANTWOORDELIJKE)),
+        "werkorganisatie": (f.get(WERKORGANISATIE) or {}).get("value"),
         "confluence_page_ids": sorted(set(PAGE_RE.findall(f.get("description") or ""))),
         "url": f"{cfg['atlassian']['jira_url'].rstrip('/')}/browse/{issue['key']}",
     }

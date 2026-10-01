@@ -113,6 +113,11 @@ def make_plan(cat,backend,cfg,request):
         if not values:raise ValueError('Geen wijzigingen opgegeven')
         if 'ai_key' in values and values['ai_key']!=key:raise ValueError('Identiteit niet wijzigen via kenmerken')
         p=page_for(key);update_page(p,patch_details(cat,p['body']['storage']['value'],values))
+        # Soort is mirrored to Jira Werkorganisatie; Confluence stays the source.
+        if values.get('soort') in jira.WERKORGANISATIE_SOORT:
+            wanted=jira.WERKORGANISATIE_SOORT[values['soort']]
+            if (observe('issue',key)['fields'].get(jira.WERKORGANISATIE) or {}).get('value')!=wanted:
+                action('issue.update',key.split('-')[0],{'fields':{jira.WERKORGANISATIE:{'value':wanted}}},key)
     elif kind=='label':
         p=observe('page',str(request.get('page_id','')));label=request.get('label')
         if label not in set(cat.schema['artefact_labels'])|{cat.schema['label']}:raise ValueError('Onbekend label; eerst catalogusuitbreiding voorstellen')
@@ -125,6 +130,9 @@ def make_plan(cat,backend,cfg,request):
         if backend.search_duplicate(title):raise ValueError('Mogelijk dubbel initiatief: dezelfde titel bestaat')
         fields={'project':{'key':cfg['atlassian']['jira_project']},'issuetype':{'name':'Initiative'},'summary':title,'description':description}
         if request.get('received'):fields['customfield_14415']=request['received']
+        if request.get('soort'):
+            if request['soort'] not in jira.WERKORGANISATIE_SOORT:raise ValueError('Soort moet afgebakend of doorlopend zijn')
+            fields[jira.WERKORGANISATIE]={'value':jira.WERKORGANISATIE_SOORT[request['soort']]}
         action('issue.create',cfg['atlassian']['jira_project'],{'fields':fields})
         notes.append('Na aanmaak: met de verkregen AI-key een afzonderlijk voorstel voor initiatiefpagina en eventuele EAG-link. Geen lege artefactpagina’s.')
     elif kind=='ad-hocvraag':

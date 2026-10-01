@@ -120,7 +120,7 @@ def test_list_initiatives_vorm_en_afgesloten_filter(client):
     ai25 = next(i for i in data["issues"] if i["key"] == "AI-25")
     assert set(ai25) == {"key", "summary", "status_raw", "status", "fase", "resolution", "created",
                          "updated", "last_transition", "eag_keys", "links", "children", "billingkey",
-                         "labels", "assignee", "trekker", "verantwoordelijke", "confluence_page_ids",
+                         "labels", "assignee", "trekker", "verantwoordelijke", "werkorganisatie", "confluence_page_ids",
                          "url"}
     assert ai25["status_raw"] == "In Analyse" and ai25["status"] == "Analyse" and ai25["fase"] == 1
     assert ai25["eag_keys"] == ["EAG-927"]
