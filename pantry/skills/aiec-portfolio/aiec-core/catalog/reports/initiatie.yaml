@@ -10,10 +10,10 @@
       "id": "opvolging",
       "title": "Opvolging",
       "kind": "input",
-      "prompt": "Wordt het initiatief opgevolgd door het AI EC, een ander team of een externe partij?",
+      "prompt": "Wordt het initiatief opgevolgd door het Secretariaat Digitale Agenda of een Domeingebonden stuurorgaan",
       "required": true,
       "group": "Administratieve info",
-      "row": "Wordt het initiatief opgevolgd door het AI EC, een ander team of een externe partij?"
+      "row": "Wordt het initiatief opgevolgd door het Secretariaat Digitale Agenda of een Domeingebonden stuurorgaan"
     },
     {
       "id": "beschrijving",
