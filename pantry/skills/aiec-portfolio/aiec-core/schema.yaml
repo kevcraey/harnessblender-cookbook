@@ -123,7 +123,9 @@ fields:
     value_hints:
       afgebakend: een project of opdracht met een einde. Heeft altijd een EAG-counterpart, en dat is de koppeling met het centrale demandproces
       doorlopend: een staande functie zoals ondersteuning, kennisdeling of beheer. Heeft geen EAG-ticket, staat wel in het AIEC-portfolio, en valt buiten de funnel
-    required: true
+    # Beslist door Kenzo op 2026-10-01: tijdens Captatie en Analyse is de vorm van de oplossing nog onbekend.
+    required_when:
+      - fase_min: Planning
     hint: doorlopend = staande functie (omkadering, kennisdeling, governance); valt buiten de funnel
   - key: pijler
     label: Pijler

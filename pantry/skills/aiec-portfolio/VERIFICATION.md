@@ -2,6 +2,12 @@
 
 Laatste controle: 2026-10-01. Deze controles zijn uitgevoerd door de bouwsessie, zonder live mutaties.
 
+## Soort vanaf Planning — release 2.4.61
+
+Lokaal geïnstalleerd op 2026-10-01. **374 geslaagde tests**; kernbestanden byte-identiek aan de bron.
+Soort is verplicht vanaf Planning (beslist door Kenzo): in Captatie en Analyse is de vorm van de oplossing
+nog onbekend. Live review (alleen lezen): "Soort ontbreekt" enkel nog bij AI-8.
+
 ## Werkorganisatie — release 2.4.60
 
 Lokaal geïnstalleerd op 2026-10-01. **373 geslaagde tests**; kernbestanden byte-identiek aan de bron.

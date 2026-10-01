@@ -172,7 +172,7 @@ def review(cat, snapshot, today=None):
             ctx={'values':vals,'soort':vals.get('soort'),'fase':rank,'status':phase,'resolution':i.get('resolution')}
             # Captation fields are due at entry into Analyse, not on first registration.
             required = (matches(f['required_when_v2'],i) if 'required_when_v2' in f else
-                        sch.required_now(cat.schema,f,ctx) and (rank>=1 or f['key'] in ('ai_key','soort')))
+                        sch.required_now(cat.schema,f,ctx) and (rank>=1 or f['key']=='ai_key'))
             if f['key']=='stopreden' and phase=='Afgesloten':
                 required = sch.resolution_category(cat.schema,i.get('resolution'))!='uitgevoerd'
             if required:emit('verplicht-veld','error',f"{f['label']} ontbreekt.",'Vraag de inhoudelijk verantwoordelijke om aanvulling.')

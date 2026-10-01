@@ -918,3 +918,13 @@ def test_new_initiative_sets_werkorganisatie(env):
     key=execute(p,r,cat,cfg,b,tmp/'state')['results'][0]['result']['key']
     assert b.data['objects']['issue'][key]['fields'][jira.WERKORGANISATIE]=={'value':'Doorlopende werking'}
     with pytest.raises(ValueError,match='Soort'):make_plan(cat,b,cfg,{'kind':'new-initiative','title':'X','description':'Y','soort':'project'})
+
+
+def test_soort_required_from_planning(env):
+    # Beslist 2026-10-01: in Captatie en Analyse is de vorm van de oplossing nog onbekend.
+    cat,cfg,b,_=env;p=b.data['objects']['page']['100']['body']['storage']
+    p['value']=p['value'].replace('<td>afgebakend</td>','<td></td>')
+    def missing(status):
+        b.data['objects']['issue']['AI-38']['fields']['status']={'name':status}
+        return any(x['rule']=='verplicht-veld' and x['key']=='AI-38' and x['message']=='Soort ontbreekt.' for x in review(cat,b.collect()))
+    assert not missing('Captatie') and not missing('In Analyse') and missing('Planning')
