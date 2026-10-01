@@ -16,13 +16,13 @@ from export_docs import documents
 
 def answers():
     return {
-        'vlag': 'kleine-afwijking',
+        'vlag': 'afwijking-geen-actie',
         'wijzigingen': 'De functionele analyse is afgerond.\nDe datalevering komt een week later; scope en batenaanname blijven gelijk.',
         'milestones': [
-            {'nr': 1, 'milestone': 'Functionele analyse', 'status': 'Afgerond', 'baseline_md': '3,5',
+            {'nr': 1, 'milestone': 'Functionele analyse', 'status': 'uitgevoerd', 'baseline_md': '3,5',
              'actual_md': 3.5, 'gezondheid': 'op-schema', 'notities': 'Gevalideerd door de projectleider.'},
-            {'nr': 2, 'milestone': 'Datalevering', 'status': 'Bezig', 'baseline_md': None,
-             'actual_md': 0, 'remaining_md': 5, 'gezondheid': 'kleine-afwijking', 'notities': 'Nieuwe leverdatum afspreken.'},
+            {'nr': 2, 'milestone': 'Datalevering', 'status': 'lopend', 'baseline_md': None,
+             'actual_md': 0, 'remaining_md': 5, 'gezondheid': 'afwijking-geen-actie', 'notities': 'Nieuwe leverdatum afspreken.'},
         ],
         'beslissing': 'Akkoord op nieuwe leverdatum door de data-eigenaar vóór 30 september.',
         'volgende': 'Datalevering afronden en de eerste validatie uitvoeren.',
@@ -48,8 +48,10 @@ def test_exact_five_sections_and_shared_flags(env):
     r = cat.reports['vooruitgang']
     assert [s['id'] for s in r['sections']] == ['vlag', 'wijzigingen', 'beslissing', 'milestones', 'volgende']
     assert r['sections'][0]['enum'] == r['sections'][3]['columns'][6]['enum'] == 'projectgezondheid'
-    assert [c['symbol'] for c in r['enums']['projectgezondheid']] == ['⚪', '🟢', '🟡', '🟠', '🔴']
-    assert r['enums']['projectgezondheid'][-1]['description'] == 'Blockers, scopeproblemen, vertraging > 20%'
+    assert [c['label'] for c in r['enums']['projectgezondheid']] == ['Op schema', 'Afwijking - Geen actie vereist', 'Afwijking - Actie vereist']
+    assert [c['handy'] for c in r['enums']['projectgezondheid']] == [{'set': 154, 'status': s} for s in (686, 687, 688)]
+    assert r['sections'][3]['columns'][2]['enum'] == 'voortgang'
+    assert [c['label'] for c in r['enums']['voortgang']] == ['Backlog', 'In Voorbereiding', 'Lopend', 'Uitgevoerd', 'Niet Uitgevoerd']
 
 
 def test_monthly_markdown_and_storage_table(env):
@@ -57,15 +59,18 @@ def test_monthly_markdown_and_storage_table(env):
     assert result['complete']
     assert result['title'] == '2026-09-30 - vooruitgang - POR-1 - proef-por-1'
     assert '| Nr | Milestone | Voortgang | Baseline (md) | Actual (md) | Remaining (md) | Gezondheid | Notities |' in result['markdown']
-    assert '| 2 | Datalevering | Bezig | 5 | 0 | 5 | 🟡 Kleine afwijking |' in result['markdown']
-    assert '🟡 Kleine afwijking' in result['storage'] and '🟢 Alles op schema' in result['storage']
+    assert '| 2 | Datalevering | Lopend | 5 | 0 | 5 | Afwijking - Geen actie vereist |' in result['markdown']
+    # Voortgang and Gezondheid as Handy Status macros; the project flag too.
+    assert '<td><ac:structured-macro ac:name="handy-status-macro" ac:schema-version="1"><ac:parameter ac:name="statusSetId">199</ac:parameter><ac:parameter ac:name="statusId">905</ac:parameter><ac:parameter ac:name="Status">Lopend</ac:parameter></ac:structured-macro></td>' in result['storage']
+    assert '<td><ac:structured-macro ac:name="handy-status-macro" ac:schema-version="1"><ac:parameter ac:name="statusSetId">154</ac:parameter><ac:parameter ac:name="statusId">687</ac:parameter><ac:parameter ac:name="Status">Afwijking - Geen actie vereist</ac:parameter></ac:structured-macro></td>' in result['storage']
+    assert result['storage'].count('<ac:structured-macro ac:name="handy-status-macro" ac:schema-version="1"><ac:parameter ac:name="statusSetId">154</ac:parameter><ac:parameter ac:name="statusId">687</ac:parameter><ac:parameter ac:name="Status">Afwijking - Geen actie vereist</ac:parameter></ac:structured-macro>') == 2  # vlag and milestone 2
     assert '<table>' in result['storage'] and '<th>Baseline (md)</th>' in result['storage']
     assert result['storage'].count('<h2>') == 5
     assert 'Invulhulp:' not in result['storage']
     ET.fromstring('<root xmlns:ac="urn:ac" xmlns:ri="urn:ri">' + result['storage'] + '</root>')
 
 
-@pytest.mark.parametrize('flag', ['geen-status', 'op-schema', 'kleine-afwijking', 'aandacht', 'escalatie'])
+@pytest.mark.parametrize('flag', ['op-schema', 'afwijking-geen-actie', 'afwijking-actie'])
 def test_every_flag_at_both_levels(env, flag):
     a = answers(); a['vlag'] = flag; a['milestones'][0]['gezondheid'] = flag
     result = monthly(env, a)
@@ -77,8 +82,8 @@ def test_every_flag_at_both_levels(env, flag):
 def test_no_health_inferred_from_numbers(env):
     a = answers(); a['milestones'][0].update(baseline_md=1, actual_md=200, gezondheid='op-schema')
     result = monthly(env, a)
-    assert '🔴 Escalatie' not in result['storage']
-    assert '🟢 Alles op schema' in result['storage']
+    assert 'Afwijking - Actie vereist' not in result['storage']
+    assert '>Op schema</ac:parameter>' in result['storage']
 
 
 def test_missing_input_is_question_not_white_or_zero(env):
@@ -185,7 +190,7 @@ def test_generated_template_matches_report_definition(env):
     cat, _, _, _ = env
     docs = documents(cat); text = docs['aiec-maandrapport.md']
     assert text.count('\n## ') == 5
-    assert '| Status | Label | Omschrijving |' in text
+    assert '| Label | Omschrijving |' in text
     assert '| Baseline (md) | Actual (md) | Remaining (md) | Gezondheid |' in text
-    assert '🟡' in text and '🔴' in text
+    assert 'Afwijking - Geen actie vereist' in text and 'Niet Uitgevoerd' in text
     assert '[[aiec-maandrapport]]' in docs['aiec-sjablonen.md']

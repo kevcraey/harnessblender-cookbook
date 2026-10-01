@@ -62,6 +62,12 @@ def content_hash(storage):
         # Confluence generates these identifiers; they do not change report content.
         for name in ('macro-id', 'local-id', 'schema-version'):
             node.attrib.pop(AC+name, None)
+        # On save, Handy turns the published handy-status-macro (set and status id) into status-handy with its
+        # own instance id. Both forms carry the same Status name, which is the content.
+        if node.tag == AC+'structured-macro' and node.get(AC+'name') in ('handy-status-macro', 'status-handy'):
+            node.set(AC+'name', 'status-handy')
+            for param in [p for p in node if p.tag == AC+'parameter' and p.get(AC+'name') in ('id', 'statusSetId', 'statusId')]:
+                node.remove(param)
     xml = ET.tostring(root, encoding='unicode')
     return digest(ET.canonicalize(xml, strip_text=True, rewrite_prefixes=True))
 

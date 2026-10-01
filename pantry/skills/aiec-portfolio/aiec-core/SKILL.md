@@ -56,10 +56,20 @@ goedgekeurd scopegewicht) en wijzigt nooit; een ingevulde waarde wordt genegeerd
 heette dit veld `forecast_md`: oude projectbestanden laten het vallen, oude meetstanden worden bij het lezen hernoemd.
 Actual + Remaining heet het verwachte totaal (`expected_md`) en stuurt de scopegrafiek niet. De meetstand
 bevat ook `period_actual_md`: de groei van de cumulatieve Actual sinds de vorige stand (eerste rapport of
-nieuwe milestone: volledige Actual; onbekend blijft onbekend; een correctie kan negatief zijn). Opgeleverd: Remaining=0. Backlog: de
-vaste oorspronkelijke planning als Remaining, tenzij dit nieuwe scope zonder oorspronkelijk plan is;
-dan is een expliciete positieve schatting nodig. Andere statussen vragen Remaining. Nul resterend zonder
-opleverstatus is een vraag, geen automatische afsluiting.
+nieuwe milestone: volledige Actual; onbekend blijft onbekend; een correctie kan negatief zijn).
+
+`status` is een waarde uit de lijst `voortgang`: `backlog`, `in-voorbereiding`, `lopend`, `uitgevoerd`,
+`niet-uitgevoerd`. `vlag` en `gezondheid` komen uit `projectgezondheid`: `op-schema`,
+`afwijking-geen-actie`, `afwijking-actie`. Wat nog niet gestart is, staat op schema; er is geen vlag voor
+onbekend. In Confluence verschijnen ze als Handy Status-macro (globale sets Taakstatus 199 en
+ProjectrapporteringIkvProgramma 154). De plugin publiceert de primitieve `handy-status-macro`; Handy zet die
+bij het opslaan om naar `status-handy` met een eigen id, en de inhoudshash negeert dat verschil.
+Uitgevoerd: Remaining=0. Niet Uitgevoerd: afgesloten zonder oplevering, Remaining=0, telt niet als
+opgeleverde scope of lopend werk; het project is klaar als elke milestone Uitgevoerd of Niet Uitgevoerd is.
+Backlog: de vaste oorspronkelijke planning als Remaining, tenzij dit nieuwe scope zonder oorspronkelijk
+plan is; dan is een expliciete positieve schatting nodig. In Voorbereiding en Lopend vragen Remaining. Nul
+resterend zonder afsluitstatus is een vraag, geen automatische afsluiting. Oude projectbestanden met vrije
+statustekst en de vijf vroegere vlaggen worden bij het inlezen omgezet (`form_files.LEGACY_*`).
 
 Actual onbekend blijft onbekend; een onvolledige som wordt niet als totale inzet gepresenteerd. Gezondheid
 blijft het oordeel van de projectleider, nooit een berekening. Reken uren niet zonder afgesproken daglengte
@@ -101,7 +111,7 @@ invoegen of een vastgelegde maand corrigeren vraagt afzonderlijke review, niet e
 Grafieken: zwart **Plan**, blauw vol **Opgeleverd**, geel gestippeld **Opgeleverd incl. lopend**. Bij inzet:
 blauw vol **Werkelijk besteed**. Elke grafiek heeft een eigen legende; grijs gestippeld is goedgekeurde scope, lichtblauw
 ±10 procentpunt rond het oorspronkelijke plan. Scope en inzet kunnen boven 100% uitkomen. Ontbrekende
-maanden blijven gaten. ‘Klaar’ volgt de opleverstatus van alle goedgekeurde milestones, nooit een schatting.
+maanden blijven gaten. ‘Klaar’ volgt de afsluitstatus (Uitgevoerd of Niet Uitgevoerd) van alle goedgekeurde milestones, nooit een schatting.
 Opbouw van het vooruitgangsrapport: eigenschappenblok (`aiec-vooruitgang`) met de vlag, opgeleverde scope en
 besteed budget; wijzigingen; beslissingen; scope en inzet (grafieken, maandplanning enkel als oranje lijnen,
 een regel alleen bij backlogfactor ≠ 1); milestones; volgende periode; ingeklapte bijlagen met meetbasis en
@@ -240,7 +250,7 @@ gebruikers worden geweigerd.
 {"kind":"rapportering","key":"AI-123","frequentie":"jaar","vanaf":"2026"}
 ```
 ```json
-{"kind":"report","report":"eindrapport","target":"POR-123","period":"2026-11","inputs":{"vlag":"kleine-afwijking","context":"…","resultaat":"…","rijpheid":"MVP","waarde":"…","wendingen":"…","productverantwoordelijke":"…","beslissingen":"nee","vervolgstappen":[{"stap":"…","verantwoordelijke":"…","datum":"2027-01-31"}]}}
+{"kind":"report","report":"eindrapport","target":"POR-123","period":"2026-11","inputs":{"vlag":"afwijking-geen-actie","context":"…","resultaat":"…","rijpheid":"MVP","waarde":"…","wendingen":"…","productverantwoordelijke":"…","beslissingen":"nee","vervolgstappen":[{"stap":"…","verantwoordelijke":"…","datum":"2027-01-31"}]}}
 ```
 ```json
 {"kind":"report","report":"onderhoud","target":"POR-123","period":"2026-11","inputs":{"uitval":[{"duur":"15m","impact":"1"},{"duur":"30m","impact":"1"},{"duur":"1u","impact":"2"},{"duur":"4u","impact":"3"},{"duur":"1d","impact":"4"},{"duur":"1w","impact":"5"}],"buiten_kantooruren":"nee","terugval":"…","as_is":[{"md":"0","bron":"green field"}],"runkost":[{"post":"hosting","omschrijving":"…","bedrag":"0"},{"post":"licenties","omschrijving":"Geen.","bedrag":"0"},{"post":"inference","omschrijving":"…","bedrag":"1800"},{"post":"overige","omschrijving":"Geen.","bedrag":"0"}],"modellen":[{"component":"…","model":"…","einde":"2027-11","aanpak":"…","referentiedataset":"ja"}],"kwaliteit":"…","afhankelijkheden":[{"afhankelijkheid":"…","einde":""}],"producten":[{"product":"PROD-12","waarvoor":"…"}],"incidenten":"…","afbouw":"…"}}

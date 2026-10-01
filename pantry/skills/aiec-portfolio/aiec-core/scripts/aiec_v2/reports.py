@@ -9,7 +9,7 @@ from .catalog import get, matches, placeholders
 from .review import datasets, review
 from . import periods
 from aiec_lib.confluence import _cell_text, _jira_macro, details_macro
-from .report_inputs import INPUT_KINDS, render_input, choice_text
+from .report_inputs import INPUT_KINDS, render_input, choice_text, choice_storage
 from .form_files import font_faces
 
 
@@ -17,8 +17,11 @@ TABLE_OPEN='<table class="relative-table wrapped" style="width: 100.0%;"><colgro
 
 
 def preview_html(title, period, body, fixture=False, fonts=''):
-    style=fonts+''':root{--grey-100:#f7f9fc;--grey-300:#cfd5dd;--grey-1000:#333332;--text-subtle:rgba(0,20,46,.6);--accent:#447a6d;--primary:#ffed00;--warning-100:#fff9e8;--warning-400:#ffe49c;--warning-800:#9f5804}*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--grey-1000);font:18px/1.5 "Flanders Art Sans",sans-serif;-webkit-font-smoothing:antialiased}header{border-bottom:6px solid var(--primary)}header>div,main{max-width:1200px;margin:auto;padding:20px 30px}main{padding-bottom:60px}h1{font-size:32px;line-height:1.24;font-weight:500;margin:5px 0 0}h2{font-size:26px;line-height:1.3;font-weight:500;margin:40px 0 15px}h3,h4{font-size:22px;font-weight:500;margin:30px 0 10px}p{margin:0 0 15px}table{display:block;width:100%;overflow-x:auto;border-collapse:collapse;margin:15px 0;font-size:16px}th,td{padding:10px 12px;border-bottom:1px solid var(--grey-300);text-align:left;vertical-align:top}thead th{background:var(--grey-100);font-weight:500}.properties{display:table;width:auto;min-width:min(100%,560px);border:1px solid var(--grey-300);border-radius:3px}.properties th{width:220px;background:var(--grey-100);font-weight:500}.properties td{font-size:18px}aside{padding:15px 20px;background:var(--warning-100);border:1px solid var(--warning-400);border-radius:3px;margin:20px 0}aside strong{color:var(--warning-800)}.report-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}figure{margin:10px 0;border:1px solid var(--grey-300);border-radius:3px;overflow:hidden}figure img{display:block;width:100%;height:auto}figcaption{padding:8px 15px;color:var(--text-subtle);font-size:16px}em{color:var(--text-subtle);font-size:16px;font-style:normal}details{margin:30px 0 0;border-top:1px solid var(--grey-300);padding-top:15px}summary{cursor:pointer;font-weight:500}p,li{overflow-wrap:anywhere}.eyebrow{color:var(--accent);font-size:16px;font-weight:500}@media(max-width:900px){.report-charts{grid-template-columns:1fr}}@media(max-width:600px){header>div,main{padding:15px 16px}h1{font-size:26px}body{font-size:16px}}'''
+    style=fonts+''':root{--grey-100:#f7f9fc;--grey-300:#cfd5dd;--grey-1000:#333332;--text-subtle:rgba(0,20,46,.6);--accent:#447a6d;--primary:#ffed00;--warning-100:#fff9e8;--warning-400:#ffe49c;--warning-800:#9f5804}*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--grey-1000);font:18px/1.5 "Flanders Art Sans",sans-serif;-webkit-font-smoothing:antialiased}header{border-bottom:6px solid var(--primary)}header>div,main{max-width:1200px;margin:auto;padding:20px 30px}main{padding-bottom:60px}h1{font-size:32px;line-height:1.24;font-weight:500;margin:5px 0 0}h2{font-size:26px;line-height:1.3;font-weight:500;margin:40px 0 15px}h3,h4{font-size:22px;font-weight:500;margin:30px 0 10px}p{margin:0 0 15px}table{display:block;width:100%;overflow-x:auto;border-collapse:collapse;margin:15px 0;font-size:16px}th,td{padding:10px 12px;border-bottom:1px solid var(--grey-300);text-align:left;vertical-align:top}thead th{background:var(--grey-100);font-weight:500}.properties{display:table;width:auto;min-width:min(100%,560px);border:1px solid var(--grey-300);border-radius:3px}.properties th{width:220px;background:var(--grey-100);font-weight:500}.properties td{font-size:18px}aside{padding:15px 20px;background:var(--warning-100);border:1px solid var(--warning-400);border-radius:3px;margin:20px 0}aside strong{color:var(--warning-800)}.report-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}figure{margin:10px 0;border:1px solid var(--grey-300);border-radius:3px;overflow:hidden}figure img{display:block;width:100%;height:auto}figcaption{padding:8px 15px;color:var(--text-subtle);font-size:16px}em{color:var(--text-subtle);font-size:16px;font-style:normal}details{margin:30px 0 0;border-top:1px solid var(--grey-300);padding-top:15px}summary{cursor:pointer;font-weight:500}p,li{overflow-wrap:anywhere}.eyebrow{color:var(--accent);font-size:16px;font-weight:500}.status{display:inline-block;padding:0 6px;border:1px solid var(--grey-300);border-radius:3px;font-size:14px;font-weight:500;text-transform:uppercase}@media(max-width:900px){.report-charts{grid-template-columns:1fr}}@media(max-width:600px){header>div,main{padding:15px 16px}h1{font-size:26px}body{font-size:16px}}'''
     label='AIEC · Fictieve voorbeelddata · Concept' if fixture else 'AIEC · Concept ter goedkeuring'
+    # A Handy Status macro only renders in Confluence; the preview shows its status name.
+    body=re.sub(r'<ac:structured-macro ac:name="handy-status-macro".*?<ac:parameter ac:name="Status">(.*?)</ac:parameter></ac:structured-macro>',
+                r'<span class="status">\1</span>',body)
     return '<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+escape(title)+'</title><style>'+style+'</style></head><body><header><div><div class="eyebrow">'+label+' · '+escape(period)+'</div><h1>'+escape(title)+'</h1></div></header><main>'+body+'</main></body></html>'
 
 
@@ -171,8 +174,8 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
         sections={s['id']:s for s in spec['sections']};rows=''
         for sid in spec['properties']['sections']:
             value=working.get(sid) or ''
-            text=choice_text(spec,sections[sid],value) if sections[sid]['kind']=='choice' and value else str(value).strip()
-            rows+=f"<tr><th>{escape(sections[sid]['title'])}</th><td>{escape(text).replace(chr(10),'<br/>')}</td></tr>"
+            cell_html=choice_storage(spec,sections[sid],value) if sections[sid]['kind']=='choice' and value else escape(str(value).strip()).replace(chr(10),'<br/>')
+            rows+=f"<tr><th>{escape(sections[sid]['title'])}</th><td>{cell_html}</td></tr>"
         if measured_state:
             extra=report_charts.looptijd(measured_state) if final else []
             for name,value in report_charts.headline(measured_state)+extra:
@@ -217,7 +220,10 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
             continue
         if spec.get('tracking_source') and section['id']==spec['tracking_source']['section']:
             if final:
-                final_md,final_storage,final_html=report_charts.final_fragments(final['state'],chart_data,assets)
+                source=cat.reports[spec['tracking_source']['report']]
+                column=next(c for s in source['sections'] if s['id']==source['tracking']['section'] for c in s['columns'] if c['id']==source['tracking']['fields']['status'])
+                status_cell=lambda value:(choice_text(source,column,value),choice_storage(source,column,value))
+                final_md,final_storage,final_html=report_charts.final_fragments(final['state'],chart_data,assets,status_cell)
                 md[-2:-2]=final_md;body.append(final_storage);preview_body.append(final_html)
             else:
                 message='Grafieken en milestones wachten op het laatste vooruitgangsrapport met meetstand.'

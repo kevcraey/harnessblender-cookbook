@@ -37,6 +37,22 @@ def test_browser_matches_python_model(env,index):
     assert actual['rows']==expected['milestones']
 
 
+def test_browser_matches_python_for_closed_milestone(env):
+    doc=project(8);doc['periods'][0]['inputs']['milestones'][4].update(status='niet-uitgevoerd',actual_md=3,remaining_md=None)
+    py=form_files.evaluate(env[0],doc)[-1];js=browser_model(env[0],[doc])[0]['value']['states'][-1]
+    assert not py['questions'] and not js['errors'] and js['metrics']['done'] is True is py['state']['metrics']['done']
+    assert js['rows']==py['state']['milestones'] and float(js['metrics']['estimated_md'])==float(py['state']['metrics']['estimated_md'])==80
+
+
+def test_legacy_free_text_statuses_and_flags_are_mapped(env):
+    doc=project(5);p=doc['periods'][0]['inputs'];p['vlag']='kleine-afwijking'
+    for row,(status,health) in zip(p['milestones'],[('Afgerond','geen-status'),('bezig','aandacht'),('Niet gestart','escalatie'),('Opgeleverd','op-schema'),('klaar','kleine-afwijking')]):
+        row.update(status=status,gezondheid=health)
+    up=form_files.upgrade(doc)['periods'][0]['inputs']
+    assert up['vlag']=='afwijking-geen-actie'
+    assert [(r['status'],r['gezondheid']) for r in up['milestones']]==[('uitgevoerd','op-schema'),('lopend','afwijking-actie'),('backlog','afwijking-actie'),('uitgevoerd','op-schema'),('uitgevoerd','afwijking-geen-actie')]
+
+
 def test_decimal_expected_total_exact_and_baseline_fixed(env):
     doc=project(5);row=doc['periods'][0]['inputs']['milestones'][3];row.update(actual_md='0,1',remaining_md='0,2')
     py=form_files.evaluate(env[0],doc)[0];js=browser_model(env[0],[doc])[0]['value']['states'][0]
@@ -144,11 +160,11 @@ def test_nested_damage_refused_before_opening(env,tracking_value):
 def test_scope_and_assumption_parity(env):
     from test_tracking import addition
     doc=project(8);doc['periods'][0]['tracking']['scope_changes']=[addition()]
-    doc['periods'][0]['inputs']['milestones'].append({'nr':6,'milestone':'Extra scope','status':'Bezig','actual_md':10,'remaining_md':10,'gezondheid':'op-schema'})
+    doc['periods'][0]['inputs']['milestones'].append({'nr':6,'milestone':'Extra scope','status':'lopend','actual_md':10,'remaining_md':10,'gezondheid':'op-schema'})
     doc['periods'][0]['confirmed'].append(6)
     py=form_files.evaluate(env[0],doc)[0]['state']['metrics'];js=browser_model(env[0],[doc])[0]['value']['states'][0]['metrics']
     assert float(py['estimated_md'])==js['estimated_md']==110 and py['approved_md']==js['approved_md']=='120'
-    doc=project(1);doc['periods'][0]['inputs']['milestones'][0].update(status='Bezig',actual_md=2,remaining_md=None)
+    doc=project(1);doc['periods'][0]['inputs']['milestones'][0].update(status='lopend',actual_md=2,remaining_md=None)
     doc['periods'][0]['tracking']['assume_on_plan']=True
     py=form_files.evaluate(env[0],doc)[0];js=browser_model(env[0],[doc])[0]['value']['states'][0]
     assert not py['questions'] and not js['errors'] and py['state']['metrics']['assumed_md']==js['metrics']['assumed_md']=='20'
@@ -189,7 +205,7 @@ def test_export_official_history_and_import_next_month(env):
 def test_manual_old_health_and_text_not_discarded(env):
     publish(env,'2026-02',five_answers(1),five_basis());cat,cfg,b,_=env
     doc=form_files.export_project(cat,b.collect(),'POR-1','2026-03');doc['periods'][-1]['confirmed']=[1,2,3,4,5]
-    doc['periods'][0]['inputs']['vlag']='escalatie'
+    doc['periods'][0]['inputs']['vlag']='afwijking-actie'
     with pytest.raises(ValueError,match='handmatige'):form_files.import_request(cat,b.collect(),doc)
 
 

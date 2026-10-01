@@ -15,8 +15,8 @@ from aiec_v2.report_inputs import INPUT_KINDS, md_cell
 
 
 def choice_legend(report, enum):
-    return ['| Status | Label | Omschrijving |', '| --- | --- | --- |'] + [
-        '| ' + ' | '.join(md_cell(c.get(k, '')) for k in ('symbol', 'label', 'description')) + ' |'
+    return ['| Label | Omschrijving |', '| --- | --- |'] + [
+        '| ' + ' | '.join(md_cell(c.get(k, '')) for k in ('label', 'description')) + ' |'
         for c in report['enums'][enum]]
 
 
@@ -35,6 +35,9 @@ def monthly_template(report):
                       '| ' + ' | '.join('---' for c in cols) + ' |',
                       '| ' + ' | '.join('' for c in cols) + ' |', '']
             lines += [section.get('caption', ''), '']
+            for col in cols:
+                if col['type'] == 'choice':
+                    lines += [f"**{col['title']}** (Handy Status in Confluence):", ''] + choice_legend(report, col['enum']) + ['']
         else:
             lines += [section['prompt'], '', '*In te vullen.*', '']
         if section.get('help'): lines += [section['help'], '']
@@ -47,7 +50,7 @@ def monthly_template(report):
                       '- Blauwgroen is goedgekeurde scope. Lichtgroen is **±10 procentpunt** rond het oorspronkelijke plan. Scope en inzet mogen boven 100% uitkomen.',
                       '- Ontbrekende maanden blijven gaten. Zolang niets is opgeleverd en er geen volledige Actual/Remaining is, toont de grafiek automatisch een grijze aanname volgens plan.',
                       '- Bovenaan het rapport staan de vlag, de opgeleverde scope en het besteed budget, telkens als percentage van de meetbasis. De maandplanning zie je als oranje lijnen; meetbasis, scopebesluiten en vaste maandstanden staan ingeklapt als bijlage.',
-                      '- Klaar betekent dat alle goedgekeurde milestones zijn opgeleverd. Een berekende schatting sluit niets af.',
+                      '- Klaar betekent dat elke goedgekeurde milestone Uitgevoerd of Niet Uitgevoerd is. Niet Uitgevoerd sluit af zonder oplevering: Remaining 0, geen opgeleverde scope. Een berekende schatting sluit niets af.',
                       '- De HTML-preview wordt beoordeeld vóór publicatie. Gepubliceerde maandstanden bewaren hun meetbasis en historiek; een nieuwe schatting verandert geen oude grafiekpunten.', '',
                       'Werkwijze en uitzonderingen: [[aiec-portfolio-rapporten]].', '']
     return '\n'.join(lines) + '\n'

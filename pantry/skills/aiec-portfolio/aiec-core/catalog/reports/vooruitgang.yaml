@@ -11,31 +11,46 @@ tracking:
   kind: milestone_effort
   section: milestones
   fields: {id: nr, name: milestone, status: status, baseline: baseline_md, actual: actual_md, remaining: remaining_md}
-  delivered: [opgeleverd, afgerond, klaar]
-  backlog: [backlog, niet gestart, te starten]
+  delivered: [uitgevoerd]
+  backlog: [backlog]
+  closed: [niet-uitgevoerd]
 
+# Statussen en vlaggen tonen als Handy Status-macro: globale sets in Confluence, de label is exact de Handy-naam.
 enums:
-  projectgezondheid:
-    - value: geen-status
-      symbol: ⚪
-      label: Geen status
+  voortgang:
+    - value: backlog
+      label: Backlog
       description: Nog niet gestart
+      handy: {set: 199, status: 903}
+    - value: in-voorbereiding
+      label: In Voorbereiding
+      description: Lopend werk in voorbereiding
+      handy: {set: 199, status: 904}
+    - value: lopend
+      label: Lopend
+      description: In uitvoering
+      handy: {set: 199, status: 905}
+    - value: uitgevoerd
+      label: Uitgevoerd
+      description: Opgeleverd
+      handy: {set: 199, status: 907}
+    - value: niet-uitgevoerd
+      label: Niet Uitgevoerd
+      description: Afgesloten zonder oplevering; telt niet als opgeleverd
+      handy: {set: 199, status: 908}
+  projectgezondheid:
     - value: op-schema
-      symbol: 🟢
-      label: Alles op schema
-      description: Voortgang goed, geen grote risico’s
-    - value: kleine-afwijking
-      symbol: 🟡
-      label: Kleine afwijking
-      description: Lichte vertraging of milde scopewijziging
-    - value: aandacht
-      symbol: 🟠
-      label: Aandacht vereist
-      description: Duidelijke risico’s, maar nog beheersbaar
-    - value: escalatie
-      symbol: 🔴
-      label: Escalatie / risico
-      description: Blockers, scopeproblemen, vertraging > 20%
+      label: Op schema
+      description: Voortgang goed, geen grote risico’s; ook voor wat nog niet gestart is
+      handy: {set: 154, status: 686}
+    - value: afwijking-geen-actie
+      label: Afwijking - Geen actie vereist
+      description: Lichte vertraging of milde scopewijziging, zonder ingreep
+      handy: {set: 154, status: 687}
+    - value: afwijking-actie
+      label: Afwijking - Actie vereist
+      description: Duidelijke risico’s, blockers of vertraging die een ingreep vragen
+      handy: {set: 154, status: 688}
 
 sections:
   - id: vlag
@@ -44,7 +59,7 @@ sections:
     enum: projectgezondheid
     prompt: Welke gezondheidsvlag kent de projectleider aan het project toe?
     required: true
-    help: De vlag is een beoordeling van de projectleider, geen Jira-workflowstatus. ⚪ betekent nog niet gestart, niet onbekend. Licht afwijkingen toe bij de wijzigingen. Vertraging > 20% wordt beoordeeld tegenover de afgesproken planning, niet berekend uit Baseline en Actual.
+    help: De vlag is een beoordeling van de projectleider, geen Jira-workflowstatus. Wat nog niet gestart is, staat op schema; er is geen vlag voor onbekend. Licht afwijkingen toe bij de wijzigingen.
 
   - id: wijzigingen
     title: Belangrijkste wijzigingen sinds het vorige rapport
@@ -89,9 +104,10 @@ sections:
         required: true
       - id: status
         title: Voortgang
-        type: text
+        type: choice
+        enum: voortgang
         required: true
-        help: Bijvoorbeeld niet gestart, bezig of afgerond; dit is geen tweede gezondheidsvlag.
+        help: Backlog, In Voorbereiding, Lopend, Uitgevoerd of Niet Uitgevoerd; dit is geen tweede gezondheidsvlag. In Voorbereiding is lopend werk; Niet Uitgevoerd sluit de milestone af zonder oplevering (Remaining 0).
       - id: baseline_md
         title: Baseline (md)
         type: decimal

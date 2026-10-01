@@ -14,7 +14,7 @@ def validate_spec(report):
     spec = report.get('tracking')
     if spec is None:
         return
-    _keys(spec, {'kind', 'section', 'fields', 'delivered', 'backlog'}, 'Trackingdefinitie')
+    _keys(spec, {'kind', 'section', 'fields', 'delivered', 'backlog', 'closed'}, 'Trackingdefinitie')
     if spec.get('kind') != 'milestone_effort' or report.get('scope') != 'project' or report.get('cadence') != 'monthly':
         raise ValueError('Milestonemeting vraagt een maandelijks projectrapport')
     section = next((s for s in report['sections'] if s['id'] == spec.get('section')), None)
@@ -24,17 +24,21 @@ def validate_spec(report):
     if not isinstance(fields, dict) or set(fields) != FIELDS or len(set(fields.values())) != len(FIELDS):
         raise ValueError('Onvolledige of dubbele veldmapping voor milestonemeting')
     cols = {c['id']: c for c in section['columns']}
-    types = {'id': 'integer', 'name': 'text', 'status': 'text', 'baseline': 'decimal', 'actual': 'decimal', 'remaining': 'decimal'}
+    types = {'id': 'integer', 'name': 'text', 'status': 'choice', 'baseline': 'decimal', 'actual': 'decimal', 'remaining': 'decimal'}
     if any(fields[k] not in cols or cols[fields[k]]['type'] != typ for k, typ in types.items()):
         raise ValueError('Milestonevelden verwijzen naar ontbrekende of anders getypeerde kolommen')
+    # Categories name values of the status choice list; every other value is running work.
+    known = {c['value'] for c in report['enums'][cols[fields['status']]['enum']]}
     aliases = []
-    for name in ('delivered', 'backlog'):
+    for name in ('delivered', 'backlog', 'closed'):
         values = spec.get(name)
-        if not isinstance(values, list) or not values or any(not isinstance(v, str) or not v.strip() for v in values):
-            raise ValueError('Statusmapping vraagt expliciete aliassen')
-        aliases += [v.strip().casefold() for v in values]
+        if name == 'closed' and values is None:
+            continue
+        if not isinstance(values, list) or not values or any(v not in known for v in values):
+            raise ValueError('Statusmapping vraagt waarden uit de voortgangslijst')
+        aliases += values
     if len(aliases) != len(set(aliases)):
-        raise ValueError('Overlappende milestone-statusaliassen')
+        raise ValueError('Overlappende milestone-statuscategorieën')
 
 
 def _keys(value, allowed, label):
@@ -232,7 +236,7 @@ def prepare(report, snapshot, target, initiative, period, inputs, supplied=None)
         raise ValueError('Milestones moeten een lijst rijen zijn')
     normalized, seen, remaining_questions = [], set(), []
     old_rows = {r['nr']: r for r in previous['milestones']} if previous else {}
-    categories = {a.strip().casefold(): group for group in ('delivered', 'backlog') for a in spec[group]}
+    categories = {a: group for group in ('delivered', 'backlog', 'closed') for a in spec.get(group, [])}
     for row in rows:
         if not isinstance(row, dict):
             raise ValueError('Milestone moet een object zijn')
@@ -249,14 +253,14 @@ def prepare(report, snapshot, target, initiative, period, inputs, supplied=None)
         if not isinstance(status, str) or not status.strip():
             ask(f'Milestone {ident}: de voortgangsstatus ontbreekt voor de meting.')
             continue
-        category = categories.get(status.strip().casefold(), 'other')
+        category = categories.get(status, 'other')
         actual = amount(row.get(fields['actual']), f'Milestone {ident} Actual')
         remaining = amount(row.get(fields['remaining']), f'Milestone {ident} Remaining')
         supplied_baseline = amount(row.get(fields['baseline']), f'Milestone {ident} Baseline')
         weight = weights[ident]
-        if category == 'delivered':
+        if category in ('delivered', 'closed'):
             if remaining is not None and Decimal(remaining) != 0:
-                ask(f'Milestone {ident} is opgeleverd maar heeft Remaining > 0; verduidelijk de tegenspraak.')
+                ask(f'Milestone {ident} is afgesloten maar heeft Remaining > 0; verduidelijk de tegenspraak.')
             elif remaining is None:
                 remaining = '0'; row[fields['remaining']] = 0
         elif remaining is None:
@@ -278,6 +282,7 @@ def prepare(report, snapshot, target, initiative, period, inputs, supplied=None)
         if old and old['actual_md'] is not None and actual is not None and Decimal(actual) < Decimal(old['actual_md']) and ident not in reasons:
             ask(f'Milestone {ident}: cumulatieve Actual is gedaald; geef een expliciete correctietoelichting.')
         normalized.append({'nr': ident, 'milestone': row.get(fields['name']), 'status': status, 'delivered': category == 'delivered',
+                           'closed': category == 'closed',
                            'weight_md': text(weight['weight']), 'actual_md': actual, 'remaining_md': remaining, 'baseline_md': initial,
                            'expected_md': expected, 'backlog': category == 'backlog'})
     missing = set(weights)-seen
@@ -292,6 +297,8 @@ def prepare(report, snapshot, target, initiative, period, inputs, supplied=None)
     for row in normalized:
         if row['delivered']:
             fraction = Decimal(1)
+        elif row['closed']:
+            fraction = Decimal(0)  # Closed without delivery: no progress, whatever was spent.
         elif row['actual_md'] is None or row['remaining_md'] is None or Decimal(row['actual_md'])+Decimal(row['remaining_md']) == 0:
             estimate = None
             break
@@ -319,7 +326,7 @@ def prepare(report, snapshot, target, initiative, period, inputs, supplied=None)
         result['notes'].append('Geen volledige Actual/Remaining-inschatting; de gestippelde voortgang blijft deze maand leeg.')
     metrics = {'delivered_md': text(delivered), 'estimated_md': text(estimate), 'approved_md': text(approved),
                'actual_md': text(effort), 'assumed_md': assumed, 'scope_denominator_md': text(denominator),
-               'budget_md': base['budget_md'], 'done': all(r['delivered'] for r in normalized)}
+               'budget_md': base['budget_md'], 'done': all(r['delivered'] or r['closed'] for r in normalized)}
     # Effort in the reported month: growth of cumulative Actual since the previous measurement.
     # First report or newly added milestone: the full Actual counts. Unknown stays unknown.
     period_effort = Decimal(0)

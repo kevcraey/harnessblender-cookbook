@@ -98,11 +98,22 @@ def validate_document(doc):
     return doc
 
 
+# Free-text statuses and the five health flags from before the Handy Status lists (2026-10), as Kenzo mapped them.
+LEGACY_STATUS = {'afgerond':'uitgevoerd','opgeleverd':'uitgevoerd','klaar':'uitgevoerd','bezig':'lopend',
+                 'niet gestart':'backlog','te starten':'backlog','backlog':'backlog'}
+LEGACY_HEALTH = {'geen-status':'op-schema','kleine-afwijking':'afwijking-geen-actie','aandacht':'afwijking-actie','escalatie':'afwijking-actie'}
+
+
 def upgrade(doc):
     validate_document(doc)
     result=deepcopy(doc)
     for p in result['periods']:
-        for row in p['inputs']['milestones']:row.pop('forecast_md',None)  # Old name of the ignored Baseline input.
+        if p['inputs'].get('vlag') in LEGACY_HEALTH:p['inputs']['vlag']=LEGACY_HEALTH[p['inputs']['vlag']]
+        for row in p['inputs']['milestones']:
+            row.pop('forecast_md',None)  # Old name of the ignored Baseline input.
+            status=str(row.get('status') or '').strip().casefold()
+            if status in LEGACY_STATUS:row['status']=LEGACY_STATUS[status]
+            if row.get('gezondheid') in LEGACY_HEALTH:row['gezondheid']=LEGACY_HEALTH[row['gezondheid']]
     if result['version']==1:
         result['version']=VERSION;result['settings']={'auto_remaining':True}
         for p in result['periods']:p['planning']=None
@@ -243,7 +254,7 @@ def import_request(cat, snapshot, doc, period=None):
 
 def contract(cat):
     spec = cat.reports['vooruitgang']
-    return {'version':VERSION,'legacyVersions':[1],'format':FORMAT,'tracking':spec['tracking'],'health':spec['enums']['projectgezondheid'],
+    return {'version':VERSION,'legacyVersions':[1],'format':FORMAT,'tracking':spec['tracking'],'health':spec['enums']['projectgezondheid'],'progress':spec['enums']['voortgang'],
             'columns':next(s['columns'] for s in spec['sections'] if s['id']=='milestones'), 'maxBytes':MAX_BYTES,
             'texts':[{k:s[k] for k in ('id','title','prompt','min_lines','max_lines') if k in s} for s in spec['sections'] if s['kind']=='input']}
 

@@ -13,23 +13,20 @@ tracking_source:
   section: wendingen
 
 enums:
+  # Zelfde vlaggen en Handy Status-set als het vooruitgangsrapport.
   projectgezondheid:
     - value: op-schema
-      symbol: 🟢
-      label: Alles op schema
+      label: Op schema
       description: Afgesproken resultaat binnen planning en budget
-    - value: kleine-afwijking
-      symbol: 🟡
-      label: Kleine afwijking
-      description: Lichte vertraging of milde scopewijziging
-    - value: aandacht
-      symbol: 🟠
-      label: Aandacht vereist
-      description: Duidelijke afwijking in resultaat, planning of budget
-    - value: escalatie
-      symbol: 🔴
-      label: Escalatie / risico
-      description: Afgesproken resultaat niet gehaald of zware overschrijding
+      handy: {set: 154, status: 686}
+    - value: afwijking-geen-actie
+      label: Afwijking - Geen actie vereist
+      description: Lichte vertraging of milde scopewijziging, zonder ingreep
+      handy: {set: 154, status: 687}
+    - value: afwijking-actie
+      label: Afwijking - Actie vereist
+      description: Afgesproken resultaat niet gehaald of duidelijke overschrijding
+      handy: {set: 154, status: 688}
   # Zelfde waarden als het kenmerk rijpheid in schema.yaml (test_rijpheid_eindrapport bewaakt dat).
   rijpheid:
     - value: PoC

@@ -27,6 +27,10 @@ def validate_definitions(report):
             if not isinstance(choice, dict) or not isinstance(choice.get('value'), str) or not choice['value'] or not choice.get('label'):
                 raise ValueError(f'Ongeldige keuze in {name}')
             keys.append(choice['value'])
+            handy = choice.get('handy')
+            if handy is not None and (not isinstance(handy, dict) or set(handy) != {'set', 'status'}
+                                      or any(type(handy[k]) is not int or handy[k] < 1 for k in handy)):
+                raise ValueError(f'Ongeldige Handy Status-verwijzing in {name}')
         if len(keys) != len(set(keys)):
             raise ValueError(f'Dubbele keuze in {name}')
     for section in report['sections']:
@@ -74,6 +78,21 @@ def choice_text(report, spec, value):
     if found is None:
         raise ValueError(f"Onbekende keuze {value!r}; gebruik een waarde uit {spec['enum']}")
     return ' '.join(x for x in [found.get('symbol', ''), found['label']] if x)
+
+
+def choice_storage(report, spec, value):
+    """Storage for a choice: a Handy Status macro when the choice names one, else the plain text.
+
+    Confluence turns the primitive macro into status-handy with its own id and the Status name on save;
+    report_history.content_hash normalizes both forms to the same content."""
+    text = choice_text(report, spec, value)
+    handy = next(c for c in options(report, spec) if c['value'] == value).get('handy')
+    if not handy:
+        return escape(text)
+    return ('<ac:structured-macro ac:name="handy-status-macro" ac:schema-version="1">'
+            f'<ac:parameter ac:name="statusSetId">{handy["set"]}</ac:parameter>'
+            f'<ac:parameter ac:name="statusId">{handy["status"]}</ac:parameter>'
+            f'<ac:parameter ac:name="Status">{escape(text)}</ac:parameter></ac:structured-macro>')
 
 
 def md_cell(value):
@@ -131,7 +150,7 @@ def render_input(report, section, value):
             if not isinstance(value, str): raise ValueError('Keuze moet tekst zijn: ' + sid)
             label = choice_text(report, section, value)
             md.append(label)
-            body.append('<p>' + escape(label) + '</p>')
+            body.append('<p>' + choice_storage(report, section, value) + '</p>')
     else:
         if value is None: value = []
         if not isinstance(value, list): raise ValueError('Invoertabel moet een lijst rijen zijn: ' + sid)
@@ -144,12 +163,13 @@ def render_input(report, section, value):
         for pos, row in enumerate(value, 1):
             if not isinstance(row, dict) or set(row) - {c['id'] for c in cols}:
                 raise ValueError(f'{sid} rij {pos}: ongeldige of onbekende kolommen')
-            rendered = []
+            rendered, cells = [], []
             for col in cols:
                 raw = row.get(col['id'])
                 if blank(raw):
                     if col.get('required', True): ask(f"{section['title']}, rij {pos}: vul {col['title']} in.")
                     rendered.append(col.get('empty', 'onbekend'))
+                    cells.append(escape(rendered[-1]))
                     continue
                 if col['type'] == 'text':
                     if not isinstance(raw, str): raise ValueError(f"{col['title']}: verwacht tekst")
@@ -162,8 +182,9 @@ def render_input(report, section, value):
                     if text in seen[col['id']]: raise ValueError(f"Dubbele waarde in {col['title']}: {text}")
                     seen[col['id']].add(text)
                 rendered.append(text)
+                cells.append(choice_storage(report, col, raw) if col['type'] == 'choice' else escape(text).replace('\n', '<br/>'))
             md.append('| ' + ' | '.join(md_cell(t) for t in rendered) + ' |')
-            body.append('<tr>' + ''.join('<td>' + escape(t).replace('\n', '<br/>') + '</td>' for t in rendered) + '</tr>')
+            body.append('<tr>' + ''.join('<td>' + c + '</td>' for c in cells) + '</tr>')
         body.append('</tbody></table>')
         if not value: md.append('Nog geen milestones of andere tabelrijen aangeleverd.')
     if section.get('help'):

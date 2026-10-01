@@ -249,6 +249,15 @@ def headline(state):
             ('Besteed budget', pct(metrics['actual_md'], metrics['budget_md'])+' van het oorspronkelijke budget')]
 
 
+def done_text(state, final=False):
+    if not state['metrics']['done']:
+        return 'Niet alle goedgekeurde milestones zijn opgeleverd.' if final else 'Nog niet alle goedgekeurde milestones zijn opgeleverd.'
+    closed = [str(r['nr']) for r in state['milestones'] if r.get('closed')]
+    if not closed:
+        return 'Alle goedgekeurde milestones zijn opgeleverd.'
+    return 'Alle goedgekeurde milestones zijn afgesloten; niet uitgevoerd: milestone '+', '.join(closed)+'.'
+
+
 def fragments(state, data, assets):
     metrics = state['metrics']
     summary = ('Opgeleverd: '+pct(metrics['delivered_md'], metrics['scope_denominator_md'])+
@@ -257,7 +266,7 @@ def fragments(state, data, assets):
                '; werkelijk besteed: '+pct(metrics['actual_md'], metrics['budget_md'])+'.')
     detail = ('Inclusief lopend werk: '+pct(metrics['estimated_md'], metrics['scope_denominator_md'])+
               '; goedgekeurde scope: '+pct(metrics['approved_md'], metrics['scope_denominator_md'])+'.')
-    done = 'Alle goedgekeurde milestones zijn opgeleverd.' if metrics['done'] else 'Nog niet alle goedgekeurde milestones zijn opgeleverd.'
+    done = done_text(state)
     # The monthly planning itself is visible as the orange lines; only a scaled projection needs a word.
     factor = state.get('future_factor', 1.0)
     scaled = [] if state.get('planning') is None or factor == 1 else ['Backlog is in de projectie geschaald met factor '+f'{factor:.2f}'.replace('.', ',')+'.']
@@ -297,24 +306,27 @@ def looptijd(state):
             ('Cijfers per', state['period']+', laatste vooruitgangsrapport')]
 
 
-def final_fragments(state, data, assets):
+def final_fragments(state, data, assets, status_cell=None):
     """Verloop for the final report: charts without projection, milestones against Baseline, and scope decisions.
 
-    Unlike the monthly report, the scope decisions go into Confluence: the reader has no preview."""
+    Unlike the monthly report, the scope decisions go into Confluence: the reader has no preview.
+    status_cell: value -> (text, storage) for the Eindstatus column, e.g. a Handy Status macro."""
+    status_cell = status_cell or (lambda value: (value, escape(value)))
     metrics = state['metrics']
     approved = 'Goedgekeurde scope: '+pct(metrics['approved_md'], metrics['scope_denominator_md'])+' van de oorspronkelijke scope.'
-    done = 'Alle goedgekeurde milestones zijn opgeleverd.' if metrics['done'] else 'Niet alle goedgekeurde milestones zijn opgeleverd.'
+    done = done_text(state, final=True)
     summary = 'Opgeleverd: '+pct(metrics['delivered_md'], metrics['scope_denominator_md'])+'; werkelijk besteed: '+pct(metrics['actual_md'], metrics['budget_md'])+'.'
     lead = '<p>'+escape(approved)+' '+done+'</p>'
     storage, preview = figures(data, assets, summary, lead)
     md = [approved+' '+done, '']
     headers = ['Nr', 'Milestone', 'Eindstatus', 'Baseline (md)', 'Actual (md)', 'Verschil (md)']
-    rows = []
+    rows, statuses = [], []
     for r in state['milestones']:
+        label, cell = status_cell(r['status']); statuses.append(cell)
         # Actual against Baseline only means something for delivered work; an undelivered row is not a saving.
         diff = None if r['actual_md'] is None or not r['delivered'] else Decimal(r['actual_md'])-Decimal(r['baseline_md'])
         share = '' if not diff or not Decimal(r['baseline_md']) else f' ({diff*100/Decimal(r["baseline_md"]):+.0f}%)'
-        rows.append([str(r['nr']), r['milestone'] or '', r['status'], md_number(r['baseline_md']), md_number(r['actual_md']),
+        rows.append([str(r['nr']), r['milestone'] or '', label, md_number(r['baseline_md']), md_number(r['actual_md']),
                      ('—' if not r['delivered'] else signed(diff)+share)])
     total_base = sum((Decimal(r['baseline_md']) for r in state['milestones']), Decimal(0))
     total_actual = metrics['actual_md']
@@ -324,7 +336,7 @@ def final_fragments(state, data, assets):
                  signed(total_diff) if delivered else '—'])
     caption = 'md = mandagen. Baseline: oorspronkelijke inschatting of vast gewicht van goedgekeurde scope. Actual: werkelijk besteed. Verschil alleen voor opgeleverde milestones.'
     table = ('<h3>Milestones</h3><table><thead><tr>'+''.join('<th>'+h+'</th>' for h in headers)+'</tr></thead><tbody>'+
-             ''.join('<tr>'+''.join('<td>'+escape(v)+'</td>' for v in row)+'</tr>' for row in rows)+'</tbody></table><p><em>'+caption+'</em></p>')
+             ''.join('<tr>'+''.join('<td>'+(statuses[i] if j == 2 and i < len(statuses) else escape(v))+'</td>' for j, v in enumerate(row))+'</tr>' for i, row in enumerate(rows))+'</tbody></table><p><em>'+caption+'</em></p>')
     md += ['### Milestones', '', '| '+' | '.join(headers)+' |', '| '+' | '.join('---' for _ in headers)+' |']
     md += ['| '+' | '.join(v.replace('|', '\\|') for v in row)+' |' for row in rows]+['', caption, '']
     changes = state['scope_changes']

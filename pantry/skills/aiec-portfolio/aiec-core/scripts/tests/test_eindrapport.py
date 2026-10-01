@@ -9,7 +9,7 @@ from aiec_v2.execution import approve, execute
 
 
 def closing():
-    return {'vlag': 'kleine-afwijking',
+    return {'vlag': 'afwijking-geen-actie',
             'context': 'Aanleiding, doel en opdrachtgever.',
             'resultaat': 'Alle vijf milestones opgeleverd.',
             'rijpheid': 'MVP',
@@ -76,7 +76,7 @@ def test_final_report_shows_undelivered_and_unknown_honestly(env):
     publish(env, '2026-04', five_answers(3), five_basis())
     r = render(cat, b.collect(), 'eindrapport', 'POR-1', '2026-05', closing(), cfg)
     assert 'Niet alle goedgekeurde milestones zijn opgeleverd.' in r['storage']
-    assert '<td>Backlog</td><td>20</td><td>0</td><td>—</td>' in r['storage'] and 'Totaal (verschil: opgeleverde milestones)' in r['storage']
+    assert '<td><ac:structured-macro ac:name="handy-status-macro" ac:schema-version="1"><ac:parameter ac:name="statusSetId">199</ac:parameter><ac:parameter ac:name="statusId">903</ac:parameter><ac:parameter ac:name="Status">Backlog</ac:parameter></ac:structured-macro></td><td>20</td><td>0</td><td>—</td>' in r['storage'] and 'Totaal (verschil: opgeleverde milestones)' in r['storage']
     assert r['chart_data']['periods'][-1] == '2026-04'
 
 

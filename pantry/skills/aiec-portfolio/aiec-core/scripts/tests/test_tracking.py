@@ -30,7 +30,7 @@ def five_answers(index=5):
     data = answers(); rows = []; cursor = 0
     for ident, duration in enumerate([1, 1, 1, 4, 1], 1):
         elapsed = max(0, min(index-cursor, duration)); actual = 20*elapsed/duration
-        status = 'Opgeleverd' if elapsed == duration else ('Backlog' if elapsed == 0 else 'Bezig')
+        status = 'uitgevoerd' if elapsed == duration else ('backlog' if elapsed == 0 else 'lopend')
         rows.append({'nr': ident, 'milestone': f'Milestone {ident}', 'status': status, 'actual_md': actual,
                      'remaining_md': 20-actual, 'gezondheid': 'op-schema', 'notities': ''})
         cursor += duration
@@ -95,7 +95,7 @@ def test_conflicting_manual_baseline_and_remaining_are_not_replaced(env):
     assert p['inputs']['milestones'][3]['baseline_md'] == '20' and data['milestones'][3]['baseline_md'] == 2
     data['milestones'][0]['remaining_md'] = 5
     p = prepared(env, data=data)
-    assert any('opgeleverd maar' in q['question'] for q in p['questions'])
+    assert any('afgesloten maar' in q['question'] for q in p['questions'])
     assert p['inputs']['milestones'][0]['remaining_md'] == 5
 
 
@@ -129,7 +129,7 @@ def addition():
 def test_added_scope_exceeds_original_reference(env, done, expected):
     measure = five_basis(); measure['scope_changes'] = [addition()]
     data = five_answers(8)
-    data['milestones'].append({'nr': 6, 'milestone': 'Extra scope', 'status': 'Opgeleverd' if done else 'Bezig',
+    data['milestones'].append({'nr': 6, 'milestone': 'Extra scope', 'status': 'uitgevoerd' if done else 'lopend',
                               'actual_md': 24 if done else 10, 'remaining_md': 0 if done else 10, 'gezondheid': 'op-schema'})
     p = prepared(env, index=8, data=data, measure=measure)
     assert not p['questions']
@@ -147,7 +147,7 @@ def test_lines_start_from_zero_in_lead_month(env):
 
 def test_added_backlog_keeps_explicit_remaining(env):
     measure = five_basis(); measure['scope_changes'] = [addition()]
-    data = five_answers(); data['milestones'].append({'nr': 6, 'milestone': 'Extra scope', 'status': 'Backlog', 'actual_md': 0, 'remaining_md': 20, 'gezondheid': 'op-schema'})
+    data = five_answers(); data['milestones'].append({'nr': 6, 'milestone': 'Extra scope', 'status': 'backlog', 'actual_md': 0, 'remaining_md': 20, 'gezondheid': 'op-schema'})
     p = prepared(env, data=data, measure=measure)
     assert not p['questions'] and p['state']['milestones'][-1]['remaining_md'] == '20'
     data['milestones'][-1].pop('remaining_md')
@@ -156,7 +156,7 @@ def test_added_backlog_keeps_explicit_remaining(env):
 
 def test_early_assumption_is_automatic_and_only_in_reported_month(env):
     data = five_answers(1)
-    data['milestones'][0].update(status='Bezig', actual_md=2, remaining_md=None)
+    data['milestones'][0].update(status='lopend', actual_md=2, remaining_md=None)
     p = prepared(env, 1, data, five_basis())  # No toggle needed: nothing delivered and no complete estimate.
     assert not p['questions'] and p['state']['metrics']['assumed_md'] == '20'
     assert p['state']['metrics']['estimated_md'] is None
@@ -459,3 +459,28 @@ def test_live_archive_writes_one_commit_and_never_overwrites(tmp_path):
     assert report_history.read_archive(root) == [{'page_id': '123', 'record': record}]
     with pytest.raises(FileExistsError):archive(cfg, '124', record)
     with pytest.raises(ValueError, match='geen git-repo'):report_history.read_archive(tmp_path)
+
+
+def test_niet_uitgevoerd_closes_without_delivery(env):
+    data = five_answers(8); data['milestones'][4].update(status='niet-uitgevoerd', actual_md=3, remaining_md=None)
+    p = prepared(env, 8, data)
+    assert not p['questions']
+    row = p['state']['milestones'][4]
+    assert row['closed'] and not row['delivered'] and row['remaining_md'] == '0'
+    metrics = p['state']['metrics']
+    assert metrics['done'] and metrics['delivered_md'] == '80' and metrics['estimated_md'] == '80'
+    assert report_charts.done_text(p['state']) == 'Alle goedgekeurde milestones zijn afgesloten; niet uitgevoerd: milestone 5.'
+    data['milestones'][4]['remaining_md'] = 2
+    assert any('afgesloten maar' in q['question'] for q in prepared(env, 8, data)['questions'])
+
+
+def test_handy_status_conversion_keeps_content_hash():
+    sent = ('<table><tbody><tr><td><ac:structured-macro ac:name="handy-status-macro" ac:schema-version="1">'
+            '<ac:parameter ac:name="statusSetId">199</ac:parameter><ac:parameter ac:name="statusId">907</ac:parameter>'
+            '<ac:parameter ac:name="Status">Uitgevoerd</ac:parameter></ac:structured-macro></td></tr></tbody></table>')
+    # What Confluence stores after save: Handy's own instance id, the Status name kept.
+    stored = ('<table><tbody><tr><td><ac:structured-macro ac:name="status-handy" ac:schema-version="1" ac:macro-id="6bb76d44">'
+              '<ac:parameter ac:name="id">89610</ac:parameter><ac:parameter ac:name="Status">Uitgevoerd</ac:parameter>'
+              '</ac:structured-macro></td></tr></tbody></table>')
+    assert report_history.content_hash(sent) == report_history.content_hash(stored)
+    assert report_history.content_hash(stored) != report_history.content_hash(stored.replace('>Uitgevoerd<', '>Lopend<'))
