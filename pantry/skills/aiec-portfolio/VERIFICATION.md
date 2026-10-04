@@ -2,6 +2,13 @@
 
 Laatste controle: 2026-10-01. Deze controles zijn uitgevoerd door de bouwsessie, zonder live mutaties.
 
+## Uitzonderingen — release 2.4.62
+
+Lokaal geïnstalleerd op 2026-10-04. **383 geslaagde tests** (9 nieuw); kernbestanden byte-identiek aan de bron.
+Uitzondering op een catalogusregel of `gate:<artefact>` als interne beheerdata in het meetstandenarchief
+(beslist door Kenzo): herzieningsritme 30/90 dagen in de review, niet in Confluence, Jira of rapporten,
+`door` = goedkeurder. Live review (alleen lezen) werkt met de nieuwe collector. Live wegschrijven nog niet beproefd.
+
 ## Soort vanaf Planning — release 2.4.61
 
 Lokaal geïnstalleerd op 2026-10-01. **374 geslaagde tests**; kernbestanden byte-identiek aan de bron.
