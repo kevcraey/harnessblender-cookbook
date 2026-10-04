@@ -70,7 +70,8 @@ def render(cat, snapshot, report_id, target=None, period=None, inputs=None, cfg=
     if spec.get('cadence')=='monthly' and periods.parse(period)[2]!=1:raise ValueError('Maandrapport vraagt JJJJ-MM')
     # A usage report covers the initiative's reporting period: quarter, half year or year.
     if spec.get('cadence')=='periodic' and periods.parse(period)[2]==1:raise ValueError('Gebruiksrapport vraagt JJJJ-Qn, JJJJ-Hn of JJJJ')
-    data=datasets(cat,snapshot);data['findings']=review(cat,snapshot)
+    # Exceptions are internal portfolio management; reports show only open points.
+    data=datasets(cat,snapshot);data['findings']=[f for f in review(cat,snapshot) if not f.get('uitzondering') and not f['rule'].startswith('uitzondering-')]
     initiative=target if scope=='initiative' else None;intern=False
     if scope=='project':
         candidates=[p for p in data['projects'] if p['key']==target]

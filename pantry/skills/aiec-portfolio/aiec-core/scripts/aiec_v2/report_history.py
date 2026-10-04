@@ -106,6 +106,40 @@ def read_rapportering(root):
     return records
 
 
+UITZONDERING = 'uitzondering'
+_DATUM = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?\+00:00')
+
+
+def check_exception(record):
+    """An exception record: key, rule, reason, who and when. Reviewing it again is a new record."""
+    if not isinstance(record, dict) or set(record) != {'key', 'regel', 'reden', 'door', 'datum', 'ingetrokken'}:
+        raise ValueError('Uitzondering vraagt key, regel, reden, door, datum en ingetrokken')
+    if not re.fullmatch(r'[A-Z][A-Z0-9_]*-\d+(-intern-\d+)?', str(record['key'])): raise ValueError('Ongeldige key')
+    if not re.fullmatch(r'(gate:)?[a-z0-9-]+', str(record['regel'])): raise ValueError('Ongeldige regel')
+    if not str(record['reden']).strip() or not str(record['door']).strip(): raise ValueError('Uitzondering vraagt reden en door')
+    if not _DATUM.fullmatch(str(record['datum'])): raise ValueError('Ongeldige datum')
+    if not isinstance(record['ingetrokken'], bool): raise ValueError('ingetrokken is true of false')
+    return record
+
+
+def exception_name(record):
+    return f"{UITZONDERING}/{record['key']}/{record['regel'].replace(':', '-')}/{record['datum'][:19].replace(':', '')}.json"
+
+
+def read_exceptions(root):
+    """All recorded exceptions; a review or withdrawal is a new file, never an overwrite."""
+    root = Path(root).expanduser()
+    if not (root/'.git').exists():
+        raise ValueError(f'Meetstandenarchief ontbreekt of is geen git-repo: {root}')
+    records = []
+    for path in sorted((root/UITZONDERING).glob('*/*/*.json')):
+        record = check_exception(json.loads(path.read_text()))
+        if exception_name(record) != str(path.relative_to(root)):
+            raise ValueError(f'Uitzondering staat op een verkeerde plaats in het archief: {path.relative_to(root)}')
+        records.append(record)
+    return records
+
+
 def read_archive(root):
     """All archived measurements as {'page_id', 'record'} entries; a missing archive is an error, not empty history."""
     root = Path(root).expanduser()
@@ -113,8 +147,8 @@ def read_archive(root):
         raise ValueError(f'Meetstandenarchief ontbreekt of is geen git-repo: {root}')
     entries = []
     for path in sorted(root.glob('*/*/*.json')):
-        # Reporting frequencies share the archive but are no measurements.
-        if path.relative_to(root).parts[0] == RAPPORTERING: continue
+        # Reporting frequencies and exceptions share the archive but are no measurements.
+        if path.relative_to(root).parts[0] in (RAPPORTERING, UITZONDERING): continue
         entry = json.loads(path.read_text())
         if not isinstance(entry, dict) or set(entry) != {'page_id', 'record'} or not isinstance(entry['record'], dict):
             raise ValueError(f'Ongeldige meetstand in archief: {path.relative_to(root)}')

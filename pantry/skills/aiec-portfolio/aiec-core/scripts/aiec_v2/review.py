@@ -36,6 +36,22 @@ def frequency(snapshot, key):
     return rows[-1] if rows else {'key': key, 'frequentie': periods.DEFAULT, 'vanaf': None}
 
 
+# An exception is reviewed preferably monthly; after three months without review it no longer counts.
+HERZIEN_AANBEVOLEN, HERZIEN_VERPLICHT = 30, 90
+
+
+def exceptions(snapshot):
+    """The latest record per (key, rule); a withdrawn one is left out."""
+    latest = {}
+    for r in sorted(snapshot.get('uitzonderingen', []), key=lambda r: r['datum']):
+        latest[(r['key'], r['regel'])] = r
+    return {k: r for k, r in latest.items() if not r['ingetrokken']}
+
+
+def exception_age(record, today):
+    return (today-day(record['datum'])).days
+
+
 def usage_due(snapshot, key, today):
     """The usage period that should be reported by now, or None when nothing is due yet."""
     f = frequency(snapshot, key)
@@ -226,7 +242,41 @@ def review(cat, snapshot, today=None):
             add('sjabloon-uit-sync','warning',None,f"{tpl.get('omschrijving',rid)} (versie {live.get('version')}) wijkt af van rapport {rid}: vingerafdruk {now_fp} i.p.v. {tpl['vingerafdruk']}.",
                 f'Vergelijk het sjabloon met {rid}.yaml, werk de secties bij en neem daarna de nieuwe vingerafdruk over.')
     for warning in snapshot.get('gaps',[]):add('brondekking','warning',None,warning,'Vul de bron of koppeling aan; ontbrekende gegevens zijn geen nul.')
+    findings = apply_exceptions(cat, snapshot, findings, today)
     return sorted(findings,key=lambda x:({'error':0,'warning':1,'info':2}[x['severity']],str(x['key']),x['rule']))
+
+
+def apply_exceptions(cat, snapshot, findings, today):
+    """Catalog-rule findings under a reviewed exception become info; nothing disappears silently."""
+    excs = exceptions(snapshot); used = set(); out = []
+    for f in findings:
+        e = excs.get((f['key'], f['rule'])) if f['rule'] in cat.rules else None
+        if not e:
+            out.append(f); continue
+        used.add((f['key'], f['rule'])); age = exception_age(e, today)
+        since = f"{e['datum'][:10]} door {e['door']}: {e['reden']}"
+        if age > HERZIEN_VERPLICHT:
+            out += [f, dict(f, rule='uitzondering-te-herzien', severity='warning',
+                            message=f"Uitzondering op {f['rule']} niet herzien in {HERZIEN_VERPLICHT} dagen ({since}).",
+                            action='Herzie de uitzondering: opnieuw bevestigen of intrekken.')]
+            continue
+        out.append(dict(f, severity='info', uitzondering=e, message=f"Onder uitzondering sinds {since}. {f['message']}"))
+        if age > HERZIEN_AANBEVOLEN:
+            out.append(dict(f, rule='uitzondering-herzien', severity='info', message=f"Uitzondering op {f['rule']} is ouder dan een maand.",
+                            action='Herzie de uitzondering: opnieuw bevestigen of intrekken.'))
+    # Exceptions without a finding today: a fixed rule (withdraw it) or a gate exception (still to review).
+    for (key, regel), e in sorted(excs.items()):
+        if (key, regel) in used: continue
+        row = {'key': key, 'page_id': None, 'action': 'Herzie de uitzondering: opnieuw bevestigen of intrekken.'}
+        if regel in cat.rules:
+            out.append(dict(row, rule='uitzondering-overbodig', severity='info',
+                            message=f"Uitzondering op {regel} heeft geen bevinding meer.", action='Trek de uitzondering in.'))
+        elif exception_age(e, today) > HERZIEN_VERPLICHT:
+            out.append(dict(row, rule='uitzondering-te-herzien', severity='warning',
+                            message=f"Uitzondering op {regel} niet herzien in {HERZIEN_VERPLICHT} dagen ({e['datum'][:10]} door {e['door']}: {e['reden']})."))
+        elif exception_age(e, today) > HERZIEN_AANBEVOLEN:
+            out.append(dict(row, rule='uitzondering-herzien', severity='info', message=f"Uitzondering op {regel} is ouder dan een maand."))
+    return out
 
 
 def markdown(findings):

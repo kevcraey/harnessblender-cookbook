@@ -141,7 +141,13 @@
       "date": "2026-10-01",
       "by": "Kenzo",
       "rule": "De overgang naar Implementatie vraagt enkel een formele beslissing (decisions)."
+    },
+    {
+      "id": "uitzonderingen",
+      "date": "2026-10-04",
+      "by": "Kenzo",
+      "rule": "Een afwijking van een catalogusregel of gatevoorwaarde (gate:<artefact>) is interne beheerdata in het meetstandenarchief: regel, reden, door wie. Geen spoor in Confluence, Jira of rapporten. Elke gebruiker van de plugin kan ze vastleggen, ook voor regels met ernst error; ingebouwde controles los je op. Een uitzondering wordt bij voorkeur maandelijks herzien; na 3 maanden zonder herziening telt ze niet meer en komt de bevinding terug met 'uitzondering-te-herzien'. Herzien is opnieuw bevestigen; het archief bewaart de geschiedenis."
     }
   ],
-  "rules_note": "Regels signaleren. Een ontbrekende gatevoorwaarde vraagt een expliciete, gelogde uitzondering; nooit een stilzwijgende keuze."
+  "rules_note": "Regels signaleren. Een ontbrekende gatevoorwaarde vraagt een expliciete, gelogde uitzondering (beslissing uitzonderingen); nooit een stilzwijgende keuze."
 }

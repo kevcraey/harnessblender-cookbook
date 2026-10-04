@@ -8,7 +8,7 @@ from uuid import uuid4
 from aiec_lib import confluence as conf, jira, schema as sch
 from .catalog import digest
 from .backend import now, revision, INTERN, INTERN_KEY_RE, PROJECT_DETAILS, intern_key
-from .review import datasets, review, decided, decision_question
+from .review import datasets, review, decided, decision_question, exceptions, exception_age, HERZIEN_VERPLICHT
 from .reports import render
 
 
@@ -239,12 +239,22 @@ def make_plan(cat,backend,cfg,request):
         # Initiative artefacts hang directly under the initiative; project artefacts under their project page.
         own={l for a in data['artifacts'] if a['initiative']==key and not a.get('project') for l in a.get('labels',[])}
         per_project={p['key']:set(p['artifact_labels']) for p in data['projects'] if key in p['initiatives']}
+        # A reviewed exception (gate:<artefact>) on the initiative or project stands in for a missing artefact.
+        excs=exceptions(snapshot)
+        def excepted(k,x):
+            e=excs.get((k,'gate:'+x))
+            if e and exception_age(e,date.today())<=HERZIEN_VERPLICHT:
+                note=f"Gate-artefact {x} van {k} onder uitzondering sinds {e['datum'][:10]} door {e['door']}: {e['reden']}"
+                if note not in notes:notes.append(note)
+                return True
+            return False
         for x in gate.get('project_artifacts',[]):
-            questions += [f'Gate-artefact ontbreekt voor project {pk}: {x}' for pk,labels in sorted(per_project.items()) if x not in labels]
+            questions += [f'Gate-artefact ontbreekt voor project {pk}: {x}' for pk,labels in sorted(per_project.items()) if x not in labels and not excepted(pk,x)]
         # With exactly one project, its artefact also counts for the initiative.
         single=next(iter(per_project.values())) if len(per_project)==1 else set()
         needed=[x for x in gate.get('artifacts',[]) if x not in own and x not in gate.get('project_only',[]) and not (x in gate.get('project_artifacts',[]) and x in single)]
-        questions += ['Gate-artefact ontbreekt: '+x for x in needed]
+        # As with the artefact itself, the exception of a single project also counts for the initiative.
+        questions += ['Gate-artefact ontbreekt: '+x for x in needed if not excepted(key,x) and not (len(per_project)==1 and excepted(next(iter(per_project)),x))]
         # Closing sets the one resolution of the chosen category (decision resoluties).
         resolution=None
         if target=='Afgesloten':
@@ -310,6 +320,24 @@ def make_plan(cat,backend,cfg,request):
         else:
             action('rapportering.archive','rapportering',record)
             notes.append(f"Nu: {current['frequentie']}"+(f" vanaf {current['vanaf']}" if current.get('vanaf') else '')+'. Wordt vastgelegd in het archief (commit en push), niet in Confluence.')
+    elif kind=='uitzondering':
+        # Internal only: the archive, never Confluence or Jira. Reviewing again is a new record; the latest counts.
+        from .report_history import check_exception
+        keys=set(issues)|{x['key'] for x in data['projects']}|{x['key'] for x in data['products']}
+        if key not in keys:raise ValueError('Onbekende key: geef een initiatief, project of product')
+        regels=request.get('regels')
+        if not isinstance(regels,list) or not regels:raise ValueError('Geef de regels: catalogusregel-id of gate:<artefact>')
+        for regel in regels:
+            gate_label=regel[5:] if str(regel).startswith('gate:') else None
+            if not (regel in cat.rules or gate_label in cat.schema['artefact_labels']):
+                raise ValueError(f'{regel}: geen catalogusregel of gate-artefact; ingebouwde controles los je op, daar komt geen uitzondering op')
+            record=check_exception({'key':key,'regel':regel,'reden':request.get('reden') or '','door':request.get('door') or '',
+                                    'datum':now(),'ingetrokken':bool(request.get('ingetrokken',False))})
+            current=exceptions(snapshot).get((key,regel))
+            if record['ingetrokken'] and not current:notes.append(f'{key} heeft geen actieve uitzondering op {regel}; niets in te trekken.');continue
+            action('uitzondering.archive','uitzondering',record)
+            notes.append(f"{key} · {regel}: "+('ingetrokken' if record['ingetrokken'] else 'herzien' if current else 'nieuw')+
+                         '. Wordt vastgelegd in het archief (commit en push), niet in Confluence of Jira.')
     else:raise ValueError('Onbekende verzoeksoort: '+str(kind))
     # Scope guard checks actual objects, not just the caller's claimed scope.
     allowed={cfg['atlassian']['space'],cfg['writes']['test_space']}

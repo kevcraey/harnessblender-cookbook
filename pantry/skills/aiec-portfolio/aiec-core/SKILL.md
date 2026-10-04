@@ -267,6 +267,9 @@ beschrijving. Collect leest alle ad-hocvragen (open en afgesloten) in de dataset
 {"kind":"rapportering","key":"AI-123","frequentie":"jaar","vanaf":"2026"}
 ```
 ```json
+{"kind":"uitzondering","key":"AI-123","regels":["geen-project","gate:opleveringsverslag"],"reden":"POR aangevraagd","door":"Kenzo"}
+```
+```json
 {"kind":"report","report":"eindrapport","target":"POR-123","period":"2026-11","inputs":{"vlag":"afwijking-geen-actie","context":"…","resultaat":"…","rijpheid":"MVP","waarde":"…","wendingen":"…","productverantwoordelijke":"…","beslissingen":"nee","vervolgstappen":[{"stap":"…","verantwoordelijke":"…","datum":"2027-01-31"}]}}
 ```
 ```json
@@ -413,6 +416,18 @@ waarvan die termijn verstreken is. Het vooruitgangsrapport is maandelijks per pr
 intern: ze staat niet in Confluence maar in het meetstandenarchief (`rapportering/<AI-key>/<tijdstip>.json`,
 commit en push via het `rapportering`-voorstel); een wijziging is een nieuw bestand, het laatste telt. Een
 gebruiksrapport telt voor de periode op zijn regel `Periode:`; alleen zonder die regel beslist de titeldatum.
+
+Uitzondering (beslissing `uitzonderingen`): een afwijking van een catalogusregel of gatevoorwaarde
+(`gate:<artefact>`) op een initiatief, project of product. Intern, zoals de rapporteringsfrequentie:
+`uitzondering/<key>/<regel>/<tijdstip>.json` in het meetstandenarchief (commit en push via het
+`uitzondering`-voorstel), nooit in Confluence, Jira of een rapport. Elke gebruiker legt ze vast met reden en
+`door`; de uitvoering weigert als `door` niet gelijk is aan wie goedkeurt (`approve --by`); ook regels met ernst error. Ingebouwde controles (verplicht veld, waarde, structuur,
+koppeling, brondekking, sjabloon) krijgen geen uitzondering. Herzien = hetzelfde voorstel opnieuw; intrekken =
+`"ingetrokken": true`. Het laatste record per key en regel telt. Review: tot 30 dagen wordt de bevinding
+info "onder uitzondering"; van 30 tot 90 dagen komt `uitzondering-herzien` (info) erbij; na 90 dagen keert de
+bevinding terug met `uitzondering-te-herzien` (warning). Een uitzondering zonder bevinding geeft
+`uitzondering-overbodig`. Een gate-uitzondering heeft geen eigen bevinding maar volgt hetzelfde ritme. Een gate aanvaardt een `gate:<artefact>` van ten hoogste 90 dagen; bij één project
+telt de uitzondering van het project ook voor het initiatief. Stand en kwartaal tonen geen uitzonderingen.
 
 Een beslissing komt onder `[AI-x] Beslissingen`, of onder `parent_id` als die is opgegeven. Ontbreekt de
 Beslissingen-pagina, dan stopt het voorstel.

@@ -59,6 +59,11 @@ def validate_plan(plan,cat,cfg,backend):
             if action.get('key') is not None:raise Refused('Rapporteringsfrequentie draagt de initiatiefkey in de payload')
             try:check_frequency(action['payload'])
             except ValueError as error:raise Refused(str(error)) from None
+        if action['kind']=='uitzondering.archive':
+            from .report_history import check_exception
+            if action.get('key') is not None:raise Refused('Uitzondering draagt de key in de payload')
+            try:check_exception(action['payload'])
+            except ValueError as error:raise Refused(str(error)) from None
 
 
 def approve(plan,cat,cfg,backend,by,evidence,ack):
@@ -87,6 +92,9 @@ def execute(plan,receipt,cat,cfg,backend,state_dir):
     validate_plan(plan,cat,cfg,backend)
     if receipt.get('plan_id')!=plan['id'] or receipt.get('plan_hash')!=plan['hash'] or not receipt.get('approved_by') or not receipt.get('evidence'):
         raise Refused('Geen passend expliciet akkoord')
+    # Who grants an exception is who approves it, not a name typed into the request.
+    if any(a['kind']=='uitzondering.archive' and a['payload']['door']!=receipt['approved_by'] for a in plan['actions']):
+        raise Refused('Uitzondering: door moet gelijk zijn aan wie het voorstel goedkeurt')
     root=Path(state_dir).expanduser()/('fixture' if backend.identity['mode']=='fixture' else 'live')
     with locked(root):
         journal=root/(plan['id']+'.jsonl')

@@ -13,7 +13,7 @@ from . import report_history
 
 def now(): return datetime.now(timezone.utc).isoformat(timespec='seconds')
 # Writes to the git archive, not to Atlassian: no Atlassian write guard or writer.
-ARCHIVE_KINDS = {'meetstand.archive', 'rapportering.archive'}
+ARCHIVE_KINDS = {'meetstand.archive', 'rapportering.archive', 'uitzondering.archive'}
 
 
 # Jira plugin fields (Development) serialize as Java toString with per-request identity
@@ -45,6 +45,7 @@ class FixtureBackend:
         snap=normalize(self.cat,self.cfg,self.data['objects'],self.identity)
         snap['meetstanden']=deepcopy(self.data.get('meetstanden',[]))
         snap['rapportering']=deepcopy(self.data.get('rapportering',[]))
+        snap['uitzonderingen']=deepcopy(self.data.get('uitzonderingen',[]))
         return snap
     def transitions(self,key):return deepcopy(self.data.get('transitions',{}).get(key,[]))
     def title_exists(self,space,title):
@@ -98,6 +99,11 @@ class FixtureBackend:
             from .periods import check_frequency
             entries=self.data.setdefault('rapportering',[]);name=rapportering_name(check_frequency(payload))
             if any(rapportering_name(e)==name for e in entries):raise ValueError('Rapporteringsfrequentie bestaat al; niet overschrijven')
+            entries.append(deepcopy(payload));result={'archive':name}
+        elif kind=='uitzondering.archive':
+            from .report_history import exception_name, check_exception
+            entries=self.data.setdefault('uitzonderingen',[]);name=exception_name(check_exception(payload))
+            if any(exception_name(e)==name for e in entries):raise ValueError('Uitzondering bestaat al; niet overschrijven')
             entries.append(deepcopy(payload));result={'archive':name}
         elif kind=='issue.create':
             project=payload['fields']['project']['key'];keys=[int(x.split('-')[1]) for x in objects['issue'] if x.startswith(project+'-')]
@@ -191,11 +197,13 @@ class LiveBackend:
             snap['gaps']=[g for g in snap['gaps'] if not g.startswith('Uren zijn niet')]
         snap['meetstanden']=report_history.read_archive(self.cfg['meetstanden']['path'])
         snap['rapportering']=report_history.read_rapportering(self.cfg['meetstanden']['path'])
+        snap['uitzonderingen']=report_history.read_exceptions(self.cfg['meetstanden']['path'])
         return snap
     def mutate(self,action):
         kind=action['kind'];key=action.get('key');scope=action['scope']
         if kind=='meetstand.archive':return archive(self.cfg,key,action['payload']['record'])
         if kind=='rapportering.archive':return archive_frequency(self.cfg,action['payload'])
+        if kind=='uitzondering.archive':return archive_exception(self.cfg,action['payload'])
         client=http.writer(self.cfg,'confluence' if kind.startswith('page.') else 'jira',scope,True)
         if kind=='page.attachment':
             from .report_assets import attachment_bytes
@@ -234,6 +242,17 @@ def archive_frequency(cfg,record):
     path.parent.mkdir(parents=True,exist_ok=True)
     with path.open('x',encoding='utf-8') as f:f.write(json.dumps(record,ensure_ascii=False,sort_keys=True,indent=2)+'\n')
     return {'archive':name,'commit':_commit(cfg,root,name,f"rapportering {record['key']}: {record['frequentie']}"+(f" vanaf {record['vanaf']}" if record['vanaf'] else ''))}
+
+
+def archive_exception(cfg,record):
+    """Write one exception record to the git archive, commit it and push it. Never overwrites."""
+    root=Path(cfg['meetstanden']['path']).expanduser()
+    report_history.read_exceptions(root)  # Refuses a missing or inconsistent archive before writing.
+    name=report_history.exception_name(report_history.check_exception(record));path=root/name
+    path.parent.mkdir(parents=True,exist_ok=True)
+    with path.open('x',encoding='utf-8') as f:f.write(json.dumps(record,ensure_ascii=False,sort_keys=True,indent=2)+'\n')
+    verb='ingetrokken' if record['ingetrokken'] else 'bevestigd'
+    return {'archive':name,'commit':_commit(cfg,root,name,f"uitzondering {record['key']} {record['regel']}: {verb} door {record['door']}")}
 
 
 def archive(cfg,page_id,record):
