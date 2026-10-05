@@ -242,7 +242,11 @@ def review(cat, snapshot, today=None):
             add('sjabloon-uit-sync','warning',None,f"{tpl.get('omschrijving',rid)} (versie {live.get('version')}) wijkt af van rapport {rid}: vingerafdruk {now_fp} i.p.v. {tpl['vingerafdruk']}.",
                 f'Vergelijk het sjabloon met {rid}.yaml, werk de secties bij en neem daarna de nieuwe vingerafdruk over.')
     for warning in snapshot.get('gaps',[]):add('brondekking','warning',None,warning,'Vul de bron of koppeling aan; ontbrekende gegevens zijn geen nul.')
+    # Identity before exceptions: an excepted finding keeps the id (and so the history) of the original.
+    for f in findings: f['id'] = f"{f['key']}|{f['rule']}|{f['message']}"
     findings = apply_exceptions(cat, snapshot, findings, today)
+    for f in findings: f['id'] = f.get('id') or f"{f['key']}|{f['rule']}|{f['message']}"
+    since(snapshot, findings, today)
     return sorted(findings,key=lambda x:({'error':0,'warning':1,'info':2}[x['severity']],str(x['key']),x['rule']))
 
 
@@ -256,13 +260,13 @@ def apply_exceptions(cat, snapshot, findings, today):
         used.add((f['key'], f['rule'])); age = exception_age(e, today)
         since = f"{e['datum'][:10]} door {e['door']}: {e['reden']}"
         if age > HERZIEN_VERPLICHT:
-            out += [f, dict(f, rule='uitzondering-te-herzien', severity='warning',
+            out += [f, dict(f, id=None, rule='uitzondering-te-herzien', severity='warning',
                             message=f"Uitzondering op {f['rule']} niet herzien in {HERZIEN_VERPLICHT} dagen ({since}).",
                             action='Herzie de uitzondering: opnieuw bevestigen of intrekken.')]
             continue
         out.append(dict(f, severity='info', uitzondering=e, message=f"Onder uitzondering sinds {since}. {f['message']}"))
         if age > HERZIEN_AANBEVOLEN:
-            out.append(dict(f, rule='uitzondering-herzien', severity='info', message=f"Uitzondering op {f['rule']} is ouder dan een maand.",
+            out.append(dict(f, id=None, rule='uitzondering-herzien', severity='info', message=f"Uitzondering op {f['rule']} is ouder dan een maand.",
                             action='Herzie de uitzondering: opnieuw bevestigen of intrekken.'))
     # Exceptions without a finding today: a fixed rule (withdraw it) or a gate exception (still to review).
     for (key, regel), e in sorted(excs.items()):
@@ -279,9 +283,31 @@ def apply_exceptions(cat, snapshot, findings, today):
     return out
 
 
-def markdown(findings):
-    lines=['# Portfolioreview','', 'Dit is een voorstel voor bespreking. Er is niets gewijzigd.','']
+def since(snapshot, findings, today):
+    """'sinds' = first run of the unbroken streak of saved runs up to now; a finding that went away starts over."""
+    runs = sorted(snapshot.get('reviews', []), key=lambda r: r['datum'], reverse=True)
     for f in findings:
-        lines += [f"## {f['key'] or 'Bronnen'} · {f['severity']} · {f['rule']}",f['message'],f"Actie: {f['action']}",'']
+        first = today
+        for run in runs:
+            if f['id'] not in {x.get('id') for x in run['findings']}: break
+            first = day(run['datum'])
+        f['sinds'] = first.isoformat()
+
+
+def trend(snapshot, findings):
+    """New and resolved compared to the latest saved run; None without history."""
+    runs = sorted(snapshot.get('reviews', []), key=lambda r: r['datum'])
+    if not runs: return None
+    before = {x.get('id') for x in runs[-1]['findings']}; now = {f['id'] for f in findings}
+    return {'vorige': runs[-1]['datum'][:10], 'nieuw': sorted(now-before), 'opgelost': sorted(before-now)}
+
+
+def markdown(findings, change=None):
+    lines=['# Portfolioreview','', 'Dit is een voorstel voor bespreking. Er is niets gewijzigd.','']
+    if change:
+        lines += [f"Sinds de review van {change['vorige']}: {len(change['nieuw'])} nieuw, {len(change['opgelost'])} opgelost.",'']
+        lines += [f"- Opgelost: {x}" for x in change['opgelost']] + ([''] if change['opgelost'] else [])
+    for f in findings:
+        lines += [f"## {f['key'] or 'Bronnen'} · {f['severity']} · {f['rule']}",f['message'],f"Sinds: {f['sinds']}",f"Actie: {f['action']}",'']
     if not findings:lines.append('Geen afwijkingen gevonden binnen de gelezen bronnen en ingestelde regels.')
     return '\n'.join(lines)+'\n'

@@ -47,7 +47,7 @@ zijn een registratie van toestemming, geen bewijs dat een mens is geauthenticeer
 | Gebruik en opbrengst | Scope is het operationele initiatief; periode volgens de interne rapporteringsfrequentie (kwartaal, halfjaar of jaar; `rapportering`-voorstel). Niet verwarren met een POR-taak op InUitvoering. |
 | Uitzondering | `kind: uitzondering` met key, `regels` (catalogusregel-id of `gate:<artefact>`), `reden` en `door` (de gebruiker, dezelfde naam als bij `approve --by`). Intern beheer: archief, niet Confluence of Jira. Herzien = opnieuw voorstellen; intrekken met `ingetrokken: true`. Review vraagt maandelijks herziening, na 90 dagen telt ze niet meer. Zie de kernskill. |
 | Stand of kwartaaltoelichting | Rapportconcept uit de snapshot, met bronmoment en hiaten. Gebruik bronverwijzingen; reken cijfers niet zelf uit. Publicatie/verzending is in v2 nog handmatig na review. |
-| Review/migratie Confluence | Verzamel de hele AI-space inclusief ongeclassificeerde kandidaatpagina’s. `A review`. Bespreek afwijkingen, maak kleine herstelvoorstellen. Geen pagina’s verwijderen of samenvoegen zonder apart voorstel en back-up. |
+| Review/migratie Confluence | Verzamel de hele AI-space inclusief ongeclassificeerde kandidaatpagina’s. `A review` (met `--bewaar` op een live snapshot: houdt de geschiedenis bij voor `sinds` en nieuw/opgelost). Bespreek afwijkingen, maak kleine herstelvoorstellen. Geen pagina’s verwijderen of samenvoegen zonder apart voorstel en back-up. |
 | Nieuwe regel, rapport of processtap | Gebruik `../aiec-maintainer/SKILL.md`. Pas niet terloops de actieve catalogus aan. |
 
 ## Reviewgesprek

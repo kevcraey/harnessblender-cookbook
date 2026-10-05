@@ -140,6 +140,29 @@ def read_exceptions(root):
     return records
 
 
+REVIEW = 'review'
+
+
+def review_name(run):
+    return f"{REVIEW}/{run['datum'][:19].replace(':', '')}.json"
+
+
+def read_reviews(root):
+    """Saved review runs, oldest first. Derived data: each run is a new file, never an overwrite."""
+    root = Path(root).expanduser()
+    if not (root/'.git').exists():
+        raise ValueError(f'Meetstandenarchief ontbreekt of is geen git-repo: {root}')
+    runs = []
+    for path in sorted((root/REVIEW).glob('*.json')):
+        run = json.loads(path.read_text())
+        if not isinstance(run, dict) or set(run) != {'datum', 'findings'} or not isinstance(run['findings'], list) or not _DATUM.fullmatch(str(run['datum'])):
+            raise ValueError(f'Ongeldige reviewrun in archief: {path.relative_to(root)}')
+        if review_name(run) != str(path.relative_to(root)):
+            raise ValueError(f'Reviewrun staat op een verkeerde plaats in het archief: {path.relative_to(root)}')
+        runs.append(run)
+    return runs
+
+
 def read_archive(root):
     """All archived measurements as {'page_id', 'record'} entries; a missing archive is an error, not empty history."""
     root = Path(root).expanduser()

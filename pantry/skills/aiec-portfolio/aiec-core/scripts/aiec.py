@@ -48,7 +48,7 @@ def parser():
     s.add_parser('doctor')
     s.add_parser('config-init')
     q=s.add_parser('collect');q.add_argument('--out',required=True);q.add_argument('--hours',action='store_true');q.add_argument('--since');q.add_argument('--until')
-    q=s.add_parser('review');q.add_argument('--snapshot',required=True);q.add_argument('--out');q.add_argument('--today')
+    q=s.add_parser('review');q.add_argument('--snapshot',required=True);q.add_argument('--out');q.add_argument('--today');q.add_argument('--bewaar',action='store_true',help='bewaar deze run in het archief (live snapshot)')
     q=s.add_parser('report');q.add_argument('report');q.add_argument('--snapshot',required=True);q.add_argument('--target');q.add_argument('--period',required=True);q.add_argument('--inputs');q.add_argument('--tracking',help='JSON met baseline/scopebesluiten/expliciete aannames');q.add_argument('--slug');q.add_argument('--out')
     q=s.add_parser('propose');q.add_argument('--request',required=True);q.add_argument('--out',required=True)
     q=s.add_parser('form');fs=q.add_subparsers(dest='form_action',required=True)
@@ -87,8 +87,14 @@ def main(argv=None):
             return 0
         if args.cmd=='review':
             from datetime import date
-            data=reviews.review(cat,read_json(args.snapshot),date.fromisoformat(args.today) if args.today else None)
-            emit(data,args.out,reviews.markdown(data));return 0
+            snapshot=read_json(args.snapshot)
+            data=reviews.review(cat,snapshot,date.fromisoformat(args.today) if args.today else None)
+            if args.bewaar:
+                # Only a live run of today is history; a fixture or a backdated run is not.
+                if snapshot.get('source',{}).get('mode')!='live' or args.today:raise ValueError('Bewaren kan alleen voor een live snapshot zonder --today')
+                from aiec_v2.backend import archive_review
+                print(json.dumps(archive_review(cfg,data),ensure_ascii=False))
+            emit(data,args.out,reviews.markdown(data,reviews.trend(snapshot,data)));return 0
         if args.cmd=='report':
             result=reports.render(cat,read_json(args.snapshot),args.report,args.target,args.period,read_json(args.inputs) if args.inputs else {},cfg,args.slug,read_json(args.tracking) if args.tracking else None)
             emit(result,args.out,result['markdown']);return 0

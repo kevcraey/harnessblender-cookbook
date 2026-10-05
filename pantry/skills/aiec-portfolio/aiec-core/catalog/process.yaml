@@ -147,6 +147,12 @@
       "date": "2026-10-04",
       "by": "Kenzo",
       "rule": "Een afwijking van een catalogusregel of gatevoorwaarde (gate:<artefact>) is interne beheerdata in het meetstandenarchief: regel, reden, door wie. Geen spoor in Confluence, Jira of rapporten. Elke gebruiker van de plugin kan ze vastleggen, ook voor regels met ernst error; ingebouwde controles los je op. Een uitzondering wordt bij voorkeur maandelijks herzien; na 3 maanden zonder herziening telt ze niet meer en komt de bevinding terug met 'uitzondering-te-herzien'. Herzien is opnieuw bevestigen; het archief bewaart de geschiedenis."
+    },
+    {
+      "id": "reviewgeschiedenis",
+      "date": "2026-10-05",
+      "by": "Kenzo",
+      "rule": "Een bewaarde reviewrun is afgeleide, interne data in het meetstandenarchief en wordt zonder voorstel of akkoord geschreven. Uit die geschiedenis volgen per bevinding 'sinds' en per review nieuw en opgelost; geen status per bevinding (die rol heeft de uitzondering)."
     }
   ],
   "rules_note": "Regels signaleren. Een ontbrekende gatevoorwaarde vraagt een expliciete, gelogde uitzondering (beslissing uitzonderingen); nooit een stilzwijgende keuze."

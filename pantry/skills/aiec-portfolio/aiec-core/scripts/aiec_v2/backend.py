@@ -46,6 +46,7 @@ class FixtureBackend:
         snap['meetstanden']=deepcopy(self.data.get('meetstanden',[]))
         snap['rapportering']=deepcopy(self.data.get('rapportering',[]))
         snap['uitzonderingen']=deepcopy(self.data.get('uitzonderingen',[]))
+        snap['reviews']=deepcopy(self.data.get('reviews',[]))
         return snap
     def transitions(self,key):return deepcopy(self.data.get('transitions',{}).get(key,[]))
     def title_exists(self,space,title):
@@ -198,6 +199,7 @@ class LiveBackend:
         snap['meetstanden']=report_history.read_archive(self.cfg['meetstanden']['path'])
         snap['rapportering']=report_history.read_rapportering(self.cfg['meetstanden']['path'])
         snap['uitzonderingen']=report_history.read_exceptions(self.cfg['meetstanden']['path'])
+        snap['reviews']=report_history.read_reviews(self.cfg['meetstanden']['path'])
         return snap
     def mutate(self,action):
         kind=action['kind'];key=action.get('key');scope=action['scope']
@@ -253,6 +255,16 @@ def archive_exception(cfg,record):
     with path.open('x',encoding='utf-8') as f:f.write(json.dumps(record,ensure_ascii=False,sort_keys=True,indent=2)+'\n')
     verb='ingetrokken' if record['ingetrokken'] else 'bevestigd'
     return {'archive':name,'commit':_commit(cfg,root,name,f"uitzondering {record['key']} {record['regel']}: {verb} door {record['door']}")}
+
+
+def archive_review(cfg,findings):
+    """Save one review run to the git archive, commit it and push it. Derived data: no proposal or approval."""
+    root=Path(cfg['meetstanden']['path']).expanduser()
+    report_history.read_reviews(root)  # Refuses a missing or inconsistent archive before writing.
+    run={'datum':now(),'findings':findings};name=report_history.review_name(run);path=root/name
+    path.parent.mkdir(parents=True,exist_ok=True)
+    with path.open('x',encoding='utf-8') as f:f.write(json.dumps(run,ensure_ascii=False,sort_keys=True,indent=2)+'\n')
+    return {'archive':name,'commit':_commit(cfg,root,name,f"review {run['datum'][:10]}: {len(findings)} bevindingen")}
 
 
 def archive(cfg,page_id,record):
