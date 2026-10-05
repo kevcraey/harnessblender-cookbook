@@ -2,6 +2,13 @@
 
 Laatste controle: 2026-10-01. Deze controles zijn uitgevoerd door de bouwsessie, zonder live mutaties.
 
+## Reviewgeschiedenis — release 2.4.63
+
+Lokaal geïnstalleerd op 2026-10-05. **388 geslaagde tests** (5 nieuw); kernbestanden byte-identiek aan de bron.
+`review --bewaar` bewaart de run in het meetstandenarchief zonder voorstel (beslist door Kenzo); elke bevinding
+krijgt `sinds`, het concept toont nieuw en opgelost. Live nulpunt: `review/2026-10-05T121222.json`, 83 bevindingen
+(28 error, 46 warning, 9 info), gepusht.
+
 ## Uitzonderingen — release 2.4.62
 
 Lokaal geïnstalleerd op 2026-10-04. **383 geslaagde tests** (9 nieuw); kernbestanden byte-identiek aan de bron.
