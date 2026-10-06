@@ -2,6 +2,13 @@
 
 Laatste controle: 2026-10-01. Deze controles zijn uitgevoerd door de bouwsessie, zonder live mutaties.
 
+## Regelreview — release 2.4.65
+
+Lokaal geïnstalleerd op 2026-10-06. **393 geslaagde tests** (3 nieuw); plugincache identiek aan de blend.
+`regelreview` op live snapshot, Q4 lopend (1 bewaarde review): `geen-project` gemarkeerd als
+uitzonderingsregel (placeholder-POR's), 15 catalogusregels `dood`. Niet bewaard; eerste echte regelreview
+begin januari over Q4.
+
 ## Ochtendsignalen — release 2.4.64
 
 Lokaal geïnstalleerd op 2026-10-06, met routine 0.2.4 (pane `portfolio`). **390 geslaagde tests** (2 nieuw);
