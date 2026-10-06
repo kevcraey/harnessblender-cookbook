@@ -6,6 +6,7 @@ from __future__ import annotations
 from pathlib import Path
 import re
 from .review import day
+from . import periods
 
 # Sources from the routine collector that carry other people's activity. git and claude are our own
 # portfolio work, notes and chrome are duplicates or noise.
@@ -58,13 +59,25 @@ def scan(snapshot, bundle, today):
                 seen.add(text)
                 found.append({'dag': folder.name, 'bron': bron, 'tekst': text[:400], 'keys': keys,
                               'onbekend': [k for k in keys if k not in known], 'namen': hits, 'termen': terms})
-    return {**ladder(snapshot, today), 'kandidaten': found}
+    return {**ladder(snapshot, today), 'regelreview': rule_review_due(snapshot, today), 'kandidaten': found}
+
+
+def rule_review_due(snapshot, today):
+    """The quarter that just ended needs a rule review when it has saved runs and no saved rule review."""
+    from .rule_review import previous_quarter
+    q = previous_quarter(today); first, last = periods.start(q), periods.last_day(q)
+    has_runs = any(first <= day(r['datum']) <= last for r in snapshot.get('reviews', []))
+    done = any(r.get('kwartaal') == q for r in snapshot.get('regelreviews', []))
+    return {'kwartaal': q, 'nodig': has_runs and not done}
 
 
 def markdown(result):
     lad = {'info': '', 'vraag': ' — review aanbevolen', 'verplicht': ' — review verplicht'}[result['niveau']]
     last = f"{result['laatste_review']} ({result['dagen']} dagen)" if result['laatste_review'] else 'nooit'
-    lines = ['# Portfoliosignalen', '', f"Laatste bewaarde review: {last}{lad}.", '', f"{len(result['kandidaten'])} kandidaten.", '']
+    rr = result['regelreview']
+    lines = ['# Portfoliosignalen', '', f"Laatste bewaarde review: {last}{lad}.", '']
+    if rr['nodig']: lines += [f"Regelreview {rr['kwartaal']} nodig.", '']
+    lines += [f"{len(result['kandidaten'])} kandidaten.", '']
     for c in result['kandidaten']:
         tags = ', '.join(dict.fromkeys(c['keys'] + c['namen'] + c['termen']))
         lines.append(f"- {c['dag']} · {c['bron']} · {tags}{' · onbekende key: '+', '.join(c['onbekend']) if c['onbekend'] else ''}: {c['tekst']}")

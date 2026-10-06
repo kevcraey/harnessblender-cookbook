@@ -47,6 +47,7 @@ class FixtureBackend:
         snap['rapportering']=deepcopy(self.data.get('rapportering',[]))
         snap['uitzonderingen']=deepcopy(self.data.get('uitzonderingen',[]))
         snap['reviews']=deepcopy(self.data.get('reviews',[]))
+        snap['regelreviews']=deepcopy(self.data.get('regelreviews',[]))
         return snap
     def transitions(self,key):return deepcopy(self.data.get('transitions',{}).get(key,[]))
     def title_exists(self,space,title):
@@ -200,6 +201,7 @@ class LiveBackend:
         snap['rapportering']=report_history.read_rapportering(self.cfg['meetstanden']['path'])
         snap['uitzonderingen']=report_history.read_exceptions(self.cfg['meetstanden']['path'])
         snap['reviews']=report_history.read_reviews(self.cfg['meetstanden']['path'])
+        snap['regelreviews']=report_history.read_rule_reviews(self.cfg['meetstanden']['path'])
         return snap
     def mutate(self,action):
         kind=action['kind'];key=action.get('key');scope=action['scope']
@@ -265,6 +267,16 @@ def archive_review(cfg,findings):
     path.parent.mkdir(parents=True,exist_ok=True)
     with path.open('x',encoding='utf-8') as f:f.write(json.dumps(run,ensure_ascii=False,sort_keys=True,indent=2)+'\n')
     return {'archive':name,'commit':_commit(cfg,root,name,f"review {run['datum'][:10]}: {len(findings)} bevindingen")}
+
+
+def archive_rule_review(cfg,result):
+    """Save one quarterly rule review to the git archive, commit it and push it. One per quarter, never overwritten."""
+    root=Path(cfg['meetstanden']['path']).expanduser()
+    report_history.read_rule_reviews(root)
+    name=report_history.rule_review_name(result);path=root/name
+    path.parent.mkdir(parents=True,exist_ok=True)
+    with path.open('x',encoding='utf-8') as f:f.write(json.dumps(result,ensure_ascii=False,sort_keys=True,indent=2)+'\n')
+    return {'archive':name,'commit':_commit(cfg,root,name,f"regelreview {result['kwartaal']}")}
 
 
 def archive(cfg,page_id,record):

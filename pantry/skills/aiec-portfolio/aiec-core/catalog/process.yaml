@@ -159,6 +159,18 @@
       "date": "2026-10-06",
       "by": "Kenzo",
       "rule": "De ochtendroutine (ook in het weekend) zoekt in de recente activiteit naar wat in het portfolio moet doorstromen en stelt dat voor; niets wordt zonder akkoord geschreven. Review minstens om de 5 dagen: tot 2 dagen een vermelding, 3–4 dagen een vraag, vanaf 5 dagen (of zonder bewaarde review) verplicht vóór de routine afsluit."
+    },
+    {
+      "id": "regelreview",
+      "date": "2026-10-06",
+      "by": "Kenzo",
+      "rule": "Elk kwartaal een regelreview uit de bewaarde reviews: regels die nooit afgaan (dood), waarvan minstens de helft onder uitzondering staat (uitzonderingsregel) of met bevindingen langer dan 90 dagen open zonder oplossing (hardnekkig) worden besproken: aanpassen, schrappen of behouden. De eerste ochtendroutine van een nieuw kwartaal vraagt ze."
+    },
+    {
+      "id": "terugkoppeling",
+      "date": "2026-10-06",
+      "by": "Kenzo",
+      "rule": "Voorlopig geen routering van bevindingen naar dossiereigenaars of escalatie: het systeem koppelt rechtstreeks terug naar de portfoliobeheerder."
     }
   ],
   "rules_note": "Regels signaleren. Een ontbrekende gatevoorwaarde vraagt een expliciete, gelogde uitzondering (beslissing uitzonderingen); nooit een stilzwijgende keuze."

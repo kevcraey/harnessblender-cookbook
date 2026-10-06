@@ -163,6 +163,27 @@ def read_reviews(root):
     return runs
 
 
+REGELREVIEW = 'regelreview'
+
+
+def rule_review_name(result):
+    return f"{REGELREVIEW}/{result['kwartaal']}.json"
+
+
+def read_rule_reviews(root):
+    """Saved quarterly rule reviews, one file per quarter."""
+    root = Path(root).expanduser()
+    if not (root/'.git').exists():
+        raise ValueError(f'Meetstandenarchief ontbreekt of is geen git-repo: {root}')
+    out = []
+    for path in sorted((root/REGELREVIEW).glob('*.json')):
+        result = json.loads(path.read_text())
+        if not isinstance(result, dict) or rule_review_name(result) != str(path.relative_to(root)):
+            raise ValueError(f'Regelreview staat op een verkeerde plaats in het archief: {path.relative_to(root)}')
+        out.append(result)
+    return out
+
+
 def read_archive(root):
     """All archived measurements as {'page_id', 'record'} entries; a missing archive is an error, not empty history."""
     root = Path(root).expanduser()

@@ -35,6 +35,7 @@ A collect --hours --since 2026-07-01 --until 2026-09-30 --out snapshot-met-uren.
 A review --snapshot snapshot.json --out review.json
 A review --snapshot snapshot.json --bewaar --out review.json
 A signalen --snapshot snapshot.json --bundle <routine-run>/days --out signalen.json
+A regelreview --snapshot snapshot.json --kwartaal 2026-Q4 [--bewaar] --out regelreview.json
 A report captatie --snapshot snapshot.json --target AI-38 --period 2026-09 --out captatie.json
 A report onderhoud --snapshot snapshot.json --target POR-123 --period 2026-11 --inputs onderhoudsantwoorden.json --out onderhoud.json
 A report eindrapport --snapshot snapshot.json --target POR-123 --period 2026-11 --inputs eindantwoorden.json --out eindrapport.json
@@ -425,6 +426,13 @@ graph, rocketchat, atlassian en vault) en geeft elke regel die een gekende key, 
 onbekende AI- of EAG-key staat apart (`onbekend`): mogelijk nieuwe vraag. Code zoekt, het model oordeelt. Het
 geeft ook de reviewladder: dagen sinds de laatste bewaarde review, `niveau` info (0–2), vraag (3–4) of
 verplicht (≥ 5 of nooit).
+
+Regelreview (beslissing `regelreview`): per kwartaal uit de bewaarde runs, per regel (catalogus en ingebouwd): keys,
+opgelost, open, mediane open duur (uit `sinds`, op de laatste run) en uitzonderingsaandeel (laatste run).
+Markeringen: `dood` (catalogusregel zonder bevinding in het kwartaal), `uitzonderingsregel` (≥ 50% van de open
+bevindingen onder uitzondering), `hardnekkig` (open > 90 dagen en niets opgelost). `--bewaar` schrijft
+`regelreview/<JJJJ-Qn>.json` (één per kwartaal, zonder voorstel). `signalen` meldt `regelreview.nodig` zodra het
+afgelopen kwartaal bewaarde runs heeft en nog geen regelreview.
 
 Reviewgeschiedenis (beslissing `reviewgeschiedenis`): `review --bewaar` schrijft de run naar
 `review/<tijdstip>.json` in het meetstandenarchief (commit en push), zonder voorstel of akkoord: afgeleide

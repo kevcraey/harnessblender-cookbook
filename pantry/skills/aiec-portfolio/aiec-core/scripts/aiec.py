@@ -49,6 +49,7 @@ def parser():
     s.add_parser('config-init')
     q=s.add_parser('collect');q.add_argument('--out',required=True);q.add_argument('--hours',action='store_true');q.add_argument('--since');q.add_argument('--until')
     q=s.add_parser('signalen');q.add_argument('--snapshot',required=True);q.add_argument('--bundle',required=True,help='run-map van de routine met per dag <bron>.md');q.add_argument('--out');q.add_argument('--today')
+    q=s.add_parser('regelreview');q.add_argument('--snapshot',required=True);q.add_argument('--kwartaal',required=True);q.add_argument('--out');q.add_argument('--bewaar',action='store_true',help='bewaar in het archief (live snapshot)')
     q=s.add_parser('review');q.add_argument('--snapshot',required=True);q.add_argument('--out');q.add_argument('--today');q.add_argument('--bewaar',action='store_true',help='bewaar deze run in het archief (live snapshot)')
     q=s.add_parser('report');q.add_argument('report');q.add_argument('--snapshot',required=True);q.add_argument('--target');q.add_argument('--period',required=True);q.add_argument('--inputs');q.add_argument('--tracking',help='JSON met baseline/scopebesluiten/expliciete aannames');q.add_argument('--slug');q.add_argument('--out')
     q=s.add_parser('propose');q.add_argument('--request',required=True);q.add_argument('--out',required=True)
@@ -91,6 +92,14 @@ def main(argv=None):
             from aiec_v2 import signals
             data=signals.scan(read_json(args.snapshot),args.bundle,date.fromisoformat(args.today) if args.today else date.today())
             emit(data,args.out,signals.markdown(data));return 0
+        if args.cmd=='regelreview':
+            from aiec_v2 import rule_review
+            snapshot=read_json(args.snapshot);data=rule_review.compute(cat,snapshot,args.kwartaal)
+            if args.bewaar:
+                if snapshot.get('source',{}).get('mode')!='live':raise ValueError('Bewaren kan alleen voor een live snapshot')
+                from aiec_v2.backend import archive_rule_review
+                print(json.dumps(archive_rule_review(cfg,data),ensure_ascii=False))
+            emit(data,args.out,rule_review.markdown(data));return 0
         if args.cmd=='review':
             from datetime import date
             snapshot=read_json(args.snapshot)
