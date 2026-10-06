@@ -2,6 +2,13 @@
 
 Laatste controle: 2026-10-01. Deze controles zijn uitgevoerd door de bouwsessie, zonder live mutaties.
 
+## Ochtendsignalen — release 2.4.64
+
+Lokaal geïnstalleerd op 2026-10-06, met routine 0.2.4 (pane `portfolio`). **390 geslaagde tests** (2 nieuw);
+kernbestanden byte-identiek aan de bron. `signalen` op echte bundels van 2 en 5 oktober (zonder Graph): 15
+kandidaten, waaronder AI-44 (onbekende key) en GEZGRO-1 afgesloten (AI-7). Pane in de ochtendroutine nog niet
+live gedraaid.
+
 ## Reviewgeschiedenis — release 2.4.63
 
 Lokaal geïnstalleerd op 2026-10-05. **388 geslaagde tests** (5 nieuw); kernbestanden byte-identiek aan de bron.
