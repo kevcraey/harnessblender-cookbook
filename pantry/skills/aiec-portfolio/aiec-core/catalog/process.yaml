@@ -153,6 +153,12 @@
       "date": "2026-10-05",
       "by": "Kenzo",
       "rule": "Een bewaarde reviewrun is afgeleide, interne data in het meetstandenarchief en wordt zonder voorstel of akkoord geschreven. Uit die geschiedenis volgen per bevinding 'sinds' en per review nieuw en opgelost; geen status per bevinding (die rol heeft de uitzondering)."
+    },
+    {
+      "id": "ochtendsignalen",
+      "date": "2026-10-06",
+      "by": "Kenzo",
+      "rule": "De ochtendroutine (ook in het weekend) zoekt in de recente activiteit naar wat in het portfolio moet doorstromen en stelt dat voor; niets wordt zonder akkoord geschreven. Review minstens om de 5 dagen: tot 2 dagen een vermelding, 3–4 dagen een vraag, vanaf 5 dagen (of zonder bewaarde review) verplicht vóór de routine afsluit."
     }
   ],
   "rules_note": "Regels signaleren. Een ontbrekende gatevoorwaarde vraagt een expliciete, gelogde uitzondering (beslissing uitzonderingen); nooit een stilzwijgende keuze."

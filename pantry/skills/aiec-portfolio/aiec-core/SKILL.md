@@ -34,6 +34,7 @@ A collect --out snapshot.json
 A collect --hours --since 2026-07-01 --until 2026-09-30 --out snapshot-met-uren.json
 A review --snapshot snapshot.json --out review.json
 A review --snapshot snapshot.json --bewaar --out review.json
+A signalen --snapshot snapshot.json --bundle <routine-run>/days --out signalen.json
 A report captatie --snapshot snapshot.json --target AI-38 --period 2026-09 --out captatie.json
 A report onderhoud --snapshot snapshot.json --target POR-123 --period 2026-11 --inputs onderhoudsantwoorden.json --out onderhoud.json
 A report eindrapport --snapshot snapshot.json --target POR-123 --period 2026-11 --inputs eindantwoorden.json --out eindrapport.json
@@ -417,6 +418,13 @@ waarvan die termijn verstreken is. Het vooruitgangsrapport is maandelijks per pr
 intern: ze staat niet in Confluence maar in het meetstandenarchief (`rapportering/<AI-key>/<tijdstip>.json`,
 commit en push via het `rapportering`-voorstel); een wijziging is een nieuw bestand, het laatste telt. Een
 gebruiksrapport telt voor de periode op zijn regel `Periode:`; alleen zonder die regel beslist de titeldatum.
+
+Signalen (beslissing `ochtendsignalen`): `signalen` leest de bundel van de routine (`<dag>/<bron>.md`, enkel
+graph, rocketchat, atlassian en vault) en geeft elke regel die een gekende key, een initiatief- of productnaam
+(volledig, vóór de `:`, of een acroniem tussen haakjes, hoofdlettergevoelig) of een vraagterm bevat. Een
+onbekende AI- of EAG-key staat apart (`onbekend`): mogelijk nieuwe vraag. Code zoekt, het model oordeelt. Het
+geeft ook de reviewladder: dagen sinds de laatste bewaarde review, `niveau` info (0–2), vraag (3–4) of
+verplicht (≥ 5 of nooit).
 
 Reviewgeschiedenis (beslissing `reviewgeschiedenis`): `review --bewaar` schrijft de run naar
 `review/<tijdstip>.json` in het meetstandenarchief (commit en push), zonder voorstel of akkoord: afgeleide
